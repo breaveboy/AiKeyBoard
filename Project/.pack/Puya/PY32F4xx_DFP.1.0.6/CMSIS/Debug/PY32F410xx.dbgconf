@@ -1,0 +1,43 @@
+// File: PY32F410xx.dbgconf
+// Version: 1.0.0
+
+// <<< Use Configuration Wizard in Context Menu >>>
+
+
+// <h> Debug MCU configuration register (DBGMCU_CR1)
+
+//   <o.20>  DBG_TIM7_STOP            <i> TIM7 counter stopped when core is halted
+//   <o.19>  DBG_TIM6_STOP            <i> TIM6 counter stopped when core is halted
+
+//   <o.16>  DBG_I2C2_SMBUS_TIMEOUT   <i> I2C2_SMBUS_TIMEOUT counter stopped when core is halted
+//   <o.15>  DBG_I2C1_SMBUS_TIMEOUT   <i> I2C1_SMBUS_TIMEOUT counter stopped when core is halted
+
+//   <o.13>  DBG_TIM4_STOP            <i> TIM4 counter stopped when core is halted
+//   <o.12>  DBG_TIM3_STOP            <i> TIM3 counter stopped when core is halted
+//   <o.11>  DBG_TIM2_STOP            <i> TIM2 counter stopped when core is halted
+//   <o.10>  DBG_TIM1_STOP            <i> TIM1 counter stopped when core is halted
+//   <o.9>  DBG_WWDG_STOP             <i> WWDG counter stopped when core is halted
+//   <o.8>  DBG_IWDG_STOP             <i> IWDG counter stopped when core is halted
+//                                    <i> Reserved bits must be kept at reset value
+//   <o.1>  DBG_STOP                  <i> Debug Stop mode
+//   <o.0>  DBG_SLEEP                 <i> Debug Sleep mode
+// </h>
+DbgMCU_CR1 = 0x00000007;
+
+
+// <h> Debug MCU configuration register (DBGMCU_CR2)
+
+//   <o.12>  DBG_PWM4_STOP            <i> PWM4 counter stopped when core is halted
+//   <o.11>  DBG_PWM3_STOP            <i> PWM3 counter stopped when core is halted
+//   <o.10>  DBG_PWM2_STOP            <i> PWM2 counter stopped when core is halted
+//   <o.9>  DBG_PWM1_STOP             <i> PWM1 counter stopped when core is halted
+//   <o.8>  DBG_LPTIM_STOP            <i> LPTIM counter stopped when core is halted
+
+//   <o.5>  DBG_TIM17_STOP            <i> TIM17 counter stopped when core is halted
+//   <o.4>  DBG_TIM16_STOP            <i> TIM16 counter stopped when core is halted
+//   <o.3>  DBG_TIM15_STOP            <i> TIM15 counter stopped when core is halted
+
+// </h>
+DbgMCU_CR2 = 0x00000000;
+
+// <<< end of configuration section >>>

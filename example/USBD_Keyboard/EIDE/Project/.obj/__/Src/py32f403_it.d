@@ -1,0 +1,26 @@
+Project/.obj/__/Src/py32f403_it.o: ../Src/py32f403_it.c ../Inc/main.h \
+ ../../../../../../Drivers/PY32F403_HAL_Driver/Inc/py32f4xx_hal.h \
+ ../Inc/py32f403_hal_conf.h \
+ ../../../../../../Drivers/PY32F403_HAL_Driver/Inc/py32f403_hal_cortex.h \
+ ../../../../../../Drivers/PY32F403_HAL_Driver/Inc/py32f403_hal_def.h \
+ ../../../../../../Drivers/CMSIS/Device/PUYA/PY32F403/Include/py32f4xx.h \
+ ../../../../../../Drivers/CMSIS/Device/PUYA/PY32F403/Include/py32f403xD.h \
+ ../../../../../../Drivers/CMSIS/Include/core_cm4.h \
+ ../../../../../../Drivers/CMSIS/Include/cmsis_version.h \
+ ../../../../../../Drivers/CMSIS/Include/cmsis_compiler.h \
+ ../../../../../../Drivers/CMSIS/Include/cmsis_gcc.h \
+ ../../../../../../Drivers/CMSIS/Device/PUYA/PY32F403/Include/system_py32f4xx.h \
+ ../../../../../../Drivers/PY32F403_HAL_Driver/Inc/py32f4xx_hal.h \
+ ../../../../../../Drivers/PY32F403_HAL_Driver/Inc/py32f403_hal_dma.h \
+ ../../../../../../Drivers/PY32F403_HAL_Driver/Inc/py32f403_hal_dma_ex.h \
+ ../../../../../../Drivers/PY32F403_HAL_Driver/Inc/py32f403_hal_flash.h \
+ ../../../../../../Drivers/PY32F403_HAL_Driver/Inc/py32f403_hal_gpio.h \
+ ../../../../../../Drivers/PY32F403_HAL_Driver/Inc/py32f403_hal_gpio_ex.h \
+ ../../../../../../Drivers/PY32F403_HAL_Driver/Inc/py32f403_hal_rcc.h \
+ ../../../../../../Drivers/PY32F403_HAL_Driver/Inc/py32f403_hal_rcc_ex.h \
+ ../../../../../../Drivers/PY32F403_HAL_Driver/Inc/py32f403_hal_pwr.h \
+ ../../../../../../Drivers/PY32F403_HAL_Driver/Inc/py32f403_hal_pwr_ex.h \
+ ../../../../../../Drivers/PY32F403_HAL_Driver/Inc/py32f403_hal_uart.h \
+ ../../../../../../Drivers/BSP/PY32F403xx_Start_Kit/py32f403xx_Start_Kit.h \
+ ../Inc/py32f403_it.h \
+ ../../../../../../Middlewares/Third_Party/CherryUSB/port/usb_py32_reg.h

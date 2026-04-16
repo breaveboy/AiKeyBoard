@@ -1,0 +1,1237 @@
+Component: ARM Compiler 5.06 update 6 (build 750) Tool: armlink [4d35ed]
+
+==============================================================================
+
+Section Cross References
+
+    startup_py32f403xx.o(RESET) refers to startup_py32f403xx.o(STACK) for __initial_sp
+    startup_py32f403xx.o(RESET) refers to startup_py32f403xx.o(.text) for Reset_Handler
+    startup_py32f403xx.o(RESET) refers to py32f403_it.o(i.NMI_Handler) for NMI_Handler
+    startup_py32f403xx.o(RESET) refers to py32f403_it.o(i.HardFault_Handler) for HardFault_Handler
+    startup_py32f403xx.o(RESET) refers to py32f403_it.o(i.MemManage_Handler) for MemManage_Handler
+    startup_py32f403xx.o(RESET) refers to py32f403_it.o(i.BusFault_Handler) for BusFault_Handler
+    startup_py32f403xx.o(RESET) refers to py32f403_it.o(i.UsageFault_Handler) for UsageFault_Handler
+    startup_py32f403xx.o(RESET) refers to py32f403_it.o(i.SVC_Handler) for SVC_Handler
+    startup_py32f403xx.o(RESET) refers to py32f403_it.o(i.DebugMon_Handler) for DebugMon_Handler
+    startup_py32f403xx.o(RESET) refers to py32f403_it.o(i.PendSV_Handler) for PendSV_Handler
+    startup_py32f403xx.o(RESET) refers to py32f403_it.o(i.SysTick_Handler) for SysTick_Handler
+    startup_py32f403xx.o(RESET) refers to py32f403_it.o(i.USB_IRQHandler) for USB_IRQHandler
+    startup_py32f403xx.o(.text) refers to system_py32f403.o(i.SystemInit) for SystemInit
+    startup_py32f403xx.o(.text) refers to entry.o(.ARM.Collect$$$$00000000) for __main
+    system_py32f403.o(i.APP_ErrorProc) refers to py32f403_hal_cortex.o(i.HAL_NVIC_SystemReset) for HAL_NVIC_SystemReset
+    system_py32f403.o(i.APP_LoadTrim) refers to memcpya.o(.text) for __aeabi_memcpy4
+    system_py32f403.o(i.APP_LoadTrim) refers to memseta.o(.text) for __aeabi_memclr4
+    system_py32f403.o(i.APP_LoadTrim) refers to system_py32f403.o(i.APP_ErrorProc) for APP_ErrorProc
+    system_py32f403.o(i.APP_LoadTrim) refers to system_py32f403.o(.constdata) for .constdata
+    system_py32f403.o(i.SystemCoreClockUpdate) refers to memcpya.o(.text) for __aeabi_memcpy4
+    system_py32f403.o(i.SystemCoreClockUpdate) refers to system_py32f403.o(.data) for SystemCoreClock
+    system_py32f403.o(i.SystemCoreClockUpdate) refers to system_py32f403.o(.constdata) for AHBPrescTable
+    system_py32f403.o(i.SystemInit) refers to system_py32f403.o(i.APP_LoadTrim) for APP_LoadTrim
+    main.o(i.APP_SystemClockConfig) refers to memseta.o(.text) for __aeabi_memclr4
+    main.o(i.APP_SystemClockConfig) refers to py32f403_hal_rcc.o(i.HAL_RCC_OscConfig) for HAL_RCC_OscConfig
+    main.o(i.APP_SystemClockConfig) refers to main.o(i.APP_ErrorHandler) for APP_ErrorHandler
+    main.o(i.APP_SystemClockConfig) refers to py32f403_hal_rcc.o(i.HAL_RCC_ClockConfig) for HAL_RCC_ClockConfig
+    main.o(i.APP_USBInit) refers to usbd_hid_keyboard_if.o(i.hid_keyboard_init) for hid_keyboard_init
+    main.o(i.main) refers to py32f403_hal.o(i.HAL_Init) for HAL_Init
+    main.o(i.main) refers to main.o(i.APP_SystemClockConfig) for APP_SystemClockConfig
+    main.o(i.main) refers to main.o(i.APP_USBInit) for APP_USBInit
+    main.o(i.main) refers to usbd_hid_keyboard_if.o(i.hid_keyboard_test) for hid_keyboard_test
+    py32f403_it.o(i.SysTick_Handler) refers to py32f403_hal.o(i.HAL_IncTick) for HAL_IncTick
+    py32f403_it.o(i.USB_IRQHandler) refers to usb_dc_py32.o(i.USBD_IRQHandler) for USBD_IRQHandler
+    usbd_hid_keyboard_if.o(i.hid_keyboard_init) refers to usbd_core.o(i.usbd_desc_register) for usbd_desc_register
+    usbd_hid_keyboard_if.o(i.hid_keyboard_init) refers to usbd_hid.o(i.usbd_hid_init_intf) for usbd_hid_init_intf
+    usbd_hid_keyboard_if.o(i.hid_keyboard_init) refers to usbd_core.o(i.usbd_add_interface) for usbd_add_interface
+    usbd_hid_keyboard_if.o(i.hid_keyboard_init) refers to usbd_core.o(i.usbd_add_endpoint) for usbd_add_endpoint
+    usbd_hid_keyboard_if.o(i.hid_keyboard_init) refers to usbd_core.o(i.usbd_initialize) for usbd_initialize
+    usbd_hid_keyboard_if.o(i.hid_keyboard_init) refers to usbd_hid_keyboard_if.o(.constdata) for hid_descriptor
+    usbd_hid_keyboard_if.o(i.hid_keyboard_init) refers to usbd_hid_keyboard_if.o(.bss) for intf0
+    usbd_hid_keyboard_if.o(i.hid_keyboard_init) refers to usbd_hid_keyboard_if.o(.data) for hid_in_ep
+    usbd_hid_keyboard_if.o(i.hid_keyboard_test) refers to usb_dc_py32.o(i.usbd_ep_start_write) for usbd_ep_start_write
+    usbd_hid_keyboard_if.o(i.hid_keyboard_test) refers to usbd_hid_keyboard_if.o(.data) for hid_state
+    usbd_hid_keyboard_if.o(i.usbd_hid_int_callback) refers to usbd_hid_keyboard_if.o(.data) for hid_state
+    usbd_hid_keyboard_if.o(i.usbh_hid_get_idle) refers to usbd_hid_keyboard_if.o(.data) for idle_speed
+    usbd_hid_keyboard_if.o(i.usbh_hid_set_idle) refers to usbd_hid_keyboard_if.o(.data) for idle_speed
+    usbd_hid_keyboard_if.o(.data) refers to usbd_hid_keyboard_if.o(i.usbd_hid_int_callback) for usbd_hid_int_callback
+    py32f403xx_start_kit.o(i.BSP_LED_DeInit) refers to memseta.o(.text) for __aeabi_memclr4
+    py32f403xx_start_kit.o(i.BSP_LED_DeInit) refers to py32f403_hal_gpio.o(i.HAL_GPIO_WritePin) for HAL_GPIO_WritePin
+    py32f403xx_start_kit.o(i.BSP_LED_DeInit) refers to py32f403_hal_gpio.o(i.HAL_GPIO_DeInit) for HAL_GPIO_DeInit
+    py32f403xx_start_kit.o(i.BSP_LED_DeInit) refers to py32f403xx_start_kit.o(.constdata) for LED_PIN
+    py32f403xx_start_kit.o(i.BSP_LED_DeInit) refers to py32f403xx_start_kit.o(.data) for LED_PORT
+    py32f403xx_start_kit.o(i.BSP_LED_Init) refers to memseta.o(.text) for __aeabi_memclr4
+    py32f403xx_start_kit.o(i.BSP_LED_Init) refers to py32f403_hal_gpio.o(i.HAL_GPIO_Init) for HAL_GPIO_Init
+    py32f403xx_start_kit.o(i.BSP_LED_Init) refers to py32f403_hal_gpio.o(i.HAL_GPIO_WritePin) for HAL_GPIO_WritePin
+    py32f403xx_start_kit.o(i.BSP_LED_Init) refers to py32f403xx_start_kit.o(.constdata) for LED_PIN
+    py32f403xx_start_kit.o(i.BSP_LED_Init) refers to py32f403xx_start_kit.o(.data) for LED_PORT
+    py32f403xx_start_kit.o(i.BSP_LED_Off) refers to py32f403_hal_gpio.o(i.HAL_GPIO_WritePin) for HAL_GPIO_WritePin
+    py32f403xx_start_kit.o(i.BSP_LED_Off) refers to py32f403xx_start_kit.o(.constdata) for LED_PIN
+    py32f403xx_start_kit.o(i.BSP_LED_Off) refers to py32f403xx_start_kit.o(.data) for LED_PORT
+    py32f403xx_start_kit.o(i.BSP_LED_On) refers to py32f403_hal_gpio.o(i.HAL_GPIO_WritePin) for HAL_GPIO_WritePin
+    py32f403xx_start_kit.o(i.BSP_LED_On) refers to py32f403xx_start_kit.o(.constdata) for LED_PIN
+    py32f403xx_start_kit.o(i.BSP_LED_On) refers to py32f403xx_start_kit.o(.data) for LED_PORT
+    py32f403xx_start_kit.o(i.BSP_LED_Toggle) refers to py32f403_hal_gpio.o(i.HAL_GPIO_TogglePin) for HAL_GPIO_TogglePin
+    py32f403xx_start_kit.o(i.BSP_LED_Toggle) refers to py32f403xx_start_kit.o(.constdata) for LED_PIN
+    py32f403xx_start_kit.o(i.BSP_LED_Toggle) refers to py32f403xx_start_kit.o(.data) for LED_PORT
+    py32f403xx_start_kit.o(i.BSP_PB_DeInit) refers to memseta.o(.text) for __aeabi_memclr4
+    py32f403xx_start_kit.o(i.BSP_PB_DeInit) refers to py32f403_hal_cortex.o(i.HAL_NVIC_DisableIRQ) for HAL_NVIC_DisableIRQ
+    py32f403xx_start_kit.o(i.BSP_PB_DeInit) refers to py32f403_hal_gpio.o(i.HAL_GPIO_DeInit) for HAL_GPIO_DeInit
+    py32f403xx_start_kit.o(i.BSP_PB_DeInit) refers to py32f403xx_start_kit.o(.constdata) for BUTTON_PIN
+    py32f403xx_start_kit.o(i.BSP_PB_DeInit) refers to py32f403xx_start_kit.o(.data) for BUTTON_PORT
+    py32f403xx_start_kit.o(i.BSP_PB_GetState) refers to py32f403_hal_gpio.o(i.HAL_GPIO_ReadPin) for HAL_GPIO_ReadPin
+    py32f403xx_start_kit.o(i.BSP_PB_GetState) refers to py32f403xx_start_kit.o(.constdata) for BUTTON_PIN
+    py32f403xx_start_kit.o(i.BSP_PB_GetState) refers to py32f403xx_start_kit.o(.data) for BUTTON_PORT
+    py32f403xx_start_kit.o(i.BSP_PB_Init) refers to memseta.o(.text) for __aeabi_memclr4
+    py32f403xx_start_kit.o(i.BSP_PB_Init) refers to py32f403_hal_gpio.o(i.HAL_GPIO_Init) for HAL_GPIO_Init
+    py32f403xx_start_kit.o(i.BSP_PB_Init) refers to py32f403_hal_cortex.o(i.HAL_NVIC_SetPriority) for HAL_NVIC_SetPriority
+    py32f403xx_start_kit.o(i.BSP_PB_Init) refers to py32f403_hal_cortex.o(i.HAL_NVIC_EnableIRQ) for HAL_NVIC_EnableIRQ
+    py32f403xx_start_kit.o(i.BSP_PB_Init) refers to py32f403xx_start_kit.o(.constdata) for BUTTON_PIN
+    py32f403xx_start_kit.o(i.BSP_PB_Init) refers to py32f403xx_start_kit.o(.data) for BUTTON_PORT
+    py32f403xx_start_kit.o(i.BSP_USART_Config) refers to memseta.o(.text) for __aeabi_memclr4
+    py32f403xx_start_kit.o(i.BSP_USART_Config) refers to py32f403_hal_uart.o(i.HAL_UART_Init) for HAL_UART_Init
+    py32f403xx_start_kit.o(i.BSP_USART_Config) refers to py32f403_hal_gpio.o(i.HAL_GPIO_Init) for HAL_GPIO_Init
+    py32f403xx_start_kit.o(i.BSP_USART_Config) refers to py32f403_hal_cortex.o(i.HAL_NVIC_SetPriority) for HAL_NVIC_SetPriority
+    py32f403xx_start_kit.o(i.BSP_USART_Config) refers to py32f403_hal_cortex.o(i.HAL_NVIC_EnableIRQ) for HAL_NVIC_EnableIRQ
+    py32f403xx_start_kit.o(i.BSP_USART_Config) refers to py32f403xx_start_kit.o(.bss) for DebugUartHandle
+    py32f403xx_start_kit.o(i.fgetc) refers to py32f403_hal_uart.o(i.HAL_UART_Receive) for HAL_UART_Receive
+    py32f403xx_start_kit.o(i.fgetc) refers to py32f403xx_start_kit.o(.bss) for DebugUartHandle
+    py32f403xx_start_kit.o(i.fputc) refers to py32f403_hal_uart.o(i.HAL_UART_Transmit) for HAL_UART_Transmit
+    py32f403xx_start_kit.o(i.fputc) refers to py32f403xx_start_kit.o(.bss) for DebugUartHandle
+    py32f403_hal.o(i.HAL_DeInit) refers to py32f403_hal.o(i.HAL_MspDeInit) for HAL_MspDeInit
+    py32f403_hal.o(i.HAL_Delay) refers to py32f403_hal.o(i.HAL_GetTick) for HAL_GetTick
+    py32f403_hal.o(i.HAL_Delay) refers to py32f403_hal.o(.data) for uwTickFreq
+    py32f403_hal.o(i.HAL_GetTick) refers to py32f403_hal.o(.data) for uwTick
+    py32f403_hal.o(i.HAL_GetTickFreq) refers to py32f403_hal.o(.data) for uwTickFreq
+    py32f403_hal.o(i.HAL_GetTickPrio) refers to py32f403_hal.o(.data) for uwTickPrio
+    py32f403_hal.o(i.HAL_IncTick) refers to py32f403_hal.o(.data) for uwTick
+    py32f403_hal.o(i.HAL_Init) refers to py32f403_hal_cortex.o(i.HAL_NVIC_SetPriorityGrouping) for HAL_NVIC_SetPriorityGrouping
+    py32f403_hal.o(i.HAL_Init) refers to py32f403_hal.o(i.HAL_InitTick) for HAL_InitTick
+    py32f403_hal.o(i.HAL_Init) refers to py32f403_hal_msp.o(i.HAL_MspInit) for HAL_MspInit
+    py32f403_hal.o(i.HAL_InitTick) refers to py32f403_hal_cortex.o(i.HAL_SYSTICK_Config) for HAL_SYSTICK_Config
+    py32f403_hal.o(i.HAL_InitTick) refers to py32f403_hal_cortex.o(i.HAL_NVIC_SetPriority) for HAL_NVIC_SetPriority
+    py32f403_hal.o(i.HAL_InitTick) refers to py32f403_hal.o(.data) for uwTickFreq
+    py32f403_hal.o(i.HAL_InitTick) refers to system_py32f403.o(.data) for SystemCoreClock
+    py32f403_hal.o(i.HAL_SetTickFreq) refers to py32f403_hal.o(i.HAL_InitTick) for HAL_InitTick
+    py32f403_hal.o(i.HAL_SetTickFreq) refers to py32f403_hal.o(.data) for uwTickFreq
+    py32f403_hal_rcc.o(i.HAL_RCC_ClockConfig) refers to py32f403_hal.o(i.HAL_GetTick) for HAL_GetTick
+    py32f403_hal_rcc.o(i.HAL_RCC_ClockConfig) refers to py32f403_hal_rcc.o(i.HAL_RCC_GetSysClockFreq) for HAL_RCC_GetSysClockFreq
+    py32f403_hal_rcc.o(i.HAL_RCC_ClockConfig) refers to py32f403_hal.o(i.HAL_InitTick) for HAL_InitTick
+    py32f403_hal_rcc.o(i.HAL_RCC_ClockConfig) refers to system_py32f403.o(.constdata) for AHBPrescTable
+    py32f403_hal_rcc.o(i.HAL_RCC_ClockConfig) refers to system_py32f403.o(.data) for SystemCoreClock
+    py32f403_hal_rcc.o(i.HAL_RCC_ClockConfig) refers to py32f403_hal.o(.data) for uwTickPrio
+    py32f403_hal_rcc.o(i.HAL_RCC_DeInit) refers to py32f403_hal.o(i.HAL_GetTick) for HAL_GetTick
+    py32f403_hal_rcc.o(i.HAL_RCC_DeInit) refers to py32f403_hal.o(i.HAL_InitTick) for HAL_InitTick
+    py32f403_hal_rcc.o(i.HAL_RCC_DeInit) refers to system_py32f403.o(.data) for SystemCoreClock
+    py32f403_hal_rcc.o(i.HAL_RCC_DeInit) refers to py32f403_hal.o(.data) for uwTickPrio
+    py32f403_hal_rcc.o(i.HAL_RCC_GetHCLKFreq) refers to system_py32f403.o(.data) for SystemCoreClock
+    py32f403_hal_rcc.o(i.HAL_RCC_GetPCLK1Freq) refers to py32f403_hal_rcc.o(i.HAL_RCC_GetHCLKFreq) for HAL_RCC_GetHCLKFreq
+    py32f403_hal_rcc.o(i.HAL_RCC_GetPCLK1Freq) refers to system_py32f403.o(.constdata) for APBPrescTable
+    py32f403_hal_rcc.o(i.HAL_RCC_GetPCLK2Freq) refers to py32f403_hal_rcc.o(i.HAL_RCC_GetHCLKFreq) for HAL_RCC_GetHCLKFreq
+    py32f403_hal_rcc.o(i.HAL_RCC_GetPCLK2Freq) refers to system_py32f403.o(.constdata) for APBPrescTable
+    py32f403_hal_rcc.o(i.HAL_RCC_GetSysClockFreq) refers to memcpya.o(.text) for __aeabi_memcpy4
+    py32f403_hal_rcc.o(i.HAL_RCC_MCOConfig) refers to memseta.o(.text) for __aeabi_memclr4
+    py32f403_hal_rcc.o(i.HAL_RCC_MCOConfig) refers to py32f403_hal_gpio.o(i.HAL_GPIO_Init) for HAL_GPIO_Init
+    py32f403_hal_rcc.o(i.HAL_RCC_NMI_IRQHandler) refers to py32f403_hal_rcc.o(i.HAL_RCC_CSSCallback) for HAL_RCC_CSSCallback
+    py32f403_hal_rcc.o(i.HAL_RCC_OscConfig) refers to py32f403_hal.o(i.HAL_GetTick) for HAL_GetTick
+    py32f403_hal_rcc.o(i.HAL_RCC_OscConfig) refers to py32f403_hal_rcc.o(i.RCC_Delay) for RCC_Delay
+    py32f403_hal_rcc.o(i.RCC_Delay) refers to system_py32f403.o(.data) for SystemCoreClock
+    py32f403_hal_rcc_ex.o(i.HAL_RCCEx_GetPeriphCLKFreq) refers to memcpya.o(.text) for __aeabi_memcpy4
+    py32f403_hal_rcc_ex.o(i.HAL_RCCEx_GetPeriphCLKFreq) refers to py32f403_hal_rcc.o(i.HAL_RCC_GetPCLK2Freq) for HAL_RCC_GetPCLK2Freq
+    py32f403_hal_rcc_ex.o(i.HAL_RCCEx_PeriphCLKConfig) refers to py32f403_hal.o(i.HAL_GetTick) for HAL_GetTick
+    py32f403_hal_gpio.o(i.HAL_GPIO_EXTI_IRQHandler) refers to py32f403_hal_gpio.o(i.HAL_GPIO_EXTI_Callback) for HAL_GPIO_EXTI_Callback
+    py32f403_hal_dma.o(i.HAL_DMA_PollForTransfer) refers to py32f403_hal.o(i.HAL_GetTick) for HAL_GetTick
+    py32f403_hal_dma.o(i.HAL_DMA_Start) refers to py32f403_hal_dma.o(i.DMA_SetConfig) for DMA_SetConfig
+    py32f403_hal_dma.o(i.HAL_DMA_Start_IT) refers to py32f403_hal_dma.o(i.DMA_SetConfig) for DMA_SetConfig
+    py32f403_hal_pwr.o(i.HAL_PWR_EnterSTOPMode) refers to py32f403_hal_pwr.o(i.PWR_OverloadWfe) for PWR_OverloadWfe
+    py32f403_hal_pwr.o(i.HAL_PWR_PVD_IRQHandler) refers to py32f403_hal_pwr.o(i.HAL_PWR_PVDCallback) for HAL_PWR_PVDCallback
+    py32f403_hal_uart.o(i.HAL_HalfDuplex_Init) refers to py32f403_hal_uart.o(i.HAL_UART_MspInit) for HAL_UART_MspInit
+    py32f403_hal_uart.o(i.HAL_HalfDuplex_Init) refers to py32f403_hal_uart.o(i.UART_SetConfig) for UART_SetConfig
+    py32f403_hal_uart.o(i.HAL_LIN_Init) refers to py32f403_hal_uart.o(i.HAL_UART_MspInit) for HAL_UART_MspInit
+    py32f403_hal_uart.o(i.HAL_LIN_Init) refers to py32f403_hal_uart.o(i.UART_SetConfig) for UART_SetConfig
+    py32f403_hal_uart.o(i.HAL_MultiProcessor_Init) refers to py32f403_hal_uart.o(i.HAL_UART_MspInit) for HAL_UART_MspInit
+    py32f403_hal_uart.o(i.HAL_MultiProcessor_Init) refers to py32f403_hal_uart.o(i.UART_SetConfig) for UART_SetConfig
+    py32f403_hal_uart.o(i.HAL_UART_Abort) refers to py32f403_hal_dma.o(i.HAL_DMA_Abort) for HAL_DMA_Abort
+    py32f403_hal_uart.o(i.HAL_UART_Abort) refers to py32f403_hal_dma.o(i.HAL_DMA_GetError) for HAL_DMA_GetError
+    py32f403_hal_uart.o(i.HAL_UART_AbortReceive) refers to py32f403_hal_dma.o(i.HAL_DMA_Abort) for HAL_DMA_Abort
+    py32f403_hal_uart.o(i.HAL_UART_AbortReceive) refers to py32f403_hal_dma.o(i.HAL_DMA_GetError) for HAL_DMA_GetError
+    py32f403_hal_uart.o(i.HAL_UART_AbortReceive_IT) refers to py32f403_hal_dma.o(i.HAL_DMA_Abort_IT) for HAL_DMA_Abort_IT
+    py32f403_hal_uart.o(i.HAL_UART_AbortReceive_IT) refers to py32f403_hal_uart.o(i.HAL_UART_AbortReceiveCpltCallback) for HAL_UART_AbortReceiveCpltCallback
+    py32f403_hal_uart.o(i.HAL_UART_AbortReceive_IT) refers to py32f403_hal_uart.o(i.UART_DMARxOnlyAbortCallback) for UART_DMARxOnlyAbortCallback
+    py32f403_hal_uart.o(i.HAL_UART_AbortTransmit) refers to py32f403_hal_dma.o(i.HAL_DMA_Abort) for HAL_DMA_Abort
+    py32f403_hal_uart.o(i.HAL_UART_AbortTransmit) refers to py32f403_hal_dma.o(i.HAL_DMA_GetError) for HAL_DMA_GetError
+    py32f403_hal_uart.o(i.HAL_UART_AbortTransmit_IT) refers to py32f403_hal_dma.o(i.HAL_DMA_Abort_IT) for HAL_DMA_Abort_IT
+    py32f403_hal_uart.o(i.HAL_UART_AbortTransmit_IT) refers to py32f403_hal_uart.o(i.HAL_UART_AbortTransmitCpltCallback) for HAL_UART_AbortTransmitCpltCallback
+    py32f403_hal_uart.o(i.HAL_UART_AbortTransmit_IT) refers to py32f403_hal_uart.o(i.UART_DMATxOnlyAbortCallback) for UART_DMATxOnlyAbortCallback
+    py32f403_hal_uart.o(i.HAL_UART_Abort_IT) refers to py32f403_hal_dma.o(i.HAL_DMA_Abort_IT) for HAL_DMA_Abort_IT
+    py32f403_hal_uart.o(i.HAL_UART_Abort_IT) refers to py32f403_hal_uart.o(i.HAL_UART_AbortCpltCallback) for HAL_UART_AbortCpltCallback
+    py32f403_hal_uart.o(i.HAL_UART_Abort_IT) refers to py32f403_hal_uart.o(i.UART_DMATxAbortCallback) for UART_DMATxAbortCallback
+    py32f403_hal_uart.o(i.HAL_UART_Abort_IT) refers to py32f403_hal_uart.o(i.UART_DMARxAbortCallback) for UART_DMARxAbortCallback
+    py32f403_hal_uart.o(i.HAL_UART_DMAStop) refers to py32f403_hal_dma.o(i.HAL_DMA_Abort) for HAL_DMA_Abort
+    py32f403_hal_uart.o(i.HAL_UART_DMAStop) refers to py32f403_hal_uart.o(i.UART_EndTxTransfer) for UART_EndTxTransfer
+    py32f403_hal_uart.o(i.HAL_UART_DMAStop) refers to py32f403_hal_uart.o(i.UART_EndRxTransfer) for UART_EndRxTransfer
+    py32f403_hal_uart.o(i.HAL_UART_DeInit) refers to py32f403_hal_uart.o(i.HAL_UART_MspDeInit) for HAL_UART_MspDeInit
+    py32f403_hal_uart.o(i.HAL_UART_IRQHandler) refers to py32f403_hal_uart.o(i.UART_Receive_IT) for UART_Receive_IT
+    py32f403_hal_uart.o(i.HAL_UART_IRQHandler) refers to py32f403_hal_uart.o(i.UART_EndRxTransfer) for UART_EndRxTransfer
+    py32f403_hal_uart.o(i.HAL_UART_IRQHandler) refers to py32f403_hal_dma.o(i.HAL_DMA_Abort_IT) for HAL_DMA_Abort_IT
+    py32f403_hal_uart.o(i.HAL_UART_IRQHandler) refers to py32f403_hal_uart.o(i.HAL_UART_ErrorCallback) for HAL_UART_ErrorCallback
+    py32f403_hal_uart.o(i.HAL_UART_IRQHandler) refers to py32f403_hal_uart.o(i.HAL_UART_IdleFrameDetectCpltCallback) for HAL_UART_IdleFrameDetectCpltCallback
+    py32f403_hal_uart.o(i.HAL_UART_IRQHandler) refers to py32f403_hal_uart.o(i.UART_Transmit_IT) for UART_Transmit_IT
+    py32f403_hal_uart.o(i.HAL_UART_IRQHandler) refers to py32f403_hal_uart.o(i.UART_EndTransmit_IT) for UART_EndTransmit_IT
+    py32f403_hal_uart.o(i.HAL_UART_IRQHandler) refers to py32f403_hal_uart.o(i.UART_DMAAbortOnError) for UART_DMAAbortOnError
+    py32f403_hal_uart.o(i.HAL_UART_Init) refers to py32f403_hal_uart.o(i.HAL_UART_MspInit) for HAL_UART_MspInit
+    py32f403_hal_uart.o(i.HAL_UART_Init) refers to py32f403_hal_uart.o(i.UART_SetConfig) for UART_SetConfig
+    py32f403_hal_uart.o(i.HAL_UART_Init) refers to py32f403_hal_uart.o(i.UART_AdvFeatureConfig) for UART_AdvFeatureConfig
+    py32f403_hal_uart.o(i.HAL_UART_Receive) refers to py32f403_hal.o(i.HAL_GetTick) for HAL_GetTick
+    py32f403_hal_uart.o(i.HAL_UART_Receive) refers to py32f403_hal_uart.o(i.UART_WaitOnFlagUntilTimeout) for UART_WaitOnFlagUntilTimeout
+    py32f403_hal_uart.o(i.HAL_UART_Receive_DMA) refers to py32f403_hal_dma.o(i.HAL_DMA_Start_IT) for HAL_DMA_Start_IT
+    py32f403_hal_uart.o(i.HAL_UART_Receive_DMA) refers to py32f403_hal_uart.o(i.UART_DMAReceiveCplt) for UART_DMAReceiveCplt
+    py32f403_hal_uart.o(i.HAL_UART_Receive_DMA) refers to py32f403_hal_uart.o(i.UART_DMARxHalfCplt) for UART_DMARxHalfCplt
+    py32f403_hal_uart.o(i.HAL_UART_Receive_DMA) refers to py32f403_hal_uart.o(i.UART_DMAError) for UART_DMAError
+    py32f403_hal_uart.o(i.HAL_UART_Transmit) refers to py32f403_hal.o(i.HAL_GetTick) for HAL_GetTick
+    py32f403_hal_uart.o(i.HAL_UART_Transmit) refers to py32f403_hal_uart.o(i.UART_WaitOnFlagUntilTimeout) for UART_WaitOnFlagUntilTimeout
+    py32f403_hal_uart.o(i.HAL_UART_Transmit_DMA) refers to py32f403_hal_dma.o(i.HAL_DMA_Start_IT) for HAL_DMA_Start_IT
+    py32f403_hal_uart.o(i.HAL_UART_Transmit_DMA) refers to py32f403_hal_uart.o(i.UART_DMATransmitCplt) for UART_DMATransmitCplt
+    py32f403_hal_uart.o(i.HAL_UART_Transmit_DMA) refers to py32f403_hal_uart.o(i.UART_DMATxHalfCplt) for UART_DMATxHalfCplt
+    py32f403_hal_uart.o(i.HAL_UART_Transmit_DMA) refers to py32f403_hal_uart.o(i.UART_DMAError) for UART_DMAError
+    py32f403_hal_uart.o(i.UART_DMAAbortOnError) refers to py32f403_hal_uart.o(i.HAL_UART_ErrorCallback) for HAL_UART_ErrorCallback
+    py32f403_hal_uart.o(i.UART_DMAError) refers to py32f403_hal_uart.o(i.UART_EndTxTransfer) for UART_EndTxTransfer
+    py32f403_hal_uart.o(i.UART_DMAError) refers to py32f403_hal_uart.o(i.UART_EndRxTransfer) for UART_EndRxTransfer
+    py32f403_hal_uart.o(i.UART_DMAError) refers to py32f403_hal_uart.o(i.HAL_UART_ErrorCallback) for HAL_UART_ErrorCallback
+    py32f403_hal_uart.o(i.UART_DMAReceiveCplt) refers to py32f403_hal_uart.o(i.HAL_UART_RxCpltCallback) for HAL_UART_RxCpltCallback
+    py32f403_hal_uart.o(i.UART_DMARxAbortCallback) refers to py32f403_hal_uart.o(i.HAL_UART_AbortCpltCallback) for HAL_UART_AbortCpltCallback
+    py32f403_hal_uart.o(i.UART_DMARxHalfCplt) refers to py32f403_hal_uart.o(i.HAL_UART_RxHalfCpltCallback) for HAL_UART_RxHalfCpltCallback
+    py32f403_hal_uart.o(i.UART_DMARxOnlyAbortCallback) refers to py32f403_hal_uart.o(i.HAL_UART_AbortReceiveCpltCallback) for HAL_UART_AbortReceiveCpltCallback
+    py32f403_hal_uart.o(i.UART_DMATransmitCplt) refers to py32f403_hal_uart.o(i.HAL_UART_TxCpltCallback) for HAL_UART_TxCpltCallback
+    py32f403_hal_uart.o(i.UART_DMATxAbortCallback) refers to py32f403_hal_uart.o(i.HAL_UART_AbortCpltCallback) for HAL_UART_AbortCpltCallback
+    py32f403_hal_uart.o(i.UART_DMATxHalfCplt) refers to py32f403_hal_uart.o(i.HAL_UART_TxHalfCpltCallback) for HAL_UART_TxHalfCpltCallback
+    py32f403_hal_uart.o(i.UART_DMATxOnlyAbortCallback) refers to py32f403_hal_uart.o(i.HAL_UART_AbortTransmitCpltCallback) for HAL_UART_AbortTransmitCpltCallback
+    py32f403_hal_uart.o(i.UART_EndTransmit_IT) refers to py32f403_hal_uart.o(i.HAL_UART_TxCpltCallback) for HAL_UART_TxCpltCallback
+    py32f403_hal_uart.o(i.UART_Receive_IT) refers to py32f403_hal_uart.o(i.HAL_UART_RxCpltCallback) for HAL_UART_RxCpltCallback
+    py32f403_hal_uart.o(i.UART_SetConfig) refers to py32f403_hal_rcc.o(i.HAL_RCC_GetPCLK2Freq) for HAL_RCC_GetPCLK2Freq
+    py32f403_hal_uart.o(i.UART_SetConfig) refers to py32f403_hal_rcc.o(i.HAL_RCC_GetPCLK1Freq) for HAL_RCC_GetPCLK1Freq
+    py32f403_hal_uart.o(i.UART_WaitOnFlagUntilTimeout) refers to py32f403_hal.o(i.HAL_GetTick) for HAL_GetTick
+    py32f403_hal_cortex.o(i.HAL_NVIC_GetPriorityGrouping) refers to py32f403_hal_cortex.o(i.__NVIC_GetPriorityGrouping) for __NVIC_GetPriorityGrouping
+    py32f403_hal_cortex.o(i.HAL_NVIC_SetPriority) refers to py32f403_hal_cortex.o(i.__NVIC_GetPriorityGrouping) for __NVIC_GetPriorityGrouping
+    py32f403_hal_cortex.o(i.HAL_NVIC_SetPriority) refers to py32f403_hal_cortex.o(i.__NVIC_SetPriority) for __NVIC_SetPriority
+    py32f403_hal_cortex.o(i.HAL_SYSTICK_Config) refers to py32f403_hal_cortex.o(i.__NVIC_SetPriority) for __NVIC_SetPriority
+    py32f403_hal_cortex.o(i.HAL_SYSTICK_IRQHandler) refers to py32f403_hal_cortex.o(i.HAL_SYSTICK_Callback) for HAL_SYSTICK_Callback
+    usbd_core.o(i.is_device_configured) refers to usbd_core.o(.noncacheable) for usbd_core_cfg
+    usbd_core.o(i.usb_device_is_configured) refers to usbd_core.o(.noncacheable) for usbd_core_cfg
+    usbd_core.o(i.usbd_add_endpoint) refers to usbd_core.o(.noncacheable) for usbd_core_cfg
+    usbd_core.o(i.usbd_add_interface) refers to usbd_core.o(.noncacheable) for usbd_core_cfg
+    usbd_core.o(i.usbd_add_interface) refers to usbd_core.o(.data) for usbd_intf_head
+    usbd_core.o(i.usbd_bos_desc_register) refers to usbd_core.o(.data) for bos_desc
+    usbd_core.o(i.usbd_class_event_notify_handler) refers to usbd_core.o(.data) for usbd_intf_head
+    usbd_core.o(i.usbd_class_request_handler) refers to usbd_core.o(.data) for usbd_intf_head
+    usbd_core.o(i.usbd_deinitialize) refers to usb_dc_py32.o(i.usb_dc_deinit) for usb_dc_deinit
+    usbd_core.o(i.usbd_deinitialize) refers to usbd_core.o(.noncacheable) for usbd_core_cfg
+    usbd_core.o(i.usbd_deinitialize) refers to usbd_core.o(.data) for usbd_intf_head
+    usbd_core.o(i.usbd_desc_register) refers to usbd_core.o(.noncacheable) for usbd_core_cfg
+    usbd_core.o(i.usbd_event_connect_handler) refers to usbd_core.o(i.usbd_class_event_notify_handler) for usbd_class_event_notify_handler
+    usbd_core.o(i.usbd_event_disconnect_handler) refers to usbd_core.o(i.usbd_class_event_notify_handler) for usbd_class_event_notify_handler
+    usbd_core.o(i.usbd_event_ep0_setup_complete_handler) refers to usb_dc_py32.o(i.usbd_ep_set_stall) for usbd_ep_set_stall
+    usbd_core.o(i.usbd_event_ep0_setup_complete_handler) refers to usb_dc_py32.o(i.usbd_ep_start_read) for usbd_ep_start_read
+    usbd_core.o(i.usbd_event_ep0_setup_complete_handler) refers to usbd_core.o(i.usbd_setup_request_handler) for usbd_setup_request_handler
+    usbd_core.o(i.usbd_event_ep0_setup_complete_handler) refers to memcpya.o(.text) for __aeabi_memcpy
+    usbd_core.o(i.usbd_event_ep0_setup_complete_handler) refers to usb_dc_py32.o(i.usbd_ep0_set_zlp_flag) for usbd_ep0_set_zlp_flag
+    usbd_core.o(i.usbd_event_ep0_setup_complete_handler) refers to usb_dc_py32.o(i.usbd_ep_start_write) for usbd_ep_start_write
+    usbd_core.o(i.usbd_event_ep0_setup_complete_handler) refers to usbd_core.o(.noncacheable) for usbd_core_cfg
+    usbd_core.o(i.usbd_event_ep_in_complete_handler) refers to usb_dc_py32.o(i.usbd_ep_start_write) for usbd_ep_start_write
+    usbd_core.o(i.usbd_event_ep_in_complete_handler) refers to usb_dc_py32.o(i.usbd_ep_start_read) for usbd_ep_start_read
+    usbd_core.o(i.usbd_event_ep_in_complete_handler) refers to usbd_core.o(.noncacheable) for usbd_core_cfg
+    usbd_core.o(i.usbd_event_ep_out_complete_handler) refers to usbd_core.o(i.usbd_setup_request_handler) for usbd_setup_request_handler
+    usbd_core.o(i.usbd_event_ep_out_complete_handler) refers to usb_dc_py32.o(i.usbd_ep_set_stall) for usbd_ep_set_stall
+    usbd_core.o(i.usbd_event_ep_out_complete_handler) refers to usb_dc_py32.o(i.usbd_ep_start_write) for usbd_ep_start_write
+    usbd_core.o(i.usbd_event_ep_out_complete_handler) refers to usb_dc_py32.o(i.usbd_ep_start_read) for usbd_ep_start_read
+    usbd_core.o(i.usbd_event_ep_out_complete_handler) refers to usbd_core.o(.noncacheable) for usbd_core_cfg
+    usbd_core.o(i.usbd_event_reset_handler) refers to usb_dc_py32.o(i.usbd_set_address) for usbd_set_address
+    usbd_core.o(i.usbd_event_reset_handler) refers to usb_dc_py32.o(i.usbd_ep_open) for usbd_ep_open
+    usbd_core.o(i.usbd_event_reset_handler) refers to usbd_core.o(i.usbd_class_event_notify_handler) for usbd_class_event_notify_handler
+    usbd_core.o(i.usbd_event_reset_handler) refers to usbd_core.o(.noncacheable) for usbd_core_cfg
+    usbd_core.o(i.usbd_event_resume_handler) refers to usbd_core.o(i.usbd_class_event_notify_handler) for usbd_class_event_notify_handler
+    usbd_core.o(i.usbd_event_suspend_handler) refers to usbd_core.o(i.usbd_class_event_notify_handler) for usbd_class_event_notify_handler
+    usbd_core.o(i.usbd_get_descriptor) refers to usbd_core.o(.data) for msosv1_desc
+    usbd_core.o(i.usbd_get_descriptor) refers to usbd_core.o(.noncacheable) for usbd_core_cfg
+    usbd_core.o(i.usbd_initialize) refers to usb_dc_py32.o(i.usb_dc_init) for usb_dc_init
+    usbd_core.o(i.usbd_msosv1_desc_register) refers to usbd_core.o(.data) for msosv1_desc
+    usbd_core.o(i.usbd_msosv2_desc_register) refers to usbd_core.o(.data) for msosv2_desc
+    usbd_core.o(i.usbd_reset_endpoint) refers to usb_dc_py32.o(i.usbd_ep_close) for usbd_ep_close
+    usbd_core.o(i.usbd_set_configuration) refers to usbd_core.o(i.usbd_reset_endpoint) for usbd_reset_endpoint
+    usbd_core.o(i.usbd_set_configuration) refers to usbd_core.o(i.usbd_set_endpoint) for usbd_set_endpoint
+    usbd_core.o(i.usbd_set_configuration) refers to usbd_core.o(.noncacheable) for usbd_core_cfg
+    usbd_core.o(i.usbd_set_endpoint) refers to usb_dc_py32.o(i.usbd_ep_open) for usbd_ep_open
+    usbd_core.o(i.usbd_set_interface) refers to usbd_core.o(i.usbd_reset_endpoint) for usbd_reset_endpoint
+    usbd_core.o(i.usbd_set_interface) refers to usbd_core.o(i.usbd_set_endpoint) for usbd_set_endpoint
+    usbd_core.o(i.usbd_set_interface) refers to usbd_core.o(i.usbd_class_event_notify_handler) for usbd_class_event_notify_handler
+    usbd_core.o(i.usbd_set_interface) refers to usbd_core.o(.noncacheable) for usbd_core_cfg
+    usbd_core.o(i.usbd_setup_request_handler) refers to usbd_core.o(i.usbd_standard_request_handler) for usbd_standard_request_handler
+    usbd_core.o(i.usbd_setup_request_handler) refers to usbd_core.o(i.usbd_print_setup) for usbd_print_setup
+    usbd_core.o(i.usbd_setup_request_handler) refers to usbd_core.o(i.usbd_class_request_handler) for usbd_class_request_handler
+    usbd_core.o(i.usbd_setup_request_handler) refers to usbd_core.o(i.usbd_vendor_request_handler) for usbd_vendor_request_handler
+    usbd_core.o(i.usbd_standard_request_handler) refers to usbd_core.o(i.usbd_std_device_req_handler) for usbd_std_device_req_handler
+    usbd_core.o(i.usbd_standard_request_handler) refers to usbd_core.o(i.usbd_std_interface_req_handler) for usbd_std_interface_req_handler
+    usbd_core.o(i.usbd_standard_request_handler) refers to usbd_core.o(i.usbd_std_endpoint_req_handler) for usbd_std_endpoint_req_handler
+    usbd_core.o(i.usbd_std_device_req_handler) refers to usb_dc_py32.o(i.usbd_set_address) for usbd_set_address
+    usbd_core.o(i.usbd_std_device_req_handler) refers to usbd_core.o(i.usbd_get_descriptor) for usbd_get_descriptor
+    usbd_core.o(i.usbd_std_device_req_handler) refers to usbd_core.o(i.usbd_set_configuration) for usbd_set_configuration
+    usbd_core.o(i.usbd_std_device_req_handler) refers to usbd_core.o(i.usbd_class_event_notify_handler) for usbd_class_event_notify_handler
+    usbd_core.o(i.usbd_std_device_req_handler) refers to usbd_hid_keyboard_if.o(i.usbd_configure_done_callback) for usbd_configure_done_callback
+    usbd_core.o(i.usbd_std_device_req_handler) refers to usbd_core.o(.noncacheable) for usbd_core_cfg
+    usbd_core.o(i.usbd_std_endpoint_req_handler) refers to usbd_core.o(i.is_device_configured) for is_device_configured
+    usbd_core.o(i.usbd_std_endpoint_req_handler) refers to usb_dc_py32.o(i.usbd_ep_is_stalled) for usbd_ep_is_stalled
+    usbd_core.o(i.usbd_std_endpoint_req_handler) refers to usb_dc_py32.o(i.usbd_ep_clear_stall) for usbd_ep_clear_stall
+    usbd_core.o(i.usbd_std_endpoint_req_handler) refers to usb_dc_py32.o(i.usbd_ep_set_stall) for usbd_ep_set_stall
+    usbd_core.o(i.usbd_std_interface_req_handler) refers to usbd_core.o(i.is_device_configured) for is_device_configured
+    usbd_core.o(i.usbd_std_interface_req_handler) refers to usbd_core.o(i.usbd_set_interface) for usbd_set_interface
+    usbd_core.o(i.usbd_std_interface_req_handler) refers to usbd_core.o(.data) for usbd_intf_head
+    usbd_core.o(i.usbd_vendor_request_handler) refers to usbd_core.o(.data) for msosv1_desc
+    usb_dc_py32.o(i.USBD_IRQHandler) refers to usb_dc_py32.o(i.pyusb_get_active_ep) for pyusb_get_active_ep
+    usb_dc_py32.o(i.USBD_IRQHandler) refers to memseta.o(.text) for __aeabi_memclr4
+    usb_dc_py32.o(i.USBD_IRQHandler) refers to usbd_core.o(i.usbd_event_reset_handler) for usbd_event_reset_handler
+    usb_dc_py32.o(i.USBD_IRQHandler) refers to usbd_core.o(i.usbd_event_resume_handler) for usbd_event_resume_handler
+    usb_dc_py32.o(i.USBD_IRQHandler) refers to usbd_core.o(i.usbd_event_suspend_handler) for usbd_event_suspend_handler
+    usb_dc_py32.o(i.USBD_IRQHandler) refers to usb_dc_py32.o(i.pyusb_set_active_ep) for pyusb_set_active_ep
+    usb_dc_py32.o(i.USBD_IRQHandler) refers to usb_dc_py32.o(i.handle_ep0) for handle_ep0
+    usb_dc_py32.o(i.USBD_IRQHandler) refers to usbd_core.o(i.usbd_event_ep_in_complete_handler) for usbd_event_ep_in_complete_handler
+    usb_dc_py32.o(i.USBD_IRQHandler) refers to usb_dc_py32.o(i.pyusb_write_packet) for pyusb_write_packet
+    usb_dc_py32.o(i.USBD_IRQHandler) refers to usb_dc_py32.o(i.pyusb_read_packet) for pyusb_read_packet
+    usb_dc_py32.o(i.USBD_IRQHandler) refers to usbd_core.o(i.usbd_event_ep_out_complete_handler) for usbd_event_ep_out_complete_handler
+    usb_dc_py32.o(i.USBD_IRQHandler) refers to usb_dc_py32.o(.bss) for g_pyusb_udc
+    usb_dc_py32.o(i.USBD_IRQHandler) refers to usb_dc_py32.o(.data) for usb_ep0_state
+    usb_dc_py32.o(i.handle_ep0) refers to usb_dc_py32.o(i.pyusb_read_packet) for pyusb_read_packet
+    usb_dc_py32.o(i.handle_ep0) refers to usbd_core.o(i.usbd_event_ep0_setup_complete_handler) for usbd_event_ep0_setup_complete_handler
+    usb_dc_py32.o(i.handle_ep0) refers to usbd_core.o(i.usbd_event_ep_in_complete_handler) for usbd_event_ep_in_complete_handler
+    usb_dc_py32.o(i.handle_ep0) refers to usbd_core.o(i.usbd_event_ep_out_complete_handler) for usbd_event_ep_out_complete_handler
+    usb_dc_py32.o(i.handle_ep0) refers to usb_dc_py32.o(.data) for usb_ep0_state
+    usb_dc_py32.o(i.handle_ep0) refers to usb_dc_py32.o(.bss) for g_pyusb_udc
+    usb_dc_py32.o(i.usb_dc_init) refers to usb_dc_py32.o(i.usb_dc_low_level_init) for usb_dc_low_level_init
+    usb_dc_py32.o(i.usb_dc_init) refers to usb_dc_py32.o(i.pyusb_set_active_ep) for pyusb_set_active_ep
+    usb_dc_py32.o(i.usbd_ep0_reset_zlp_flag) refers to usb_dc_py32.o(.data) for zlp_flag
+    usb_dc_py32.o(i.usbd_ep0_set_zlp_flag) refers to usb_dc_py32.o(.data) for zlp_flag
+    usb_dc_py32.o(i.usbd_ep_clear_stall) refers to usb_dc_py32.o(i.pyusb_get_active_ep) for pyusb_get_active_ep
+    usb_dc_py32.o(i.usbd_ep_clear_stall) refers to usb_dc_py32.o(i.pyusb_set_active_ep) for pyusb_set_active_ep
+    usb_dc_py32.o(i.usbd_ep_is_stalled) refers to usb_dc_py32.o(i.pyusb_get_active_ep) for pyusb_get_active_ep
+    usb_dc_py32.o(i.usbd_ep_is_stalled) refers to usb_dc_py32.o(i.pyusb_set_active_ep) for pyusb_set_active_ep
+    usb_dc_py32.o(i.usbd_ep_open) refers to usb_dc_py32.o(i.pyusb_get_active_ep) for pyusb_get_active_ep
+    usb_dc_py32.o(i.usbd_ep_open) refers to usb_dc_py32.o(i.pyusb_set_active_ep) for pyusb_set_active_ep
+    usb_dc_py32.o(i.usbd_ep_open) refers to usb_dc_py32.o(i.pyusb_get_fifo_size) for pyusb_get_fifo_size
+    usb_dc_py32.o(i.usbd_ep_open) refers to usb_dc_py32.o(.bss) for g_pyusb_udc
+    usb_dc_py32.o(i.usbd_ep_set_stall) refers to usb_dc_py32.o(i.pyusb_get_active_ep) for pyusb_get_active_ep
+    usb_dc_py32.o(i.usbd_ep_set_stall) refers to usb_dc_py32.o(i.pyusb_set_active_ep) for pyusb_set_active_ep
+    usb_dc_py32.o(i.usbd_ep_set_stall) refers to usb_dc_py32.o(.data) for usb_ep0_state
+    usb_dc_py32.o(i.usbd_ep_start_read) refers to usb_dc_py32.o(i.pyusb_get_active_ep) for pyusb_get_active_ep
+    usb_dc_py32.o(i.usbd_ep_start_read) refers to usb_dc_py32.o(i.pyusb_set_active_ep) for pyusb_set_active_ep
+    usb_dc_py32.o(i.usbd_ep_start_read) refers to usb_dc_py32.o(.bss) for g_pyusb_udc
+    usb_dc_py32.o(i.usbd_ep_start_read) refers to usb_dc_py32.o(.data) for usb_ep0_state
+    usb_dc_py32.o(i.usbd_ep_start_write) refers to usb_dc_py32.o(i.pyusb_get_active_ep) for pyusb_get_active_ep
+    usb_dc_py32.o(i.usbd_ep_start_write) refers to usb_dc_py32.o(i.pyusb_set_active_ep) for pyusb_set_active_ep
+    usb_dc_py32.o(i.usbd_ep_start_write) refers to usb_dc_py32.o(i.pyusb_write_packet) for pyusb_write_packet
+    usb_dc_py32.o(i.usbd_ep_start_write) refers to usb_dc_py32.o(i.usbd_ep0_reset_zlp_flag) for usbd_ep0_reset_zlp_flag
+    usb_dc_py32.o(i.usbd_ep_start_write) refers to usb_dc_py32.o(.bss) for g_pyusb_udc
+    usb_dc_py32.o(i.usbd_ep_start_write) refers to usb_dc_py32.o(.data) for usb_ep0_state
+    usb_dc_py32.o(i.usbd_set_address) refers to usb_dc_py32.o(.bss) for g_pyusb_udc
+    usbd_hid.o(i.hid_class_interface_request_handler) refers to usbd_hid.o(i.usbh_hid_get_report) for usbh_hid_get_report
+    usbd_hid.o(i.hid_class_interface_request_handler) refers to usbd_hid_keyboard_if.o(i.usbh_hid_get_idle) for usbh_hid_get_idle
+    usbd_hid.o(i.hid_class_interface_request_handler) refers to usbd_hid.o(i.usbh_hid_get_protocol) for usbh_hid_get_protocol
+    usbd_hid.o(i.hid_class_interface_request_handler) refers to usbd_hid.o(i.usbh_hid_set_report) for usbh_hid_set_report
+    usbd_hid.o(i.hid_class_interface_request_handler) refers to usbd_hid_keyboard_if.o(i.usbh_hid_set_idle) for usbh_hid_set_idle
+    usbd_hid.o(i.hid_class_interface_request_handler) refers to usbd_hid.o(i.usbh_hid_set_protocol) for usbh_hid_set_protocol
+    usbd_hid.o(i.usbd_hid_init_intf) refers to usbd_hid.o(i.hid_class_interface_request_handler) for hid_class_interface_request_handler
+    entry.o(.ARM.Collect$$$$00000000) refers (Special) to entry10a.o(.ARM.Collect$$$$0000000D) for __rt_final_cpp
+    entry.o(.ARM.Collect$$$$00000000) refers (Special) to entry11a.o(.ARM.Collect$$$$0000000F) for __rt_final_exit
+    entry.o(.ARM.Collect$$$$00000000) refers (Special) to entry7b.o(.ARM.Collect$$$$00000008) for _main_clock
+    entry.o(.ARM.Collect$$$$00000000) refers (Special) to entry8b.o(.ARM.Collect$$$$0000000A) for _main_cpp_init
+    entry.o(.ARM.Collect$$$$00000000) refers (Special) to entry9a.o(.ARM.Collect$$$$0000000B) for _main_init
+    entry.o(.ARM.Collect$$$$00000000) refers (Special) to entry5.o(.ARM.Collect$$$$00000004) for _main_scatterload
+    entry.o(.ARM.Collect$$$$00000000) refers (Special) to entry2.o(.ARM.Collect$$$$00000001) for _main_stk
+    entry2.o(.ARM.Collect$$$$00000001) refers to entry2.o(.ARM.Collect$$$$00002712) for __lit__00000000
+    entry2.o(.ARM.Collect$$$$00002712) refers to startup_py32f403xx.o(STACK) for __initial_sp
+    entry2.o(__vectab_stack_and_reset_area) refers to startup_py32f403xx.o(STACK) for __initial_sp
+    entry2.o(__vectab_stack_and_reset_area) refers to entry.o(.ARM.Collect$$$$00000000) for __main
+    entry5.o(.ARM.Collect$$$$00000004) refers to init.o(.text) for __scatterload
+    entry9a.o(.ARM.Collect$$$$0000000B) refers to main.o(i.main) for main
+    entry9b.o(.ARM.Collect$$$$0000000C) refers to main.o(i.main) for main
+    init.o(.text) refers to entry5.o(.ARM.Collect$$$$00000004) for __main_after_scatterload
+
+
+==============================================================================
+
+Removing Unused input sections from the image.
+
+    Removing startup_py32f403xx.o(HEAP), (2048 bytes).
+    Removing system_py32f403.o(.rev16_text), (4 bytes).
+    Removing system_py32f403.o(.revsh_text), (4 bytes).
+    Removing system_py32f403.o(.rrx_text), (6 bytes).
+    Removing system_py32f403.o(i.SystemCoreClockUpdate), (256 bytes).
+    Removing main.o(.rev16_text), (4 bytes).
+    Removing main.o(.revsh_text), (4 bytes).
+    Removing main.o(.rrx_text), (6 bytes).
+    Removing py32f403_hal_msp.o(.rev16_text), (4 bytes).
+    Removing py32f403_hal_msp.o(.revsh_text), (4 bytes).
+    Removing py32f403_hal_msp.o(.rrx_text), (6 bytes).
+    Removing py32f403_it.o(.rev16_text), (4 bytes).
+    Removing py32f403_it.o(.revsh_text), (4 bytes).
+    Removing py32f403_it.o(.rrx_text), (6 bytes).
+    Removing usbd_hid_keyboard_if.o(.rev16_text), (4 bytes).
+    Removing usbd_hid_keyboard_if.o(.revsh_text), (4 bytes).
+    Removing usbd_hid_keyboard_if.o(.rrx_text), (6 bytes).
+    Removing py32f403xx_start_kit.o(.rev16_text), (4 bytes).
+    Removing py32f403xx_start_kit.o(.revsh_text), (4 bytes).
+    Removing py32f403xx_start_kit.o(.rrx_text), (6 bytes).
+    Removing py32f403xx_start_kit.o(i.BSP_GetVersion), (6 bytes).
+    Removing py32f403xx_start_kit.o(i.BSP_LED_DeInit), (64 bytes).
+    Removing py32f403xx_start_kit.o(i.BSP_LED_Init), (112 bytes).
+    Removing py32f403xx_start_kit.o(i.BSP_LED_Off), (32 bytes).
+    Removing py32f403xx_start_kit.o(i.BSP_LED_On), (32 bytes).
+    Removing py32f403xx_start_kit.o(i.BSP_LED_Toggle), (32 bytes).
+    Removing py32f403xx_start_kit.o(i.BSP_PB_DeInit), (60 bytes).
+    Removing py32f403xx_start_kit.o(i.BSP_PB_GetState), (40 bytes).
+    Removing py32f403xx_start_kit.o(i.BSP_PB_Init), (152 bytes).
+    Removing py32f403xx_start_kit.o(i.BSP_USART_Config), (224 bytes).
+    Removing py32f403xx_start_kit.o(i.fgetc), (28 bytes).
+    Removing py32f403xx_start_kit.o(i.fputc), (28 bytes).
+    Removing py32f403xx_start_kit.o(.bss), (76 bytes).
+    Removing py32f403xx_start_kit.o(.constdata), (5 bytes).
+    Removing py32f403xx_start_kit.o(.data), (8 bytes).
+    Removing py32f403_hal.o(.rev16_text), (4 bytes).
+    Removing py32f403_hal.o(.revsh_text), (4 bytes).
+    Removing py32f403_hal.o(.rrx_text), (6 bytes).
+    Removing py32f403_hal.o(i.HAL_DBGMCU_DisableDBGSleepMode), (20 bytes).
+    Removing py32f403_hal.o(i.HAL_DBGMCU_DisableDBGStandbyMode), (20 bytes).
+    Removing py32f403_hal.o(i.HAL_DBGMCU_DisableDBGStopMode), (20 bytes).
+    Removing py32f403_hal.o(i.HAL_DBGMCU_EnableDBGSleepMode), (20 bytes).
+    Removing py32f403_hal.o(i.HAL_DBGMCU_EnableDBGStandbyMode), (20 bytes).
+    Removing py32f403_hal.o(i.HAL_DBGMCU_EnableDBGStopMode), (20 bytes).
+    Removing py32f403_hal.o(i.HAL_DBGMCU_GetTracePinAssignment), (16 bytes).
+    Removing py32f403_hal.o(i.HAL_DBGMCU_SetTracePinAssignment), (20 bytes).
+    Removing py32f403_hal.o(i.HAL_DeInit), (52 bytes).
+    Removing py32f403_hal.o(i.HAL_Delay), (40 bytes).
+    Removing py32f403_hal.o(i.HAL_GetDEVID), (16 bytes).
+    Removing py32f403_hal.o(i.HAL_GetHalVersion), (6 bytes).
+    Removing py32f403_hal.o(i.HAL_GetREVID), (12 bytes).
+    Removing py32f403_hal.o(i.HAL_GetTickFreq), (12 bytes).
+    Removing py32f403_hal.o(i.HAL_GetTickPrio), (12 bytes).
+    Removing py32f403_hal.o(i.HAL_GetUIDw0), (12 bytes).
+    Removing py32f403_hal.o(i.HAL_GetUIDw1), (12 bytes).
+    Removing py32f403_hal.o(i.HAL_GetUIDw2), (12 bytes).
+    Removing py32f403_hal.o(i.HAL_MspDeInit), (2 bytes).
+    Removing py32f403_hal.o(i.HAL_MspInit), (2 bytes).
+    Removing py32f403_hal.o(i.HAL_ResumeTick), (18 bytes).
+    Removing py32f403_hal.o(i.HAL_SYSCFG_DisableGPIOAnalogMode), (16 bytes).
+    Removing py32f403_hal.o(i.HAL_SYSCFG_DisableGPIONoiseFilter), (112 bytes).
+    Removing py32f403_hal.o(i.HAL_SYSCFG_DisableI2CAnalogFilter), (16 bytes).
+    Removing py32f403_hal.o(i.HAL_SYSCFG_DisableTimerClock2xPclk), (24 bytes).
+    Removing py32f403_hal.o(i.HAL_SYSCFG_EnableGPIOAnalogMode), (16 bytes).
+    Removing py32f403_hal.o(i.HAL_SYSCFG_EnableGPIONoiseFilter), (112 bytes).
+    Removing py32f403_hal.o(i.HAL_SYSCFG_EnableI2CAnalogFilter), (16 bytes).
+    Removing py32f403_hal.o(i.HAL_SYSCFG_EnableTimerClock2xPclk), (24 bytes).
+    Removing py32f403_hal.o(i.HAL_SYSCFG_GetRemapMemory), (16 bytes).
+    Removing py32f403_hal.o(i.HAL_SYSCFG_SetRemapMemory), (20 bytes).
+    Removing py32f403_hal.o(i.HAL_SetTickFreq), (44 bytes).
+    Removing py32f403_hal.o(i.HAL_SuspendTick), (18 bytes).
+    Removing py32f403_hal_rcc.o(.rev16_text), (4 bytes).
+    Removing py32f403_hal_rcc.o(.revsh_text), (4 bytes).
+    Removing py32f403_hal_rcc.o(.rrx_text), (6 bytes).
+    Removing py32f403_hal_rcc.o(i.HAL_RCC_CSSCallback), (2 bytes).
+    Removing py32f403_hal_rcc.o(i.HAL_RCC_DeInit), (260 bytes).
+    Removing py32f403_hal_rcc.o(i.HAL_RCC_DisableCSS), (20 bytes).
+    Removing py32f403_hal_rcc.o(i.HAL_RCC_EnableCSS), (20 bytes).
+    Removing py32f403_hal_rcc.o(i.HAL_RCC_GetClockConfig), (68 bytes).
+    Removing py32f403_hal_rcc.o(i.HAL_RCC_GetHCLKFreq), (12 bytes).
+    Removing py32f403_hal_rcc.o(i.HAL_RCC_GetOscConfig), (224 bytes).
+    Removing py32f403_hal_rcc.o(i.HAL_RCC_GetPCLK1Freq), (32 bytes).
+    Removing py32f403_hal_rcc.o(i.HAL_RCC_GetPCLK2Freq), (32 bytes).
+    Removing py32f403_hal_rcc.o(i.HAL_RCC_MCOConfig), (112 bytes).
+    Removing py32f403_hal_rcc.o(i.HAL_RCC_NMI_IRQHandler), (32 bytes).
+    Removing py32f403_hal_rcc_ex.o(.rev16_text), (4 bytes).
+    Removing py32f403_hal_rcc_ex.o(.revsh_text), (4 bytes).
+    Removing py32f403_hal_rcc_ex.o(.rrx_text), (6 bytes).
+    Removing py32f403_hal_rcc_ex.o(i.HAL_RCCEx_GetPeriphCLKConfig), (108 bytes).
+    Removing py32f403_hal_rcc_ex.o(i.HAL_RCCEx_GetPeriphCLKFreq), (768 bytes).
+    Removing py32f403_hal_rcc_ex.o(i.HAL_RCCEx_PeriphCLKConfig), (380 bytes).
+    Removing py32f403_hal_gpio.o(.rev16_text), (4 bytes).
+    Removing py32f403_hal_gpio.o(.revsh_text), (4 bytes).
+    Removing py32f403_hal_gpio.o(.rrx_text), (6 bytes).
+    Removing py32f403_hal_gpio.o(i.HAL_GPIO_DeInit), (280 bytes).
+    Removing py32f403_hal_gpio.o(i.HAL_GPIO_EXTI_Callback), (2 bytes).
+    Removing py32f403_hal_gpio.o(i.HAL_GPIO_EXTI_Falling_Callback), (2 bytes).
+    Removing py32f403_hal_gpio.o(i.HAL_GPIO_EXTI_IRQHandler), (28 bytes).
+    Removing py32f403_hal_gpio.o(i.HAL_GPIO_EXTI_Rising_Callback), (2 bytes).
+    Removing py32f403_hal_gpio.o(i.HAL_GPIO_Init), (456 bytes).
+    Removing py32f403_hal_gpio.o(i.HAL_GPIO_LockPin), (46 bytes).
+    Removing py32f403_hal_gpio.o(i.HAL_GPIO_ReadPin), (16 bytes).
+    Removing py32f403_hal_gpio.o(i.HAL_GPIO_TogglePin), (14 bytes).
+    Removing py32f403_hal_gpio.o(i.HAL_GPIO_WritePin), (10 bytes).
+    Removing py32f403_hal_dma.o(.rev16_text), (4 bytes).
+    Removing py32f403_hal_dma.o(.revsh_text), (4 bytes).
+    Removing py32f403_hal_dma.o(.rrx_text), (6 bytes).
+    Removing py32f403_hal_dma.o(i.DMA_SetConfig), (44 bytes).
+    Removing py32f403_hal_dma.o(i.HAL_DMA_Abort), (86 bytes).
+    Removing py32f403_hal_dma.o(i.HAL_DMA_Abort_IT), (424 bytes).
+    Removing py32f403_hal_dma.o(i.HAL_DMA_ChannelMap), (132 bytes).
+    Removing py32f403_hal_dma.o(i.HAL_DMA_DeInit), (140 bytes).
+    Removing py32f403_hal_dma.o(i.HAL_DMA_GetError), (6 bytes).
+    Removing py32f403_hal_dma.o(i.HAL_DMA_GetState), (8 bytes).
+    Removing py32f403_hal_dma.o(i.HAL_DMA_IRQHandler), (920 bytes).
+    Removing py32f403_hal_dma.o(i.HAL_DMA_Init), (140 bytes).
+    Removing py32f403_hal_dma.o(i.HAL_DMA_PollForTransfer), (1620 bytes).
+    Removing py32f403_hal_dma.o(i.HAL_DMA_RegisterCallback), (90 bytes).
+    Removing py32f403_hal_dma.o(i.HAL_DMA_Start), (114 bytes).
+    Removing py32f403_hal_dma.o(i.HAL_DMA_Start_IT), (156 bytes).
+    Removing py32f403_hal_dma.o(i.HAL_DMA_UnRegisterCallback), (106 bytes).
+    Removing py32f403_hal_pwr.o(.rev16_text), (4 bytes).
+    Removing py32f403_hal_pwr.o(.revsh_text), (4 bytes).
+    Removing py32f403_hal_pwr.o(.rrx_text), (6 bytes).
+    Removing py32f403_hal_pwr.o(i.HAL_PWR_ConfigPVD), (196 bytes).
+    Removing py32f403_hal_pwr.o(i.HAL_PWR_DeInit), (28 bytes).
+    Removing py32f403_hal_pwr.o(i.HAL_PWR_DisableBkUpAccess), (20 bytes).
+    Removing py32f403_hal_pwr.o(i.HAL_PWR_DisablePVD), (20 bytes).
+    Removing py32f403_hal_pwr.o(i.HAL_PWR_DisableSEVOnPend), (20 bytes).
+    Removing py32f403_hal_pwr.o(i.HAL_PWR_DisableSleepOnExit), (20 bytes).
+    Removing py32f403_hal_pwr.o(i.HAL_PWR_DisableWakeUpPin), (16 bytes).
+    Removing py32f403_hal_pwr.o(i.HAL_PWR_EnableBkUpAccess), (20 bytes).
+    Removing py32f403_hal_pwr.o(i.HAL_PWR_EnablePVD), (20 bytes).
+    Removing py32f403_hal_pwr.o(i.HAL_PWR_EnableSEVOnPend), (20 bytes).
+    Removing py32f403_hal_pwr.o(i.HAL_PWR_EnableSleepOnExit), (20 bytes).
+    Removing py32f403_hal_pwr.o(i.HAL_PWR_EnableWakeUpPin), (16 bytes).
+    Removing py32f403_hal_pwr.o(i.HAL_PWR_EnterSLEEPMode), (32 bytes).
+    Removing py32f403_hal_pwr.o(i.HAL_PWR_EnterSTANDBYMode), (52 bytes).
+    Removing py32f403_hal_pwr.o(i.HAL_PWR_EnterSTOPMode), (84 bytes).
+    Removing py32f403_hal_pwr.o(i.HAL_PWR_PVDCallback), (2 bytes).
+    Removing py32f403_hal_pwr.o(i.HAL_PWR_PVD_IRQHandler), (32 bytes).
+    Removing py32f403_hal_pwr.o(i.PWR_OverloadWfe), (6 bytes).
+    Removing py32f403_hal_pwr_ex.o(.rev16_text), (4 bytes).
+    Removing py32f403_hal_pwr_ex.o(.revsh_text), (4 bytes).
+    Removing py32f403_hal_pwr_ex.o(.rrx_text), (6 bytes).
+    Removing py32f403_hal_pwr_ex.o(i.HAL_PWREx_ControlBkUpVoltageScaling), (76 bytes).
+    Removing py32f403_hal_pwr_ex.o(i.HAL_PWREx_ControlVoltageScaling), (76 bytes).
+    Removing py32f403_hal_pwr_ex.o(i.HAL_PWREx_DisableHSIWakeupWait), (20 bytes).
+    Removing py32f403_hal_pwr_ex.o(i.HAL_PWREx_EnableHSIWakeupWait), (20 bytes).
+    Removing py32f403_hal_pwr_ex.o(i.HAL_PWREx_GetBkUpVoltageRange), (16 bytes).
+    Removing py32f403_hal_pwr_ex.o(i.HAL_PWREx_GetVoltageRange), (16 bytes).
+    Removing py32f403_hal_pwr_ex.o(i.HAL_PWREx_GetWakeupFlashDelay), (16 bytes).
+    Removing py32f403_hal_pwr_ex.o(i.HAL_PWREx_GetWakeupMrReadyDelay), (16 bytes).
+    Removing py32f403_hal_pwr_ex.o(i.HAL_PWREx_SetWakeupFlashDelay), (20 bytes).
+    Removing py32f403_hal_pwr_ex.o(i.HAL_PWREx_SetWakeupMrReadyDelay), (20 bytes).
+    Removing py32f403_hal_uart.o(.rev16_text), (4 bytes).
+    Removing py32f403_hal_uart.o(.revsh_text), (4 bytes).
+    Removing py32f403_hal_uart.o(.rrx_text), (6 bytes).
+    Removing py32f403_hal_uart.o(i.HAL_HalfDuplex_EnableReceiver), (68 bytes).
+    Removing py32f403_hal_uart.o(i.HAL_HalfDuplex_EnableTransmitter), (68 bytes).
+    Removing py32f403_hal_uart.o(i.HAL_HalfDuplex_Init), (118 bytes).
+    Removing py32f403_hal_uart.o(i.HAL_LIN_Init), (150 bytes).
+    Removing py32f403_hal_uart.o(i.HAL_LIN_SendBreak), (62 bytes).
+    Removing py32f403_hal_uart.o(i.HAL_MultiProcessor_EnterMuteMode), (62 bytes).
+    Removing py32f403_hal_uart.o(i.HAL_MultiProcessor_ExitMuteMode), (62 bytes).
+    Removing py32f403_hal_uart.o(i.HAL_MultiProcessor_Init), (154 bytes).
+    Removing py32f403_hal_uart.o(i.HAL_UART_Abort), (166 bytes).
+    Removing py32f403_hal_uart.o(i.HAL_UART_AbortCpltCallback), (2 bytes).
+    Removing py32f403_hal_uart.o(i.HAL_UART_AbortReceive), (100 bytes).
+    Removing py32f403_hal_uart.o(i.HAL_UART_AbortReceiveCpltCallback), (2 bytes).
+    Removing py32f403_hal_uart.o(i.HAL_UART_AbortReceive_IT), (120 bytes).
+    Removing py32f403_hal_uart.o(i.HAL_UART_AbortTransmit), (88 bytes).
+    Removing py32f403_hal_uart.o(i.HAL_UART_AbortTransmitCpltCallback), (2 bytes).
+    Removing py32f403_hal_uart.o(i.HAL_UART_AbortTransmit_IT), (108 bytes).
+    Removing py32f403_hal_uart.o(i.HAL_UART_Abort_IT), (216 bytes).
+    Removing py32f403_hal_uart.o(i.HAL_UART_DMAPause), (124 bytes).
+    Removing py32f403_hal_uart.o(i.HAL_UART_DMAResume), (126 bytes).
+    Removing py32f403_hal_uart.o(i.HAL_UART_DMAStop), (102 bytes).
+    Removing py32f403_hal_uart.o(i.HAL_UART_DeInit), (58 bytes).
+    Removing py32f403_hal_uart.o(i.HAL_UART_ErrorCallback), (2 bytes).
+    Removing py32f403_hal_uart.o(i.HAL_UART_GetError), (6 bytes).
+    Removing py32f403_hal_uart.o(i.HAL_UART_GetState), (20 bytes).
+    Removing py32f403_hal_uart.o(i.HAL_UART_IRQHandler), (372 bytes).
+    Removing py32f403_hal_uart.o(i.HAL_UART_IdleFrameDetectCpltCallback), (2 bytes).
+    Removing py32f403_hal_uart.o(i.HAL_UART_Init), (124 bytes).
+    Removing py32f403_hal_uart.o(i.HAL_UART_MspDeInit), (2 bytes).
+    Removing py32f403_hal_uart.o(i.HAL_UART_MspInit), (2 bytes).
+    Removing py32f403_hal_uart.o(i.HAL_UART_Receive), (208 bytes).
+    Removing py32f403_hal_uart.o(i.HAL_UART_Receive_DMA), (208 bytes).
+    Removing py32f403_hal_uart.o(i.HAL_UART_Receive_IT), (112 bytes).
+    Removing py32f403_hal_uart.o(i.HAL_UART_RxCpltCallback), (2 bytes).
+    Removing py32f403_hal_uart.o(i.HAL_UART_RxHalfCpltCallback), (2 bytes).
+    Removing py32f403_hal_uart.o(i.HAL_UART_Transmit), (230 bytes).
+    Removing py32f403_hal_uart.o(i.HAL_UART_Transmit_DMA), (184 bytes).
+    Removing py32f403_hal_uart.o(i.HAL_UART_Transmit_IT), (88 bytes).
+    Removing py32f403_hal_uart.o(i.HAL_UART_TxCpltCallback), (2 bytes).
+    Removing py32f403_hal_uart.o(i.HAL_UART_TxHalfCpltCallback), (2 bytes).
+    Removing py32f403_hal_uart.o(i.UART_AdvFeatureConfig), (52 bytes).
+    Removing py32f403_hal_uart.o(i.UART_DMAAbortOnError), (20 bytes).
+    Removing py32f403_hal_uart.o(i.UART_DMAError), (80 bytes).
+    Removing py32f403_hal_uart.o(i.UART_DMAReceiveCplt), (70 bytes).
+    Removing py32f403_hal_uart.o(i.UART_DMARxAbortCallback), (52 bytes).
+    Removing py32f403_hal_uart.o(i.UART_DMARxHalfCplt), (14 bytes).
+    Removing py32f403_hal_uart.o(i.UART_DMARxOnlyAbortCallback), (24 bytes).
+    Removing py32f403_hal_uart.o(i.UART_DMATransmitCplt), (54 bytes).
+    Removing py32f403_hal_uart.o(i.UART_DMATxAbortCallback), (52 bytes).
+    Removing py32f403_hal_uart.o(i.UART_DMATxHalfCplt), (14 bytes).
+    Removing py32f403_hal_uart.o(i.UART_DMATxOnlyAbortCallback), (24 bytes).
+    Removing py32f403_hal_uart.o(i.UART_EndRxTransfer), (32 bytes).
+    Removing py32f403_hal_uart.o(i.UART_EndTransmit_IT), (32 bytes).
+    Removing py32f403_hal_uart.o(i.UART_EndTxTransfer), (20 bytes).
+    Removing py32f403_hal_uart.o(i.UART_Receive_IT), (128 bytes).
+    Removing py32f403_hal_uart.o(i.UART_SetConfig), (796 bytes).
+    Removing py32f403_hal_uart.o(i.UART_Transmit_IT), (108 bytes).
+    Removing py32f403_hal_uart.o(i.UART_WaitOnFlagUntilTimeout), (108 bytes).
+    Removing py32f403_hal_cortex.o(.rev16_text), (4 bytes).
+    Removing py32f403_hal_cortex.o(.revsh_text), (4 bytes).
+    Removing py32f403_hal_cortex.o(.rrx_text), (6 bytes).
+    Removing py32f403_hal_cortex.o(i.HAL_NVIC_ClearPendingIRQ), (36 bytes).
+    Removing py32f403_hal_cortex.o(i.HAL_NVIC_DisableIRQ), (44 bytes).
+    Removing py32f403_hal_cortex.o(i.HAL_NVIC_EnableIRQ), (40 bytes).
+    Removing py32f403_hal_cortex.o(i.HAL_NVIC_GetActive), (48 bytes).
+    Removing py32f403_hal_cortex.o(i.HAL_NVIC_GetPendingIRQ), (48 bytes).
+    Removing py32f403_hal_cortex.o(i.HAL_NVIC_GetPriority), (148 bytes).
+    Removing py32f403_hal_cortex.o(i.HAL_NVIC_GetPriorityGrouping), (8 bytes).
+    Removing py32f403_hal_cortex.o(i.HAL_NVIC_SetPendingIRQ), (36 bytes).
+    Removing py32f403_hal_cortex.o(i.HAL_SYSTICK_CLKSourceConfig), (40 bytes).
+    Removing py32f403_hal_cortex.o(i.HAL_SYSTICK_Callback), (2 bytes).
+    Removing py32f403_hal_cortex.o(i.HAL_SYSTICK_IRQHandler), (8 bytes).
+    Removing usbd_core.o(.rev16_text), (4 bytes).
+    Removing usbd_core.o(.revsh_text), (4 bytes).
+    Removing usbd_core.o(.rrx_text), (6 bytes).
+    Removing usbd_core.o(i.usb_device_is_configured), (12 bytes).
+    Removing usbd_core.o(i.usbd_bos_desc_register), (12 bytes).
+    Removing usbd_core.o(i.usbd_deinitialize), (36 bytes).
+    Removing usbd_core.o(i.usbd_event_connect_handler), (12 bytes).
+    Removing usbd_core.o(i.usbd_event_disconnect_handler), (12 bytes).
+    Removing usbd_core.o(i.usbd_msosv1_desc_register), (12 bytes).
+    Removing usbd_core.o(i.usbd_msosv2_desc_register), (12 bytes).
+    Removing usb_dc_py32.o(.rev16_text), (4 bytes).
+    Removing usb_dc_py32.o(.revsh_text), (4 bytes).
+    Removing usb_dc_py32.o(.rrx_text), (6 bytes).
+    Removing usb_dc_py32.o(i.usb_dc_deinit), (4 bytes).
+    Removing usb_dc_py32.o(i.usb_dc_low_level_deinit), (2 bytes).
+    Removing usb_dc_py32.o(i.usbd_activateremotewakeup), (20 bytes).
+    Removing usb_dc_py32.o(i.usbd_deactivateremotewakeup), (20 bytes).
+    Removing usbd_hid.o(.rev16_text), (4 bytes).
+    Removing usbd_hid.o(.revsh_text), (4 bytes).
+    Removing usbd_hid.o(.rrx_text), (6 bytes).
+    Removing usbd_hid.o(i.usbh_hid_get_idle), (6 bytes).
+    Removing usbd_hid.o(i.usbh_hid_set_idle), (2 bytes).
+
+251 unused section(s) (total 17911 bytes) removed from the image.
+
+==============================================================================
+
+Image Symbol Table
+
+    Local Symbols
+
+    Symbol Name                              Value     Ov Type        Size  Object(Section)
+
+    ../clib/../cmprslib/zerorunl.c           0x00000000   Number         0  __dczerorl.o ABSOLUTE
+    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry9a.o ABSOLUTE
+    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry10a.o ABSOLUTE
+    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry10b.o ABSOLUTE
+    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry11a.o ABSOLUTE
+    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry5.o ABSOLUTE
+    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry11b.o ABSOLUTE
+    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry9b.o ABSOLUTE
+    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry.o ABSOLUTE
+    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry2.o ABSOLUTE
+    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry8b.o ABSOLUTE
+    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry8a.o ABSOLUTE
+    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry7b.o ABSOLUTE
+    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry7a.o ABSOLUTE
+    ../clib/microlib/string/memcpy.c         0x00000000   Number         0  memcpyb.o ABSOLUTE
+    ../clib/microlib/string/memcpy.c         0x00000000   Number         0  memcpya.o ABSOLUTE
+    ../clib/microlib/string/memset.c         0x00000000   Number         0  memseta.o ABSOLUTE
+    ..\..\..\..\..\..\Drivers\BSP\PY32F403xx_Start_Kit\py32f403xx_Start_Kit.c 0x00000000   Number         0  py32f403xx_start_kit.o ABSOLUTE
+    ..\..\..\..\..\..\Drivers\PY32F403_HAL_Driver\Src\py32f403_hal.c 0x00000000   Number         0  py32f403_hal.o ABSOLUTE
+    ..\..\..\..\..\..\Drivers\PY32F403_HAL_Driver\Src\py32f403_hal_cortex.c 0x00000000   Number         0  py32f403_hal_cortex.o ABSOLUTE
+    ..\..\..\..\..\..\Drivers\PY32F403_HAL_Driver\Src\py32f403_hal_dma.c 0x00000000   Number         0  py32f403_hal_dma.o ABSOLUTE
+    ..\..\..\..\..\..\Drivers\PY32F403_HAL_Driver\Src\py32f403_hal_gpio.c 0x00000000   Number         0  py32f403_hal_gpio.o ABSOLUTE
+    ..\..\..\..\..\..\Drivers\PY32F403_HAL_Driver\Src\py32f403_hal_pwr.c 0x00000000   Number         0  py32f403_hal_pwr.o ABSOLUTE
+    ..\..\..\..\..\..\Drivers\PY32F403_HAL_Driver\Src\py32f403_hal_pwr_ex.c 0x00000000   Number         0  py32f403_hal_pwr_ex.o ABSOLUTE
+    ..\..\..\..\..\..\Drivers\PY32F403_HAL_Driver\Src\py32f403_hal_rcc.c 0x00000000   Number         0  py32f403_hal_rcc.o ABSOLUTE
+    ..\..\..\..\..\..\Drivers\PY32F403_HAL_Driver\Src\py32f403_hal_rcc_ex.c 0x00000000   Number         0  py32f403_hal_rcc_ex.o ABSOLUTE
+    ..\..\..\..\..\..\Drivers\PY32F403_HAL_Driver\Src\py32f403_hal_uart.c 0x00000000   Number         0  py32f403_hal_uart.o ABSOLUTE
+    ..\..\..\..\..\..\Middlewares\Third_Party\CherryUSB\class\hid\usbd_hid.c 0x00000000   Number         0  usbd_hid.o ABSOLUTE
+    ..\..\..\..\..\..\Middlewares\Third_Party\CherryUSB\core\usbd_core.c 0x00000000   Number         0  usbd_core.o ABSOLUTE
+    ..\..\..\..\..\..\Middlewares\Third_Party\CherryUSB\port\usb_dc_py32.c 0x00000000   Number         0  usb_dc_py32.o ABSOLUTE
+    ..\Src\main.c                            0x00000000   Number         0  main.o ABSOLUTE
+    ..\Src\py32f403_hal_msp.c                0x00000000   Number         0  py32f403_hal_msp.o ABSOLUTE
+    ..\Src\py32f403_it.c                     0x00000000   Number         0  py32f403_it.o ABSOLUTE
+    ..\Src\system_py32f403.c                 0x00000000   Number         0  system_py32f403.o ABSOLUTE
+    ..\Src\usbd_hid_keyboard_if.c            0x00000000   Number         0  usbd_hid_keyboard_if.o ABSOLUTE
+    ..\\..\\..\\..\\..\\..\\Drivers\\BSP\\PY32F403xx_Start_Kit\\py32f403xx_Start_Kit.c 0x00000000   Number         0  py32f403xx_start_kit.o ABSOLUTE
+    ..\\..\\..\\..\\..\\..\\Drivers\\PY32F403_HAL_Driver\\Src\\py32f403_hal.c 0x00000000   Number         0  py32f403_hal.o ABSOLUTE
+    ..\\..\\..\\..\\..\\..\\Drivers\\PY32F403_HAL_Driver\\Src\\py32f403_hal_cortex.c 0x00000000   Number         0  py32f403_hal_cortex.o ABSOLUTE
+    ..\\..\\..\\..\\..\\..\\Drivers\\PY32F403_HAL_Driver\\Src\\py32f403_hal_dma.c 0x00000000   Number         0  py32f403_hal_dma.o ABSOLUTE
+    ..\\..\\..\\..\\..\\..\\Drivers\\PY32F403_HAL_Driver\\Src\\py32f403_hal_gpio.c 0x00000000   Number         0  py32f403_hal_gpio.o ABSOLUTE
+    ..\\..\\..\\..\\..\\..\\Drivers\\PY32F403_HAL_Driver\\Src\\py32f403_hal_pwr.c 0x00000000   Number         0  py32f403_hal_pwr.o ABSOLUTE
+    ..\\..\\..\\..\\..\\..\\Drivers\\PY32F403_HAL_Driver\\Src\\py32f403_hal_pwr_ex.c 0x00000000   Number         0  py32f403_hal_pwr_ex.o ABSOLUTE
+    ..\\..\\..\\..\\..\\..\\Drivers\\PY32F403_HAL_Driver\\Src\\py32f403_hal_rcc.c 0x00000000   Number         0  py32f403_hal_rcc.o ABSOLUTE
+    ..\\..\\..\\..\\..\\..\\Drivers\\PY32F403_HAL_Driver\\Src\\py32f403_hal_rcc_ex.c 0x00000000   Number         0  py32f403_hal_rcc_ex.o ABSOLUTE
+    ..\\..\\..\\..\\..\\..\\Drivers\\PY32F403_HAL_Driver\\Src\\py32f403_hal_uart.c 0x00000000   Number         0  py32f403_hal_uart.o ABSOLUTE
+    ..\\..\\..\\..\\..\\..\\Middlewares\\Third_Party\\CherryUSB\\class\\hid\\usbd_hid.c 0x00000000   Number         0  usbd_hid.o ABSOLUTE
+    ..\\..\\..\\..\\..\\..\\Middlewares\\Third_Party\\CherryUSB\\core\\usbd_core.c 0x00000000   Number         0  usbd_core.o ABSOLUTE
+    ..\\..\\..\\..\\..\\..\\Middlewares\\Third_Party\\CherryUSB\\port\\usb_dc_py32.c 0x00000000   Number         0  usb_dc_py32.o ABSOLUTE
+    ..\\Src\\main.c                          0x00000000   Number         0  main.o ABSOLUTE
+    ..\\Src\\py32f403_hal_msp.c              0x00000000   Number         0  py32f403_hal_msp.o ABSOLUTE
+    ..\\Src\\py32f403_it.c                   0x00000000   Number         0  py32f403_it.o ABSOLUTE
+    ..\\Src\\system_py32f403.c               0x00000000   Number         0  system_py32f403.o ABSOLUTE
+    ..\\Src\\usbd_hid_keyboard_if.c          0x00000000   Number         0  usbd_hid_keyboard_if.o ABSOLUTE
+    dc.s                                     0x00000000   Number         0  dc.o ABSOLUTE
+    handlers.s                               0x00000000   Number         0  handlers.o ABSOLUTE
+    init.s                                   0x00000000   Number         0  init.o ABSOLUTE
+    startup_py32f403xx.s                     0x00000000   Number         0  startup_py32f403xx.o ABSOLUTE
+    RESET                                    0x08000000   Section      304  startup_py32f403xx.o(RESET)
+    .ARM.Collect$$$$00000000                 0x08000130   Section        0  entry.o(.ARM.Collect$$$$00000000)
+    .ARM.Collect$$$$00000001                 0x08000130   Section        4  entry2.o(.ARM.Collect$$$$00000001)
+    .ARM.Collect$$$$00000004                 0x08000134   Section        4  entry5.o(.ARM.Collect$$$$00000004)
+    .ARM.Collect$$$$00000008                 0x08000138   Section        0  entry7b.o(.ARM.Collect$$$$00000008)
+    .ARM.Collect$$$$0000000A                 0x08000138   Section        0  entry8b.o(.ARM.Collect$$$$0000000A)
+    .ARM.Collect$$$$0000000B                 0x08000138   Section        8  entry9a.o(.ARM.Collect$$$$0000000B)
+    .ARM.Collect$$$$0000000D                 0x08000140   Section        0  entry10a.o(.ARM.Collect$$$$0000000D)
+    .ARM.Collect$$$$0000000F                 0x08000140   Section        0  entry11a.o(.ARM.Collect$$$$0000000F)
+    .ARM.Collect$$$$00002712                 0x08000140   Section        4  entry2.o(.ARM.Collect$$$$00002712)
+    __lit__00000000                          0x08000140   Data           4  entry2.o(.ARM.Collect$$$$00002712)
+    .text                                    0x08000144   Section       36  startup_py32f403xx.o(.text)
+    $v0                                      0x08000144   Number         0  startup_py32f403xx.o(.text)
+    .text                                    0x08000168   Section        0  memcpya.o(.text)
+    .text                                    0x0800018c   Section        0  memseta.o(.text)
+    .text                                    0x080001b0   Section       36  init.o(.text)
+    .text                                    0x080001d4   Section        0  __dczerorl.o(.text)
+    i.APP_ErrorHandler                       0x0800020e   Section        0  main.o(i.APP_ErrorHandler)
+    i.APP_ErrorProc                          0x08000212   Section        0  system_py32f403.o(i.APP_ErrorProc)
+    i.APP_LoadTrim                           0x0800021c   Section        0  system_py32f403.o(i.APP_LoadTrim)
+    i.APP_SystemClockConfig                  0x08000414   Section        0  main.o(i.APP_SystemClockConfig)
+    APP_SystemClockConfig                    0x08000415   Thumb Code   116  main.o(i.APP_SystemClockConfig)
+    i.APP_USBInit                            0x08000488   Section        0  main.o(i.APP_USBInit)
+    APP_USBInit                              0x08000489   Thumb Code   108  main.o(i.APP_USBInit)
+    i.BusFault_Handler                       0x080004f8   Section        0  py32f403_it.o(i.BusFault_Handler)
+    i.DebugMon_Handler                       0x080004fc   Section        0  py32f403_it.o(i.DebugMon_Handler)
+    i.HAL_GetTick                            0x08000500   Section        0  py32f403_hal.o(i.HAL_GetTick)
+    i.HAL_IncTick                            0x0800050c   Section        0  py32f403_hal.o(i.HAL_IncTick)
+    i.HAL_Init                               0x08000524   Section        0  py32f403_hal.o(i.HAL_Init)
+    i.HAL_InitTick                           0x0800053c   Section        0  py32f403_hal.o(i.HAL_InitTick)
+    i.HAL_MspInit                            0x08000588   Section        0  py32f403_hal_msp.o(i.HAL_MspInit)
+    i.HAL_NVIC_SetPriority                   0x080005c8   Section        0  py32f403_hal_cortex.o(i.HAL_NVIC_SetPriority)
+    i.HAL_NVIC_SetPriorityGrouping           0x08000644   Section        0  py32f403_hal_cortex.o(i.HAL_NVIC_SetPriorityGrouping)
+    i.HAL_NVIC_SystemReset                   0x0800066c   Section        0  py32f403_hal_cortex.o(i.HAL_NVIC_SystemReset)
+    i.HAL_RCC_ClockConfig                    0x08000698   Section        0  py32f403_hal_rcc.o(i.HAL_RCC_ClockConfig)
+    i.HAL_RCC_GetSysClockFreq                0x08000824   Section        0  py32f403_hal_rcc.o(i.HAL_RCC_GetSysClockFreq)
+    i.HAL_RCC_OscConfig                      0x08000908   Section        0  py32f403_hal_rcc.o(i.HAL_RCC_OscConfig)
+    i.HAL_SYSTICK_Config                     0x08000e88   Section        0  py32f403_hal_cortex.o(i.HAL_SYSTICK_Config)
+    i.HardFault_Handler                      0x08000ebc   Section        0  py32f403_it.o(i.HardFault_Handler)
+    i.MemManage_Handler                      0x08000ec0   Section        0  py32f403_it.o(i.MemManage_Handler)
+    i.NMI_Handler                            0x08000ec4   Section        0  py32f403_it.o(i.NMI_Handler)
+    i.PendSV_Handler                         0x08000ec6   Section        0  py32f403_it.o(i.PendSV_Handler)
+    i.RCC_Delay                              0x08000ec8   Section        0  py32f403_hal_rcc.o(i.RCC_Delay)
+    RCC_Delay                                0x08000ec9   Thumb Code    36  py32f403_hal_rcc.o(i.RCC_Delay)
+    i.SVC_Handler                            0x08000ef0   Section        0  py32f403_it.o(i.SVC_Handler)
+    i.SysTick_Handler                        0x08000ef2   Section        0  py32f403_it.o(i.SysTick_Handler)
+    i.SystemInit                             0x08000efc   Section        0  system_py32f403.o(i.SystemInit)
+    i.USBD_IRQHandler                        0x08000f20   Section        0  usb_dc_py32.o(i.USBD_IRQHandler)
+    i.USB_IRQHandler                         0x08001290   Section        0  py32f403_it.o(i.USB_IRQHandler)
+    i.UsageFault_Handler                     0x08001298   Section        0  py32f403_it.o(i.UsageFault_Handler)
+    i.__NVIC_GetPriorityGrouping             0x0800129c   Section        0  py32f403_hal_cortex.o(i.__NVIC_GetPriorityGrouping)
+    __NVIC_GetPriorityGrouping               0x0800129d   Thumb Code    10  py32f403_hal_cortex.o(i.__NVIC_GetPriorityGrouping)
+    i.__NVIC_SetPriority                     0x080012ac   Section        0  py32f403_hal_cortex.o(i.__NVIC_SetPriority)
+    __NVIC_SetPriority                       0x080012ad   Thumb Code    32  py32f403_hal_cortex.o(i.__NVIC_SetPriority)
+    i.__scatterload_copy                     0x080012d4   Section       14  handlers.o(i.__scatterload_copy)
+    i.__scatterload_null                     0x080012e2   Section        2  handlers.o(i.__scatterload_null)
+    i.__scatterload_zeroinit                 0x080012e4   Section       14  handlers.o(i.__scatterload_zeroinit)
+    i.handle_ep0                             0x080012f4   Section        0  usb_dc_py32.o(i.handle_ep0)
+    handle_ep0                               0x080012f5   Thumb Code   324  usb_dc_py32.o(i.handle_ep0)
+    i.hid_class_interface_request_handler    0x08001444   Section        0  usbd_hid.o(i.hid_class_interface_request_handler)
+    hid_class_interface_request_handler      0x08001445   Thumb Code   144  usbd_hid.o(i.hid_class_interface_request_handler)
+    i.hid_keyboard_init                      0x080014d4   Section        0  usbd_hid_keyboard_if.o(i.hid_keyboard_init)
+    i.hid_keyboard_test                      0x08001510   Section        0  usbd_hid_keyboard_if.o(i.hid_keyboard_test)
+    i.is_device_configured                   0x0800154c   Section        0  usbd_core.o(i.is_device_configured)
+    is_device_configured                     0x0800154d   Thumb Code    16  usbd_core.o(i.is_device_configured)
+    i.main                                   0x08001560   Section        0  main.o(i.main)
+    i.pyusb_get_active_ep                    0x08001574   Section        0  usb_dc_py32.o(i.pyusb_get_active_ep)
+    pyusb_get_active_ep                      0x08001575   Thumb Code     6  usb_dc_py32.o(i.pyusb_get_active_ep)
+    i.pyusb_get_fifo_size                    0x08001580   Section        0  usb_dc_py32.o(i.pyusb_get_fifo_size)
+    pyusb_get_fifo_size                      0x08001581   Thumb Code    34  usb_dc_py32.o(i.pyusb_get_fifo_size)
+    i.pyusb_read_packet                      0x080015a4   Section        0  usb_dc_py32.o(i.pyusb_read_packet)
+    pyusb_read_packet                        0x080015a5   Thumb Code    34  usb_dc_py32.o(i.pyusb_read_packet)
+    i.pyusb_set_active_ep                    0x080015cc   Section        0  usb_dc_py32.o(i.pyusb_set_active_ep)
+    pyusb_set_active_ep                      0x080015cd   Thumb Code     6  usb_dc_py32.o(i.pyusb_set_active_ep)
+    i.pyusb_write_packet                     0x080015d8   Section        0  usb_dc_py32.o(i.pyusb_write_packet)
+    pyusb_write_packet                       0x080015d9   Thumb Code    34  usb_dc_py32.o(i.pyusb_write_packet)
+    i.usb_dc_init                            0x08001600   Section        0  usb_dc_py32.o(i.usb_dc_init)
+    i.usb_dc_low_level_init                  0x0800162c   Section        0  usb_dc_py32.o(i.usb_dc_low_level_init)
+    i.usbd_add_endpoint                      0x08001630   Section        0  usbd_core.o(i.usbd_add_endpoint)
+    i.usbd_add_interface                     0x08001660   Section        0  usbd_core.o(i.usbd_add_interface)
+    i.usbd_class_event_notify_handler        0x0800169c   Section        0  usbd_core.o(i.usbd_class_event_notify_handler)
+    usbd_class_event_notify_handler          0x0800169d   Thumb Code    38  usbd_core.o(i.usbd_class_event_notify_handler)
+    i.usbd_class_request_handler             0x080016c8   Section        0  usbd_core.o(i.usbd_class_request_handler)
+    usbd_class_request_handler               0x080016c9   Thumb Code   122  usbd_core.o(i.usbd_class_request_handler)
+    i.usbd_configure_done_callback           0x08001748   Section        0  usbd_hid_keyboard_if.o(i.usbd_configure_done_callback)
+    i.usbd_desc_register                     0x0800174c   Section        0  usbd_core.o(i.usbd_desc_register)
+    i.usbd_ep0_reset_zlp_flag                0x08001760   Section        0  usb_dc_py32.o(i.usbd_ep0_reset_zlp_flag)
+    i.usbd_ep0_set_zlp_flag                  0x0800176c   Section        0  usb_dc_py32.o(i.usbd_ep0_set_zlp_flag)
+    i.usbd_ep_clear_stall                    0x08001778   Section        0  usb_dc_py32.o(i.usbd_ep_clear_stall)
+    i.usbd_ep_close                          0x080017f8   Section        0  usb_dc_py32.o(i.usbd_ep_close)
+    i.usbd_ep_is_stalled                     0x08001800   Section        0  usb_dc_py32.o(i.usbd_ep_is_stalled)
+    i.usbd_ep_open                           0x08001858   Section        0  usb_dc_py32.o(i.usbd_ep_open)
+    i.usbd_ep_set_stall                      0x08001a08   Section        0  usb_dc_py32.o(i.usbd_ep_set_stall)
+    i.usbd_ep_start_read                     0x08001a84   Section        0  usb_dc_py32.o(i.usbd_ep_start_read)
+    i.usbd_ep_start_write                    0x08001b50   Section        0  usb_dc_py32.o(i.usbd_ep_start_write)
+    i.usbd_event_ep0_setup_complete_handler  0x08001cfc   Section        0  usbd_core.o(i.usbd_event_ep0_setup_complete_handler)
+    i.usbd_event_ep_in_complete_handler      0x08001de4   Section        0  usbd_core.o(i.usbd_event_ep_in_complete_handler)
+    i.usbd_event_ep_out_complete_handler     0x08001e70   Section        0  usbd_core.o(i.usbd_event_ep_out_complete_handler)
+    i.usbd_event_reset_handler               0x08001ef4   Section        0  usbd_core.o(i.usbd_event_reset_handler)
+    i.usbd_event_resume_handler              0x08001f3c   Section        0  usbd_core.o(i.usbd_event_resume_handler)
+    i.usbd_event_suspend_handler             0x08001f48   Section        0  usbd_core.o(i.usbd_event_suspend_handler)
+    i.usbd_get_descriptor                    0x08001f54   Section        0  usbd_core.o(i.usbd_get_descriptor)
+    usbd_get_descriptor                      0x08001f55   Thumb Code   192  usbd_core.o(i.usbd_get_descriptor)
+    i.usbd_hid_init_intf                     0x08002020   Section        0  usbd_hid.o(i.usbd_hid_init_intf)
+    i.usbd_hid_int_callback                  0x0800203c   Section        0  usbd_hid_keyboard_if.o(i.usbd_hid_int_callback)
+    i.usbd_initialize                        0x08002048   Section        0  usbd_core.o(i.usbd_initialize)
+    i.usbd_print_setup                       0x08002050   Section        0  usbd_core.o(i.usbd_print_setup)
+    usbd_print_setup                         0x08002051   Thumb Code     2  usbd_core.o(i.usbd_print_setup)
+    i.usbd_reset_endpoint                    0x08002052   Section        0  usbd_core.o(i.usbd_reset_endpoint)
+    usbd_reset_endpoint                      0x08002053   Thumb Code    48  usbd_core.o(i.usbd_reset_endpoint)
+    i.usbd_set_address                       0x08002084   Section        0  usb_dc_py32.o(i.usbd_set_address)
+    i.usbd_set_configuration                 0x080020a0   Section        0  usbd_core.o(i.usbd_set_configuration)
+    usbd_set_configuration                   0x080020a1   Thumb Code   104  usbd_core.o(i.usbd_set_configuration)
+    i.usbd_set_endpoint                      0x0800210c   Section        0  usbd_core.o(i.usbd_set_endpoint)
+    usbd_set_endpoint                        0x0800210d   Thumb Code    46  usbd_core.o(i.usbd_set_endpoint)
+    i.usbd_set_interface                     0x0800213c   Section        0  usbd_core.o(i.usbd_set_interface)
+    usbd_set_interface                       0x0800213d   Thumb Code   118  usbd_core.o(i.usbd_set_interface)
+    i.usbd_setup_request_handler             0x080021b8   Section        0  usbd_core.o(i.usbd_setup_request_handler)
+    usbd_setup_request_handler               0x080021b9   Thumb Code   126  usbd_core.o(i.usbd_setup_request_handler)
+    i.usbd_standard_request_handler          0x08002236   Section        0  usbd_core.o(i.usbd_standard_request_handler)
+    usbd_standard_request_handler            0x08002237   Thumb Code    98  usbd_core.o(i.usbd_standard_request_handler)
+    i.usbd_std_device_req_handler            0x08002298   Section        0  usbd_core.o(i.usbd_std_device_req_handler)
+    usbd_std_device_req_handler              0x08002299   Thumb Code   188  usbd_core.o(i.usbd_std_device_req_handler)
+    i.usbd_std_endpoint_req_handler          0x0800235c   Section        0  usbd_core.o(i.usbd_std_endpoint_req_handler)
+    usbd_std_endpoint_req_handler            0x0800235d   Thumb Code   144  usbd_core.o(i.usbd_std_endpoint_req_handler)
+    i.usbd_std_interface_req_handler         0x080023ec   Section        0  usbd_core.o(i.usbd_std_interface_req_handler)
+    usbd_std_interface_req_handler           0x080023ed   Thumb Code   204  usbd_core.o(i.usbd_std_interface_req_handler)
+    i.usbd_vendor_request_handler            0x080024bc   Section        0  usbd_core.o(i.usbd_vendor_request_handler)
+    usbd_vendor_request_handler              0x080024bd   Thumb Code   188  usbd_core.o(i.usbd_vendor_request_handler)
+    i.usbh_hid_get_idle                      0x08002584   Section        0  usbd_hid_keyboard_if.o(i.usbh_hid_get_idle)
+    i.usbh_hid_get_protocol                  0x08002590   Section        0  usbd_hid.o(i.usbh_hid_get_protocol)
+    i.usbh_hid_get_report                    0x08002596   Section        0  usbd_hid.o(i.usbh_hid_get_report)
+    i.usbh_hid_set_idle                      0x0800259c   Section        0  usbd_hid_keyboard_if.o(i.usbh_hid_set_idle)
+    i.usbh_hid_set_protocol                  0x080025a8   Section        0  usbd_hid.o(i.usbh_hid_set_protocol)
+    i.usbh_hid_set_report                    0x080025aa   Section        0  usbd_hid.o(i.usbh_hid_set_report)
+    .constdata                               0x080025b0   Section      176  system_py32f403.o(.constdata)
+    .constdata                               0x08002660   Section      190  usbd_hid_keyboard_if.o(.constdata)
+    hid_descriptor                           0x08002660   Data         117  usbd_hid_keyboard_if.o(.constdata)
+    hid_keyboard_report_desc                 0x080026d5   Data          64  usbd_hid_keyboard_if.o(.constdata)
+    keyboard_hid_desc                        0x08002715   Data           9  usbd_hid_keyboard_if.o(.constdata)
+    .data                                    0x20000000   Section        4  system_py32f403.o(.data)
+    .data                                    0x20000004   Section       13  usbd_hid_keyboard_if.o(.data)
+    hid_state                                0x20000004   Data           1  usbd_hid_keyboard_if.o(.data)
+    hid_in_ep                                0x20000008   Data           8  usbd_hid_keyboard_if.o(.data)
+    .data                                    0x20000014   Section        9  py32f403_hal.o(.data)
+    .data                                    0x20000020   Section       16  usbd_core.o(.data)
+    msosv1_desc                              0x20000024   Data           4  usbd_core.o(.data)
+    msosv2_desc                              0x20000028   Data           4  usbd_core.o(.data)
+    bos_desc                                 0x2000002c   Data           4  usbd_core.o(.data)
+    .data                                    0x20000030   Section        2  usb_dc_py32.o(.data)
+    usb_ep0_state                            0x20000030   Data           1  usb_dc_py32.o(.data)
+    .noncacheable                            0x20000034   Section      352  usbd_core.o(.noncacheable)
+    .bss                                     0x20000194   Section       36  usbd_hid_keyboard_if.o(.bss)
+    .bss                                     0x200001c0   Section      384  usb_dc_py32.o(.bss)
+    STACK                                    0x20000340   Section     4096  startup_py32f403xx.o(STACK)
+
+    Global Symbols
+
+    Symbol Name                              Value     Ov Type        Size  Object(Section)
+
+    BuildAttributes$$THM_ISAv4$E$P$D$K$B$S$7EM$VFPi3$EXTD16$VFPS$VFMA$PE$A:L22UL41UL21$X:L11$S22US41US21$IEEE1$IW$USESV6$~STKCKD$USESV7$~SHL$OSPACE$EBA8$MICROLIB$REQ8$PRES8$EABIv2 0x00000000   Number         0  anon$$obj.o ABSOLUTE
+    __ARM_use_no_argv                        0x00000000   Number         0  main.o ABSOLUTE
+    __cpp_initialize__aeabi_                  - Undefined Weak Reference
+    __cxa_finalize                            - Undefined Weak Reference
+    _clock_init                               - Undefined Weak Reference
+    _microlib_exit                            - Undefined Weak Reference
+    __Vectors_Size                           0x00000130   Number         0  startup_py32f403xx.o ABSOLUTE
+    __Vectors                                0x08000000   Data           4  startup_py32f403xx.o(RESET)
+    __Vectors_End                            0x08000130   Data           0  startup_py32f403xx.o(RESET)
+    __main                                   0x08000131   Thumb Code     0  entry.o(.ARM.Collect$$$$00000000)
+    _main_stk                                0x08000131   Thumb Code     0  entry2.o(.ARM.Collect$$$$00000001)
+    _main_scatterload                        0x08000135   Thumb Code     0  entry5.o(.ARM.Collect$$$$00000004)
+    __main_after_scatterload                 0x08000139   Thumb Code     0  entry5.o(.ARM.Collect$$$$00000004)
+    _main_clock                              0x08000139   Thumb Code     0  entry7b.o(.ARM.Collect$$$$00000008)
+    _main_cpp_init                           0x08000139   Thumb Code     0  entry8b.o(.ARM.Collect$$$$0000000A)
+    _main_init                               0x08000139   Thumb Code     0  entry9a.o(.ARM.Collect$$$$0000000B)
+    __rt_final_cpp                           0x08000141   Thumb Code     0  entry10a.o(.ARM.Collect$$$$0000000D)
+    __rt_final_exit                          0x08000141   Thumb Code     0  entry11a.o(.ARM.Collect$$$$0000000F)
+    Reset_Handler                            0x08000145   Thumb Code     8  startup_py32f403xx.o(.text)
+    ADC1_2_IRQHandler                        0x0800015f   Thumb Code     0  startup_py32f403xx.o(.text)
+    ADC3_IRQHandler                          0x0800015f   Thumb Code     0  startup_py32f403xx.o(.text)
+    CAN_IRQHandler                           0x0800015f   Thumb Code     0  startup_py32f403xx.o(.text)
+    DMA1_Channel1_IRQHandler                 0x0800015f   Thumb Code     0  startup_py32f403xx.o(.text)
+    DMA1_Channel2_IRQHandler                 0x0800015f   Thumb Code     0  startup_py32f403xx.o(.text)
+    DMA1_Channel3_IRQHandler                 0x0800015f   Thumb Code     0  startup_py32f403xx.o(.text)
+    DMA1_Channel4_IRQHandler                 0x0800015f   Thumb Code     0  startup_py32f403xx.o(.text)
+    DMA1_Channel5_IRQHandler                 0x0800015f   Thumb Code     0  startup_py32f403xx.o(.text)
+    DMA1_Channel6_IRQHandler                 0x0800015f   Thumb Code     0  startup_py32f403xx.o(.text)
+    DMA1_Channel7_IRQHandler                 0x0800015f   Thumb Code     0  startup_py32f403xx.o(.text)
+    DMA2_Channel1_IRQHandler                 0x0800015f   Thumb Code     0  startup_py32f403xx.o(.text)
+    DMA2_Channel2_IRQHandler                 0x0800015f   Thumb Code     0  startup_py32f403xx.o(.text)
+    DMA2_Channel3_IRQHandler                 0x0800015f   Thumb Code     0  startup_py32f403xx.o(.text)
+    DMA2_Channel4_5_IRQHandler               0x0800015f   Thumb Code     0  startup_py32f403xx.o(.text)
+    ESMC_IRQHandler                          0x0800015f   Thumb Code     0  startup_py32f403xx.o(.text)
+    EXTI0_IRQHandler                         0x0800015f   Thumb Code     0  startup_py32f403xx.o(.text)
+    EXTI15_10_IRQHandler                     0x0800015f   Thumb Code     0  startup_py32f403xx.o(.text)
+    EXTI1_IRQHandler                         0x0800015f   Thumb Code     0  startup_py32f403xx.o(.text)
+    EXTI2_IRQHandler                         0x0800015f   Thumb Code     0  startup_py32f403xx.o(.text)
+    EXTI3_IRQHandler                         0x0800015f   Thumb Code     0  startup_py32f403xx.o(.text)
+    EXTI4_IRQHandler                         0x0800015f   Thumb Code     0  startup_py32f403xx.o(.text)
+    EXTI9_5_IRQHandler                       0x0800015f   Thumb Code     0  startup_py32f403xx.o(.text)
+    FLASH_IRQHandler                         0x0800015f   Thumb Code     0  startup_py32f403xx.o(.text)
+    I2C1_ER_IRQHandler                       0x0800015f   Thumb Code     0  startup_py32f403xx.o(.text)
+    I2C1_EV_IRQHandler                       0x0800015f   Thumb Code     0  startup_py32f403xx.o(.text)
+    I2C2_ER_IRQHandler                       0x0800015f   Thumb Code     0  startup_py32f403xx.o(.text)
+    I2C2_EV_IRQHandler                       0x0800015f   Thumb Code     0  startup_py32f403xx.o(.text)
+    PVD_IRQHandler                           0x0800015f   Thumb Code     0  startup_py32f403xx.o(.text)
+    RCC_CTC_IRQHandler                       0x0800015f   Thumb Code     0  startup_py32f403xx.o(.text)
+    RTC_Alarm_IRQHandler                     0x0800015f   Thumb Code     0  startup_py32f403xx.o(.text)
+    RTC_IRQHandler                           0x0800015f   Thumb Code     0  startup_py32f403xx.o(.text)
+    SDIO_IRQHandler                          0x0800015f   Thumb Code     0  startup_py32f403xx.o(.text)
+    SPI1_IRQHandler                          0x0800015f   Thumb Code     0  startup_py32f403xx.o(.text)
+    SPI2_IRQHandler                          0x0800015f   Thumb Code     0  startup_py32f403xx.o(.text)
+    SPI3_IRQHandler                          0x0800015f   Thumb Code     0  startup_py32f403xx.o(.text)
+    TAMPER_IRQHandler                        0x0800015f   Thumb Code     0  startup_py32f403xx.o(.text)
+    TIM1_BRK_TIM9_IRQHandler                 0x0800015f   Thumb Code     0  startup_py32f403xx.o(.text)
+    TIM1_CC_IRQHandler                       0x0800015f   Thumb Code     0  startup_py32f403xx.o(.text)
+    TIM1_TRG_COM_TIM11_IRQHandler            0x0800015f   Thumb Code     0  startup_py32f403xx.o(.text)
+    TIM1_UP_TIM10_IRQHandler                 0x0800015f   Thumb Code     0  startup_py32f403xx.o(.text)
+    TIM2_IRQHandler                          0x0800015f   Thumb Code     0  startup_py32f403xx.o(.text)
+    TIM3_IRQHandler                          0x0800015f   Thumb Code     0  startup_py32f403xx.o(.text)
+    TIM4_IRQHandler                          0x0800015f   Thumb Code     0  startup_py32f403xx.o(.text)
+    TIM5_IRQHandler                          0x0800015f   Thumb Code     0  startup_py32f403xx.o(.text)
+    TIM6_IRQHandler                          0x0800015f   Thumb Code     0  startup_py32f403xx.o(.text)
+    TIM7_IRQHandler                          0x0800015f   Thumb Code     0  startup_py32f403xx.o(.text)
+    TIM8_BRK_TIM12_IRQHandler                0x0800015f   Thumb Code     0  startup_py32f403xx.o(.text)
+    TIM8_CC_IRQHandler                       0x0800015f   Thumb Code     0  startup_py32f403xx.o(.text)
+    TIM8_TRG_COM_TIM14_IRQHandler            0x0800015f   Thumb Code     0  startup_py32f403xx.o(.text)
+    TIM8_UP_TIM13_IRQHandler                 0x0800015f   Thumb Code     0  startup_py32f403xx.o(.text)
+    USART1_IRQHandler                        0x0800015f   Thumb Code     0  startup_py32f403xx.o(.text)
+    USART2_IRQHandler                        0x0800015f   Thumb Code     0  startup_py32f403xx.o(.text)
+    USART3_IRQHandler                        0x0800015f   Thumb Code     0  startup_py32f403xx.o(.text)
+    USART4_IRQHandler                        0x0800015f   Thumb Code     0  startup_py32f403xx.o(.text)
+    USART5_IRQHandler                        0x0800015f   Thumb Code     0  startup_py32f403xx.o(.text)
+    WWDG_IRQHandler                          0x0800015f   Thumb Code     0  startup_py32f403xx.o(.text)
+    __aeabi_memcpy                           0x08000169   Thumb Code    36  memcpya.o(.text)
+    __aeabi_memcpy4                          0x08000169   Thumb Code     0  memcpya.o(.text)
+    __aeabi_memcpy8                          0x08000169   Thumb Code     0  memcpya.o(.text)
+    __aeabi_memset                           0x0800018d   Thumb Code    14  memseta.o(.text)
+    __aeabi_memset4                          0x0800018d   Thumb Code     0  memseta.o(.text)
+    __aeabi_memset8                          0x0800018d   Thumb Code     0  memseta.o(.text)
+    __aeabi_memclr                           0x0800019b   Thumb Code     4  memseta.o(.text)
+    __aeabi_memclr4                          0x0800019b   Thumb Code     0  memseta.o(.text)
+    __aeabi_memclr8                          0x0800019b   Thumb Code     0  memseta.o(.text)
+    _memset$wrapper                          0x0800019f   Thumb Code    18  memseta.o(.text)
+    __scatterload                            0x080001b1   Thumb Code    28  init.o(.text)
+    __scatterload_rt2                        0x080001b1   Thumb Code     0  init.o(.text)
+    __decompress                             0x080001d5   Thumb Code     0  __dczerorl.o(.text)
+    __decompress0                            0x080001d5   Thumb Code    58  __dczerorl.o(.text)
+    APP_ErrorHandler                         0x0800020f   Thumb Code     4  main.o(i.APP_ErrorHandler)
+    APP_ErrorProc                            0x08000213   Thumb Code     8  system_py32f403.o(i.APP_ErrorProc)
+    APP_LoadTrim                             0x0800021d   Thumb Code   468  system_py32f403.o(i.APP_LoadTrim)
+    BusFault_Handler                         0x080004f9   Thumb Code     4  py32f403_it.o(i.BusFault_Handler)
+    DebugMon_Handler                         0x080004fd   Thumb Code     2  py32f403_it.o(i.DebugMon_Handler)
+    HAL_GetTick                              0x08000501   Thumb Code     6  py32f403_hal.o(i.HAL_GetTick)
+    HAL_IncTick                              0x0800050d   Thumb Code    16  py32f403_hal.o(i.HAL_IncTick)
+    HAL_Init                                 0x08000525   Thumb Code    22  py32f403_hal.o(i.HAL_Init)
+    HAL_InitTick                             0x0800053d   Thumb Code    64  py32f403_hal.o(i.HAL_InitTick)
+    HAL_MspInit                              0x08000589   Thumb Code    58  py32f403_hal_msp.o(i.HAL_MspInit)
+    HAL_NVIC_SetPriority                     0x080005c9   Thumb Code   124  py32f403_hal_cortex.o(i.HAL_NVIC_SetPriority)
+    HAL_NVIC_SetPriorityGrouping             0x08000645   Thumb Code    32  py32f403_hal_cortex.o(i.HAL_NVIC_SetPriorityGrouping)
+    HAL_NVIC_SystemReset                     0x0800066d   Thumb Code    36  py32f403_hal_cortex.o(i.HAL_NVIC_SystemReset)
+    HAL_RCC_ClockConfig                      0x08000699   Thumb Code   376  py32f403_hal_rcc.o(i.HAL_RCC_ClockConfig)
+    HAL_RCC_GetSysClockFreq                  0x08000825   Thumb Code   148  py32f403_hal_rcc.o(i.HAL_RCC_GetSysClockFreq)
+    HAL_RCC_OscConfig                        0x08000909   Thumb Code  1396  py32f403_hal_rcc.o(i.HAL_RCC_OscConfig)
+    HAL_SYSTICK_Config                       0x08000e89   Thumb Code    52  py32f403_hal_cortex.o(i.HAL_SYSTICK_Config)
+    HardFault_Handler                        0x08000ebd   Thumb Code     4  py32f403_it.o(i.HardFault_Handler)
+    MemManage_Handler                        0x08000ec1   Thumb Code     4  py32f403_it.o(i.MemManage_Handler)
+    NMI_Handler                              0x08000ec5   Thumb Code     2  py32f403_it.o(i.NMI_Handler)
+    PendSV_Handler                           0x08000ec7   Thumb Code     2  py32f403_it.o(i.PendSV_Handler)
+    SVC_Handler                              0x08000ef1   Thumb Code     2  py32f403_it.o(i.SVC_Handler)
+    SysTick_Handler                          0x08000ef3   Thumb Code     8  py32f403_it.o(i.SysTick_Handler)
+    SystemInit                               0x08000efd   Thumb Code    30  system_py32f403.o(i.SystemInit)
+    USBD_IRQHandler                          0x08000f21   Thumb Code   866  usb_dc_py32.o(i.USBD_IRQHandler)
+    USB_IRQHandler                           0x08001291   Thumb Code     8  py32f403_it.o(i.USB_IRQHandler)
+    UsageFault_Handler                       0x08001299   Thumb Code     4  py32f403_it.o(i.UsageFault_Handler)
+    __scatterload_copy                       0x080012d5   Thumb Code    14  handlers.o(i.__scatterload_copy)
+    __scatterload_null                       0x080012e3   Thumb Code     2  handlers.o(i.__scatterload_null)
+    __scatterload_zeroinit                   0x080012e5   Thumb Code    14  handlers.o(i.__scatterload_zeroinit)
+    hid_keyboard_init                        0x080014d5   Thumb Code    38  usbd_hid_keyboard_if.o(i.hid_keyboard_init)
+    hid_keyboard_test                        0x08001511   Thumb Code    48  usbd_hid_keyboard_if.o(i.hid_keyboard_test)
+    main                                     0x08001561   Thumb Code    20  main.o(i.main)
+    usb_dc_init                              0x08001601   Thumb Code    40  usb_dc_py32.o(i.usb_dc_init)
+    usb_dc_low_level_init                    0x0800162d   Thumb Code     2  usb_dc_py32.o(i.usb_dc_low_level_init)
+    usbd_add_endpoint                        0x08001631   Thumb Code    42  usbd_core.o(i.usbd_add_endpoint)
+    usbd_add_interface                       0x08001661   Thumb Code    50  usbd_core.o(i.usbd_add_interface)
+    usbd_configure_done_callback             0x08001749   Thumb Code     2  usbd_hid_keyboard_if.o(i.usbd_configure_done_callback)
+    usbd_desc_register                       0x0800174d   Thumb Code    14  usbd_core.o(i.usbd_desc_register)
+    usbd_ep0_reset_zlp_flag                  0x08001761   Thumb Code     8  usb_dc_py32.o(i.usbd_ep0_reset_zlp_flag)
+    usbd_ep0_set_zlp_flag                    0x0800176d   Thumb Code     8  usb_dc_py32.o(i.usbd_ep0_set_zlp_flag)
+    usbd_ep_clear_stall                      0x08001779   Thumb Code   122  usb_dc_py32.o(i.usbd_ep_clear_stall)
+    usbd_ep_close                            0x080017f9   Thumb Code     6  usb_dc_py32.o(i.usbd_ep_close)
+    usbd_ep_is_stalled                       0x08001801   Thumb Code    82  usb_dc_py32.o(i.usbd_ep_is_stalled)
+    usbd_ep_open                             0x08001859   Thumb Code   424  usb_dc_py32.o(i.usbd_ep_open)
+    usbd_ep_set_stall                        0x08001a09   Thumb Code   114  usb_dc_py32.o(i.usbd_ep_set_stall)
+    usbd_ep_start_read                       0x08001a85   Thumb Code   190  usb_dc_py32.o(i.usbd_ep_start_read)
+    usbd_ep_start_write                      0x08001b51   Thumb Code   410  usb_dc_py32.o(i.usbd_ep_start_write)
+    usbd_event_ep0_setup_complete_handler    0x08001cfd   Thumb Code   226  usbd_core.o(i.usbd_event_ep0_setup_complete_handler)
+    usbd_event_ep_in_complete_handler        0x08001de5   Thumb Code   132  usbd_core.o(i.usbd_event_ep_in_complete_handler)
+    usbd_event_ep_out_complete_handler       0x08001e71   Thumb Code   122  usbd_core.o(i.usbd_event_ep_out_complete_handler)
+    usbd_event_reset_handler                 0x08001ef5   Thumb Code    66  usbd_core.o(i.usbd_event_reset_handler)
+    usbd_event_resume_handler                0x08001f3d   Thumb Code    12  usbd_core.o(i.usbd_event_resume_handler)
+    usbd_event_suspend_handler               0x08001f49   Thumb Code    12  usbd_core.o(i.usbd_event_suspend_handler)
+    usbd_hid_init_intf                       0x08002021   Thumb Code    22  usbd_hid.o(i.usbd_hid_init_intf)
+    usbd_hid_int_callback                    0x0800203d   Thumb Code     8  usbd_hid_keyboard_if.o(i.usbd_hid_int_callback)
+    usbd_initialize                          0x08002049   Thumb Code     8  usbd_core.o(i.usbd_initialize)
+    usbd_set_address                         0x08002085   Thumb Code    18  usb_dc_py32.o(i.usbd_set_address)
+    usbh_hid_get_idle                        0x08002585   Thumb Code     8  usbd_hid_keyboard_if.o(i.usbh_hid_get_idle)
+    usbh_hid_get_protocol                    0x08002591   Thumb Code     6  usbd_hid.o(i.usbh_hid_get_protocol)
+    usbh_hid_get_report                      0x08002597   Thumb Code     6  usbd_hid.o(i.usbh_hid_get_report)
+    usbh_hid_set_idle                        0x0800259d   Thumb Code     6  usbd_hid_keyboard_if.o(i.usbh_hid_set_idle)
+    usbh_hid_set_protocol                    0x080025a9   Thumb Code     2  usbd_hid.o(i.usbh_hid_set_protocol)
+    usbh_hid_set_report                      0x080025ab   Thumb Code     6  usbd_hid.o(i.usbh_hid_set_report)
+    AHBPrescTable                            0x080025b0   Data          16  system_py32f403.o(.constdata)
+    APBPrescTable                            0x080025c0   Data           8  system_py32f403.o(.constdata)
+    Region$$Table$$Base                      0x08002720   Number         0  anon$$obj.o(Region$$Table)
+    Region$$Table$$Limit                     0x08002740   Number         0  anon$$obj.o(Region$$Table)
+    SystemCoreClock                          0x20000000   Data           4  system_py32f403.o(.data)
+    idle_speed                               0x20000010   Data           1  usbd_hid_keyboard_if.o(.data)
+    uwTick                                   0x20000014   Data           4  py32f403_hal.o(.data)
+    uwTickPrio                               0x20000018   Data           4  py32f403_hal.o(.data)
+    uwTickFreq                               0x2000001c   Data           1  py32f403_hal.o(.data)
+    usbd_intf_head                           0x20000020   Data           4  usbd_core.o(.data)
+    zlp_flag                                 0x20000031   Data           1  usb_dc_py32.o(.data)
+    usbd_core_cfg                            0x20000034   Data         352  usbd_core.o(.noncacheable)
+    intf0                                    0x20000194   Data          36  usbd_hid_keyboard_if.o(.bss)
+    g_pyusb_udc                              0x200001c0   Data         384  usb_dc_py32.o(.bss)
+    __initial_sp                             0x20001340   Data           0  startup_py32f403xx.o(STACK)
+
+
+
+==============================================================================
+
+Memory Map of the image
+
+  Image Entry point : 0x08000131
+
+  Load Region LR_IROM1 (Base: 0x08000000, Size: 0x000028d4, Max: 0x00060000, ABSOLUTE, COMPRESSED[0x00002754])
+
+    Execution Region ER_IROM1 (Exec base: 0x08000000, Load base: 0x08000000, Size: 0x00002740, Max: 0x00060000, ABSOLUTE)
+
+    Exec Addr    Load Addr    Size         Type   Attr      Idx    E Section Name        Object
+
+    0x08000000   0x08000000   0x00000130   Data   RO            3    RESET               startup_py32f403xx.o
+    0x08000130   0x08000130   0x00000000   Code   RO         2171  * .ARM.Collect$$$$00000000  mc_w.l(entry.o)
+    0x08000130   0x08000130   0x00000004   Code   RO         2180    .ARM.Collect$$$$00000001  mc_w.l(entry2.o)
+    0x08000134   0x08000134   0x00000004   Code   RO         2183    .ARM.Collect$$$$00000004  mc_w.l(entry5.o)
+    0x08000138   0x08000138   0x00000000   Code   RO         2185    .ARM.Collect$$$$00000008  mc_w.l(entry7b.o)
+    0x08000138   0x08000138   0x00000000   Code   RO         2187    .ARM.Collect$$$$0000000A  mc_w.l(entry8b.o)
+    0x08000138   0x08000138   0x00000008   Code   RO         2188    .ARM.Collect$$$$0000000B  mc_w.l(entry9a.o)
+    0x08000140   0x08000140   0x00000000   Code   RO         2190    .ARM.Collect$$$$0000000D  mc_w.l(entry10a.o)
+    0x08000140   0x08000140   0x00000000   Code   RO         2192    .ARM.Collect$$$$0000000F  mc_w.l(entry11a.o)
+    0x08000140   0x08000140   0x00000004   Code   RO         2181    .ARM.Collect$$$$00002712  mc_w.l(entry2.o)
+    0x08000144   0x08000144   0x00000024   Code   RO            4    .text               startup_py32f403xx.o
+    0x08000168   0x08000168   0x00000024   Code   RO         2174    .text               mc_w.l(memcpya.o)
+    0x0800018c   0x0800018c   0x00000024   Code   RO         2176    .text               mc_w.l(memseta.o)
+    0x080001b0   0x080001b0   0x00000024   Code   RO         2194    .text               mc_w.l(init.o)
+    0x080001d4   0x080001d4   0x0000003a   Code   RO         2204    .text               mc_w.l(__dczerorl.o)
+    0x0800020e   0x0800020e   0x00000004   Code   RO          136    i.APP_ErrorHandler  main.o
+    0x08000212   0x08000212   0x00000008   Code   RO           13    i.APP_ErrorProc     system_py32f403.o
+    0x0800021a   0x0800021a   0x00000002   PAD
+    0x0800021c   0x0800021c   0x000001f8   Code   RO           14    i.APP_LoadTrim      system_py32f403.o
+    0x08000414   0x08000414   0x00000074   Code   RO          137    i.APP_SystemClockConfig  main.o
+    0x08000488   0x08000488   0x00000070   Code   RO          138    i.APP_USBInit       main.o
+    0x080004f8   0x080004f8   0x00000004   Code   RO          218    i.BusFault_Handler  py32f403_it.o
+    0x080004fc   0x080004fc   0x00000002   Code   RO          219    i.DebugMon_Handler  py32f403_it.o
+    0x080004fe   0x080004fe   0x00000002   PAD
+    0x08000500   0x08000500   0x0000000c   Code   RO          522    i.HAL_GetTick       py32f403_hal.o
+    0x0800050c   0x0800050c   0x00000018   Code   RO          528    i.HAL_IncTick       py32f403_hal.o
+    0x08000524   0x08000524   0x00000016   Code   RO          529    i.HAL_Init          py32f403_hal.o
+    0x0800053a   0x0800053a   0x00000002   PAD
+    0x0800053c   0x0800053c   0x0000004c   Code   RO          530    i.HAL_InitTick      py32f403_hal.o
+    0x08000588   0x08000588   0x00000040   Code   RO          194    i.HAL_MspInit       py32f403_hal_msp.o
+    0x080005c8   0x080005c8   0x0000007c   Code   RO         1630    i.HAL_NVIC_SetPriority  py32f403_hal_cortex.o
+    0x08000644   0x08000644   0x00000028   Code   RO         1631    i.HAL_NVIC_SetPriorityGrouping  py32f403_hal_cortex.o
+    0x0800066c   0x0800066c   0x0000002c   Code   RO         1632    i.HAL_NVIC_SystemReset  py32f403_hal_cortex.o
+    0x08000698   0x08000698   0x0000018c   Code   RO          756    i.HAL_RCC_ClockConfig  py32f403_hal_rcc.o
+    0x08000824   0x08000824   0x000000e4   Code   RO          765    i.HAL_RCC_GetSysClockFreq  py32f403_hal_rcc.o
+    0x08000908   0x08000908   0x00000580   Code   RO          768    i.HAL_RCC_OscConfig  py32f403_hal_rcc.o
+    0x08000e88   0x08000e88   0x00000034   Code   RO         1635    i.HAL_SYSTICK_Config  py32f403_hal_cortex.o
+    0x08000ebc   0x08000ebc   0x00000004   Code   RO          220    i.HardFault_Handler  py32f403_it.o
+    0x08000ec0   0x08000ec0   0x00000004   Code   RO          221    i.MemManage_Handler  py32f403_it.o
+    0x08000ec4   0x08000ec4   0x00000002   Code   RO          222    i.NMI_Handler       py32f403_it.o
+    0x08000ec6   0x08000ec6   0x00000002   Code   RO          223    i.PendSV_Handler    py32f403_it.o
+    0x08000ec8   0x08000ec8   0x00000028   Code   RO          769    i.RCC_Delay         py32f403_hal_rcc.o
+    0x08000ef0   0x08000ef0   0x00000002   Code   RO          224    i.SVC_Handler       py32f403_it.o
+    0x08000ef2   0x08000ef2   0x00000008   Code   RO          225    i.SysTick_Handler   py32f403_it.o
+    0x08000efa   0x08000efa   0x00000002   PAD
+    0x08000efc   0x08000efc   0x00000024   Code   RO           16    i.SystemInit        system_py32f403.o
+    0x08000f20   0x08000f20   0x00000370   Code   RO         1949    i.USBD_IRQHandler   usb_dc_py32.o
+    0x08001290   0x08001290   0x00000008   Code   RO          226    i.USB_IRQHandler    py32f403_it.o
+    0x08001298   0x08001298   0x00000004   Code   RO          227    i.UsageFault_Handler  py32f403_it.o
+    0x0800129c   0x0800129c   0x00000010   Code   RO         1637    i.__NVIC_GetPriorityGrouping  py32f403_hal_cortex.o
+    0x080012ac   0x080012ac   0x00000028   Code   RO         1638    i.__NVIC_SetPriority  py32f403_hal_cortex.o
+    0x080012d4   0x080012d4   0x0000000e   Code   RO         2198    i.__scatterload_copy  mc_w.l(handlers.o)
+    0x080012e2   0x080012e2   0x00000002   Code   RO         2199    i.__scatterload_null  mc_w.l(handlers.o)
+    0x080012e4   0x080012e4   0x0000000e   Code   RO         2200    i.__scatterload_zeroinit  mc_w.l(handlers.o)
+    0x080012f2   0x080012f2   0x00000002   PAD
+    0x080012f4   0x080012f4   0x00000150   Code   RO         1950    i.handle_ep0        usb_dc_py32.o
+    0x08001444   0x08001444   0x00000090   Code   RO         2109    i.hid_class_interface_request_handler  usbd_hid.o
+    0x080014d4   0x080014d4   0x0000003c   Code   RO          305    i.hid_keyboard_init  usbd_hid_keyboard_if.o
+    0x08001510   0x08001510   0x0000003c   Code   RO          306    i.hid_keyboard_test  usbd_hid_keyboard_if.o
+    0x0800154c   0x0800154c   0x00000014   Code   RO         1744    i.is_device_configured  usbd_core.o
+    0x08001560   0x08001560   0x00000014   Code   RO          139    i.main              main.o
+    0x08001574   0x08001574   0x0000000c   Code   RO         1951    i.pyusb_get_active_ep  usb_dc_py32.o
+    0x08001580   0x08001580   0x00000022   Code   RO         1952    i.pyusb_get_fifo_size  usb_dc_py32.o
+    0x080015a2   0x080015a2   0x00000002   PAD
+    0x080015a4   0x080015a4   0x00000028   Code   RO         1953    i.pyusb_read_packet  usb_dc_py32.o
+    0x080015cc   0x080015cc   0x0000000c   Code   RO         1954    i.pyusb_set_active_ep  usb_dc_py32.o
+    0x080015d8   0x080015d8   0x00000028   Code   RO         1955    i.pyusb_write_packet  usb_dc_py32.o
+    0x08001600   0x08001600   0x0000002c   Code   RO         1957    i.usb_dc_init       usb_dc_py32.o
+    0x0800162c   0x0800162c   0x00000002   Code   RO         1959    i.usb_dc_low_level_init  usb_dc_py32.o
+    0x0800162e   0x0800162e   0x00000002   PAD
+    0x08001630   0x08001630   0x00000030   Code   RO         1746    i.usbd_add_endpoint  usbd_core.o
+    0x08001660   0x08001660   0x0000003c   Code   RO         1747    i.usbd_add_interface  usbd_core.o
+    0x0800169c   0x0800169c   0x0000002c   Code   RO         1749    i.usbd_class_event_notify_handler  usbd_core.o
+    0x080016c8   0x080016c8   0x00000080   Code   RO         1750    i.usbd_class_request_handler  usbd_core.o
+    0x08001748   0x08001748   0x00000002   Code   RO          307    i.usbd_configure_done_callback  usbd_hid_keyboard_if.o
+    0x0800174a   0x0800174a   0x00000002   PAD
+    0x0800174c   0x0800174c   0x00000014   Code   RO         1752    i.usbd_desc_register  usbd_core.o
+    0x08001760   0x08001760   0x0000000c   Code   RO         1962    i.usbd_ep0_reset_zlp_flag  usb_dc_py32.o
+    0x0800176c   0x0800176c   0x0000000c   Code   RO         1963    i.usbd_ep0_set_zlp_flag  usb_dc_py32.o
+    0x08001778   0x08001778   0x00000080   Code   RO         1964    i.usbd_ep_clear_stall  usb_dc_py32.o
+    0x080017f8   0x080017f8   0x00000006   Code   RO         1965    i.usbd_ep_close     usb_dc_py32.o
+    0x080017fe   0x080017fe   0x00000002   PAD
+    0x08001800   0x08001800   0x00000058   Code   RO         1966    i.usbd_ep_is_stalled  usb_dc_py32.o
+    0x08001858   0x08001858   0x000001b0   Code   RO         1967    i.usbd_ep_open      usb_dc_py32.o
+    0x08001a08   0x08001a08   0x0000007c   Code   RO         1968    i.usbd_ep_set_stall  usb_dc_py32.o
+    0x08001a84   0x08001a84   0x000000cc   Code   RO         1969    i.usbd_ep_start_read  usb_dc_py32.o
+    0x08001b50   0x08001b50   0x000001ac   Code   RO         1970    i.usbd_ep_start_write  usb_dc_py32.o
+    0x08001cfc   0x08001cfc   0x000000e8   Code   RO         1755    i.usbd_event_ep0_setup_complete_handler  usbd_core.o
+    0x08001de4   0x08001de4   0x0000008c   Code   RO         1756    i.usbd_event_ep_in_complete_handler  usbd_core.o
+    0x08001e70   0x08001e70   0x00000084   Code   RO         1757    i.usbd_event_ep_out_complete_handler  usbd_core.o
+    0x08001ef4   0x08001ef4   0x00000048   Code   RO         1758    i.usbd_event_reset_handler  usbd_core.o
+    0x08001f3c   0x08001f3c   0x0000000c   Code   RO         1759    i.usbd_event_resume_handler  usbd_core.o
+    0x08001f48   0x08001f48   0x0000000c   Code   RO         1760    i.usbd_event_suspend_handler  usbd_core.o
+    0x08001f54   0x08001f54   0x000000cc   Code   RO         1761    i.usbd_get_descriptor  usbd_core.o
+    0x08002020   0x08002020   0x0000001c   Code   RO         2110    i.usbd_hid_init_intf  usbd_hid.o
+    0x0800203c   0x0800203c   0x0000000c   Code   RO          308    i.usbd_hid_int_callback  usbd_hid_keyboard_if.o
+    0x08002048   0x08002048   0x00000008   Code   RO         1762    i.usbd_initialize   usbd_core.o
+    0x08002050   0x08002050   0x00000002   Code   RO         1765    i.usbd_print_setup  usbd_core.o
+    0x08002052   0x08002052   0x00000030   Code   RO         1766    i.usbd_reset_endpoint  usbd_core.o
+    0x08002082   0x08002082   0x00000002   PAD
+    0x08002084   0x08002084   0x0000001c   Code   RO         1971    i.usbd_set_address  usb_dc_py32.o
+    0x080020a0   0x080020a0   0x0000006c   Code   RO         1767    i.usbd_set_configuration  usbd_core.o
+    0x0800210c   0x0800210c   0x0000002e   Code   RO         1768    i.usbd_set_endpoint  usbd_core.o
+    0x0800213a   0x0800213a   0x00000002   PAD
+    0x0800213c   0x0800213c   0x0000007c   Code   RO         1769    i.usbd_set_interface  usbd_core.o
+    0x080021b8   0x080021b8   0x0000007e   Code   RO         1770    i.usbd_setup_request_handler  usbd_core.o
+    0x08002236   0x08002236   0x00000062   Code   RO         1771    i.usbd_standard_request_handler  usbd_core.o
+    0x08002298   0x08002298   0x000000c4   Code   RO         1772    i.usbd_std_device_req_handler  usbd_core.o
+    0x0800235c   0x0800235c   0x00000090   Code   RO         1773    i.usbd_std_endpoint_req_handler  usbd_core.o
+    0x080023ec   0x080023ec   0x000000d0   Code   RO         1774    i.usbd_std_interface_req_handler  usbd_core.o
+    0x080024bc   0x080024bc   0x000000c8   Code   RO         1775    i.usbd_vendor_request_handler  usbd_core.o
+    0x08002584   0x08002584   0x0000000c   Code   RO          309    i.usbh_hid_get_idle  usbd_hid_keyboard_if.o
+    0x08002590   0x08002590   0x00000006   Code   RO         2112    i.usbh_hid_get_protocol  usbd_hid.o
+    0x08002596   0x08002596   0x00000006   Code   RO         2113    i.usbh_hid_get_report  usbd_hid.o
+    0x0800259c   0x0800259c   0x0000000c   Code   RO          310    i.usbh_hid_set_idle  usbd_hid_keyboard_if.o
+    0x080025a8   0x080025a8   0x00000002   Code   RO         2115    i.usbh_hid_set_protocol  usbd_hid.o
+    0x080025aa   0x080025aa   0x00000006   Code   RO         2116    i.usbh_hid_set_report  usbd_hid.o
+    0x080025b0   0x080025b0   0x000000b0   Data   RO           17    .constdata          system_py32f403.o
+    0x08002660   0x08002660   0x000000be   Data   RO          312    .constdata          usbd_hid_keyboard_if.o
+    0x0800271e   0x0800271e   0x00000002   PAD
+    0x08002720   0x08002720   0x00000020   Data   RO         2196    Region$$Table       anon$$obj.o
+
+
+    Execution Region RW_IRAM1 (Exec base: 0x20000000, Load base: 0x08002740, Size: 0x00001340, Max: 0x00010000, ABSOLUTE, COMPRESSED[0x00000014])
+
+    Exec Addr    Load Addr    Size         Type   Attr      Idx    E Section Name        Object
+
+    0x20000000   COMPRESSED   0x00000004   Data   RW           18    .data               system_py32f403.o
+    0x20000004   COMPRESSED   0x0000000d   Data   RW          313    .data               usbd_hid_keyboard_if.o
+    0x20000011   COMPRESSED   0x00000003   PAD
+    0x20000014   COMPRESSED   0x00000009   Data   RW          546    .data               py32f403_hal.o
+    0x2000001d   COMPRESSED   0x00000003   PAD
+    0x20000020   COMPRESSED   0x00000010   Data   RW         1776    .data               usbd_core.o
+    0x20000030   COMPRESSED   0x00000002   Data   RW         1973    .data               usb_dc_py32.o
+    0x20000032   COMPRESSED   0x00000002   PAD
+    0x20000034   COMPRESSED   0x00000160   Data   RW         1777    .noncacheable       usbd_core.o
+    0x20000194        -       0x00000024   Zero   RW          311    .bss                usbd_hid_keyboard_if.o
+    0x200001b8   COMPRESSED   0x00000008   PAD
+    0x200001c0        -       0x00000180   Zero   RW         1972    .bss                usb_dc_py32.o
+    0x20000340        -       0x00001000   Zero   RW            1    STACK               startup_py32f403xx.o
+
+
+==============================================================================
+
+Image component sizes
+
+
+      Code (inc. data)   RO Data    RW Data    ZI Data      Debug   Object Name
+
+       252          4          0          0          0      31137   main.o
+       134         26          0          9          0      11297   py32f403_hal.o
+       316         30          0          0          0      33245   py32f403_hal_cortex.o
+        64          6          0          0          0        938   py32f403_hal_msp.o
+      2072        124          0          0          0       5120   py32f403_hal_rcc.o
+        40          0          0          0          0       5183   py32f403_it.o
+        36          8        304          0       4096        896   startup_py32f403xx.o
+       548         42        176          4          0     296158   system_py32f403.o
+      2862        142          0          2        384      17373   usb_dc_py32.o
+      2432        138          0        368          0      28712   usbd_core.o
+       192         18          0          0          0       5381   usbd_hid.o
+       158         48        190         13         36      26631   usbd_hid_keyboard_if.o
+
+    ----------------------------------------------------------------------
+      9126        586        704        404       4524     462071   Object Totals
+         0          0         32          0          0          0   (incl. Generated)
+        20          0          2          8          8          0   (incl. Padding)
+
+    ----------------------------------------------------------------------
+
+      Code (inc. data)   RO Data    RW Data    ZI Data      Debug   Library Member Name
+
+        58          0          0          0          0          0   __dczerorl.o
+         0          0          0          0          0          0   entry.o
+         0          0          0          0          0          0   entry10a.o
+         0          0          0          0          0          0   entry11a.o
+         8          4          0          0          0          0   entry2.o
+         4          0          0          0          0          0   entry5.o
+         0          0          0          0          0          0   entry7b.o
+         0          0          0          0          0          0   entry8b.o
+         8          4          0          0          0          0   entry9a.o
+        30          0          0          0          0          0   handlers.o
+        36          8          0          0          0         68   init.o
+        36          0          0          0          0         68   memcpya.o
+        36          0          0          0          0        108   memseta.o
+
+    ----------------------------------------------------------------------
+       218         16          0          0          0        244   Library Totals
+         2          0          0          0          0          0   (incl. Padding)
+
+    ----------------------------------------------------------------------
+
+      Code (inc. data)   RO Data    RW Data    ZI Data      Debug   Library Name
+
+       216         16          0          0          0        244   mc_w.l
+
+    ----------------------------------------------------------------------
+       218         16          0          0          0        244   Library Totals
+
+    ----------------------------------------------------------------------
+
+==============================================================================
+
+
+      Code (inc. data)   RO Data    RW Data    ZI Data      Debug   
+
+      9344        602        704        404       4524     454347   Grand Totals
+      9344        602        704         20       4524     454347   ELF Image Totals (compressed)
+      9344        602        704         20          0          0   ROM Totals
+
+==============================================================================
+
+    Total RO  Size (Code + RO Data)                10048 (   9.81kB)
+    Total RW  Size (RW Data + ZI Data)              4928 (   4.81kB)
+    Total ROM Size (Code + RO Data + RW Data)      10068 (   9.83kB)
+
+==============================================================================
+

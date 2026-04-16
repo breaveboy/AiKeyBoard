@@ -1,0 +1,232 @@
+version: "4.1"
+name: py32f403r1
+type: ARM
+deviceName: PY32F403xC
+packDir: .pack/Puya/PY32F4xx_DFP.1.0.6
+srcDirs: []
+virtualFolder:
+  name: <virtual_root>
+  files: []
+  folders:
+    - name: Com
+      files:
+        - path: ../Com/startup_py32f403xx.s
+        - path: ../Com/system_py32f403.c
+      folders: []
+    - name: App
+      files: []
+      folders: []
+    - name: User
+      files:
+        - path: ../User/Src/main.c
+        - path: ../User/Src/py32f403_hal_msp.c
+        - path: ../User/Src/py32f403_it.c
+        - path: ../User/Src/usbd_hid_keyboard_if.c
+      folders: []
+    - name: Bsp
+      files:
+        - path: ../Bsp/inc/bsp_config.h
+        - path: ../Bsp/src/bsp_adc_dma.c
+        - path: ../Bsp/src/bsp_spi_dma.c
+        - path: ../Bsp/src/bsp_tim.c
+        - path: ../Bsp/src/bsp_uart.c
+      folders: []
+    - name: Lib
+      files:
+        - path: ../Lib/inc/lib_config.h
+        - path: ../Lib/src/lib_hall_sensor.c
+        - path: ../Lib/src/lib_ws2812.c
+      folders: []
+    - name: CherryUSB
+      files:
+        - path: ../CherryUSB/class/hid/usbd_hid.c
+        - path: ../CherryUSB/core/usbd_core.c
+        - path: ../CherryUSB/port/usb_dc_py32.c
+      folders: []
+    - name: Frimware
+      files:
+        - path: ../Frimware/Src/py32f403_hal.c
+        - path: ../Frimware/Src/py32f403_hal_adc.c
+        - path: ../Frimware/Src/py32f403_hal_adc_ex.c
+        - path: ../Frimware/Src/py32f403_hal_canfd.c
+        - path: ../Frimware/Src/py32f403_hal_cortex.c
+        - path: ../Frimware/Src/py32f403_hal_crc.c
+        - path: ../Frimware/Src/py32f403_hal_ctc.c
+        - path: ../Frimware/Src/py32f403_hal_dac.c
+        - path: ../Frimware/Src/py32f403_hal_dac_ex.c
+        - path: ../Frimware/Src/py32f403_hal_dma.c
+        - path: ../Frimware/Src/py32f403_hal_esmc.c
+        - path: ../Frimware/Src/py32f403_hal_exti.c
+        - path: ../Frimware/Src/py32f403_hal_flash.c
+        - path: ../Frimware/Src/py32f403_hal_gpio.c
+        - path: ../Frimware/Src/py32f403_hal_i2c.c
+        - path: ../Frimware/Src/py32f403_hal_i2s.c
+        - path: ../Frimware/Src/py32f403_hal_irda.c
+        - path: ../Frimware/Src/py32f403_hal_iwdg.c
+        - path: ../Frimware/Src/py32f403_hal_pwr.c
+        - path: ../Frimware/Src/py32f403_hal_pwr_ex.c
+        - path: ../Frimware/Src/py32f403_hal_rcc.c
+        - path: ../Frimware/Src/py32f403_hal_rcc_ex.c
+        - path: ../Frimware/Src/py32f403_hal_rtc.c
+        - path: ../Frimware/Src/py32f403_hal_rtc_ex.c
+        - path: ../Frimware/Src/py32f403_hal_sd.c
+        - path: ../Frimware/Src/py32f403_hal_smartcard.c
+        - path: ../Frimware/Src/py32f403_hal_spi.c
+        - path: ../Frimware/Src/py32f403_hal_spi_ex.c
+        - path: ../Frimware/Src/py32f403_hal_tim.c
+        - path: ../Frimware/Src/py32f403_hal_tim_ex.c
+        - path: ../Frimware/Src/py32f403_hal_uart.c
+        - path: ../Frimware/Src/py32f403_hal_usart.c
+        - path: ../Frimware/Src/py32f403_hal_wwdg.c
+      folders: []
+    - name: ::CMSIS
+      files: []
+      folders: []
+dependenceList: []
+outDir: build
+miscInfo:
+  uid: a3a90e24f2d22167db7afa7484a3e44b
+targets:
+  Target 1:
+    cppPreprocessAttrs:
+      defineList:
+        - USE_HAL_DRIVER
+        - PY32F403xC
+      incList:
+        - .
+        - ../User/Inc
+        - ../Frimware/Inc
+        - ../CherryUSB/class/hid
+        - ../CherryUSB/class/cdc
+        - ../CherryUSB/common
+        - ../CherryUSB/core
+        - ../CherryUSB/port
+        - ../../../Keil_v5/Packs/Puya/PY32F4xx_DFP/1.0.6/Drivers/CMSIS/Device/PUYA/PY32F4xx/Include
+        - ../Bsp/inc
+        - ../Lib/inc
+        - .cmsis/include
+        - RTE/_Target 1
+      libList: []
+    excludeList: []
+    settings: {}
+    toolchain: AC6
+    toolchainConfigMap:
+      AC6:
+        archExtensions: ""
+        cpuType: Cortex-M4
+        floatingPointHardware: single
+        options:
+          version: 3
+          afterBuildTasks: []
+          asm-compiler:
+            $use: asm-auto
+            defines: []
+            misc-controls: ""
+          beforeBuildTasks: []
+          c/cpp-compiler:
+            language-c: c99
+            language-cpp: c++11
+            link-time-optimization: false
+            one-elf-section-per-function: true
+            optimization: level-0
+            short-enums#wchar: true
+            warnings: ac5-like-warnings
+          global:
+            output-debug-info: enable
+            use-microLIB: false
+          linker:
+            $disableOutputTask: false
+            $outputTaskExcludes:
+              - .bin
+              - .s19
+            misc-controls: --diag_suppress=L6329
+            output-format: elf
+            ro-base: "0x08000000"
+            rw-base: "0x20000000"
+            xo-base: ""
+        scatterFilePath: ""
+        storageLayout:
+          RAM:
+            - id: 1
+              isChecked: false
+              mem:
+                size: "0x0"
+                startAddr: "0x0"
+              noInit: false
+              tag: RAM
+            - id: 2
+              isChecked: false
+              mem:
+                size: "0x0"
+                startAddr: "0x0"
+              noInit: false
+              tag: RAM
+            - id: 3
+              isChecked: false
+              mem:
+                size: "0x0"
+                startAddr: "0x0"
+              noInit: false
+              tag: RAM
+            - id: 1
+              isChecked: true
+              mem:
+                size: "0x10000"
+                startAddr: "0x20000000"
+              noInit: false
+              tag: IRAM
+            - id: 2
+              isChecked: false
+              mem:
+                size: "0x0"
+                startAddr: "0x0"
+              noInit: false
+              tag: IRAM
+          ROM:
+            - id: 1
+              isChecked: false
+              isStartup: false
+              mem:
+                size: "0x0"
+                startAddr: "0x0"
+              tag: ROM
+            - id: 2
+              isChecked: false
+              isStartup: false
+              mem:
+                size: "0x0"
+                startAddr: "0x0"
+              tag: ROM
+            - id: 3
+              isChecked: false
+              isStartup: false
+              mem:
+                size: "0x0"
+                startAddr: "0x0"
+              tag: ROM
+            - id: 1
+              isChecked: true
+              isStartup: true
+              mem:
+                size: "0x40000"
+                startAddr: "0x8000000"
+              tag: IROM
+            - id: 2
+              isChecked: false
+              isStartup: false
+              mem:
+                size: "0x0"
+                startAddr: "0x0"
+              tag: IROM
+        useCustomScatterFile: false
+    uploadConfigMap:
+      JLink:
+        baseAddr: ""
+        bin: ""
+        cpuInfo:
+          cpuName: "null"
+          vendor: "null"
+        otherCmds: ""
+        proType: 1
+        speed: 8000
+    uploader: JLink

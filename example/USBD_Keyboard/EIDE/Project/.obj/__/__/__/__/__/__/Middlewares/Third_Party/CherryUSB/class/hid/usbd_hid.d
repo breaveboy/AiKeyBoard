@@ -1,0 +1,35 @@
+Project/.obj/__/__/__/__/__/__/Middlewares/Third_Party/CherryUSB/class/hid/usbd_hid.o: \
+ ../../../../../../Middlewares/Third_Party/CherryUSB/class/hid/usbd_hid.c \
+ ../../../../../../Middlewares/Third_Party/CherryUSB/core/usbd_core.h \
+ ../Inc/usb_config.h \
+ ../../../../../../Drivers/PY32F403_HAL_Driver/Inc/py32f4xx_hal.h \
+ ../Inc/py32f403_hal_conf.h \
+ ../../../../../../Drivers/PY32F403_HAL_Driver/Inc/py32f403_hal_cortex.h \
+ ../../../../../../Drivers/PY32F403_HAL_Driver/Inc/py32f403_hal_def.h \
+ ../../../../../../Drivers/CMSIS/Device/PUYA/PY32F403/Include/py32f4xx.h \
+ ../../../../../../Drivers/CMSIS/Device/PUYA/PY32F403/Include/py32f403xD.h \
+ ../../../../../../Drivers/CMSIS/Include/core_cm4.h \
+ ../../../../../../Drivers/CMSIS/Include/cmsis_version.h \
+ ../../../../../../Drivers/CMSIS/Include/cmsis_compiler.h \
+ ../../../../../../Drivers/CMSIS/Include/cmsis_gcc.h \
+ ../../../../../../Drivers/CMSIS/Device/PUYA/PY32F403/Include/system_py32f4xx.h \
+ ../../../../../../Drivers/PY32F403_HAL_Driver/Inc/py32f4xx_hal.h \
+ ../../../../../../Drivers/PY32F403_HAL_Driver/Inc/py32f403_hal_dma.h \
+ ../../../../../../Drivers/PY32F403_HAL_Driver/Inc/py32f403_hal_dma_ex.h \
+ ../../../../../../Drivers/PY32F403_HAL_Driver/Inc/py32f403_hal_flash.h \
+ ../../../../../../Drivers/PY32F403_HAL_Driver/Inc/py32f403_hal_gpio.h \
+ ../../../../../../Drivers/PY32F403_HAL_Driver/Inc/py32f403_hal_gpio_ex.h \
+ ../../../../../../Drivers/PY32F403_HAL_Driver/Inc/py32f403_hal_rcc.h \
+ ../../../../../../Drivers/PY32F403_HAL_Driver/Inc/py32f403_hal_rcc_ex.h \
+ ../../../../../../Drivers/PY32F403_HAL_Driver/Inc/py32f403_hal_pwr.h \
+ ../../../../../../Drivers/PY32F403_HAL_Driver/Inc/py32f403_hal_pwr_ex.h \
+ ../../../../../../Drivers/PY32F403_HAL_Driver/Inc/py32f403_hal_uart.h \
+ ../../../../../../Middlewares/Third_Party/CherryUSB/common/usb_util.h \
+ ../../../../../../Middlewares/Third_Party/CherryUSB/common/usb_errno.h \
+ ../../../../../../Middlewares/Third_Party/CherryUSB/common/usb_def.h \
+ ../../../../../../Middlewares/Third_Party/CherryUSB/common/usb_list.h \
+ ../../../../../../Middlewares/Third_Party/CherryUSB/common/usb_mem.h \
+ ../../../../../../Middlewares/Third_Party/CherryUSB/common/usb_log.h \
+ ../../../../../../Middlewares/Third_Party/CherryUSB/common/usb_dc.h \
+ ../../../../../../Middlewares/Third_Party/CherryUSB/class/hid/usbd_hid.h \
+ ../../../../../../Middlewares/Third_Party/CherryUSB/class/hid/usb_hid.h

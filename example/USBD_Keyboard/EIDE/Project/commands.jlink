@@ -1,0 +1,6 @@
+r
+halt
+loadfile "d:\download_local\PY32F403_Firmware_V1.4.5\PY32F403_Firmware_V1.4.5\Projects\PY32F403-STK\Applications\USB_Device\USBD_Keyboard\EIDE\Project\Project.hex"
+r
+go
+exit

@@ -1,0 +1,134 @@
+# 项目目录结构
+
+以下是 `AiKeyBoard` 工程的主目录结构整理：
+
+- App/
+  - inc/
+  - src/
+- Bsp/
+  - inc/
+    - bsp_adc_dma.h
+    - bsp_config.h
+    - bsp_spi_dma.h
+    - bsp_tim.h
+    - bsp_uart.h
+  - src/
+    - bsp_adc_dma.c
+    - bsp_spi_dma.c
+    - bsp_tim.c
+    - bsp_uart.c
+- CherryUSB/
+  - LICENSE
+  - class/
+    - audio/
+    - cdc/
+    - dfu/
+    - hid/
+    - midi/
+    - msc/
+    - mtp/
+    - printer/
+    - vendor/
+    - video/
+    - wireless/
+  - common/
+    - usb_dc.h
+    - usb_def.h
+    - usb_errno.h
+    - usb_hc.h
+    - usb_list.h
+    - usb_log.h
+    - usb_mem.h
+    - usb_util.h
+  - core/
+    - usbd_core.c
+    - usbd_core.h
+  - port/
+    - usb_dc_py32.c
+    - usb_py32_reg.h
+- Com/
+  - startup_py32f403xx.s
+  - system_py32f403.c
+- Frimware/
+  - Inc/
+    - py32f403_hal_adc_ex.h
+    - py32f403_hal_adc.h
+    - py32f403_hal_canfd.h
+    - py32f403_hal_cortex.h
+    - py32f403_hal_crc.h
+    - py32f403_hal_ctc.h
+    - py32f403_hal_dac_ex.h
+    - py32f403_hal_dac.h
+    - py32f403_hal_def.h
+    - py32f403_hal_dma_ex.h
+    - py32f403_hal_dma.h
+    - py32f403_hal_esmc.h
+    - py32f403_hal_exti.h
+    - py32f403_hal_flash.h
+    - py32f403_hal_gpio_ex.h
+    - py32f403_hal_gpio.h
+    - py32f403_hal_i2c.h
+    - py32f403_hal_i2s.h
+    - py32f403_hal_irda.h
+    - py32f403_hal_iwdg.h
+    - py32f403_hal_pwr_ex.h
+    - py32f403_hal_pwr.h
+    - py32f403_hal_rcc_ex.h
+    - py32f403_hal_rcc.h
+    - py32f403_hal_rtc_ex.h
+    - py32f403_hal_rtc.h
+    - py32f403_hal_sd.h
+    - py32f403_hal_smartcard.h
+    - py32f403_hal_spi_ex.h
+    - py32f403_hal_spi.h
+    - py32f403_hal_tim_ex.h
+    - py32f403_hal_tim.h
+    - py32f403_hal_uart.h
+    - py32f403_hal_usart.h
+    - py32f403_hal_wwdg.h
+    - py32f403_ll_adc.h
+    - py32f403_ll_bus.h
+    - py32f403_ll_cortex.h
+    - py32f403_ll_crc.h
+    - py32f403_ll_ctc.h
+    - py32f403_ll_dac.h
+    - py32f403_ll_dma.h
+    - py32f403_ll_exti.h
+    - py32f403_ll_flash.h
+    - py32f403_ll_gpio.h
+    - py32f403_ll_i2c.h
+    - py32f403_ll_iwdg.h
+    - py32f403_ll_pwr.h
+    - py32f403_ll_rcc.h
+    - py32f403_ll_rtc.h
+    - py32f403_ll_sdmmc.h
+    - py32f403_ll_spi.h
+    - py32f403_ll_system.h
+    - py32f403_ll_tim.h
+    - py32f403_ll_usart.h
+    - py32f403_ll_utils.h
+    - ...
+  - Src/
+    - ...
+- Lib/
+  - inc/
+    - ...
+  - src/
+    - ...
+- Project/
+  - 工程目录结构.md
+  - py32f403r1.code-workspace
+  - py32f403r1.uvguix.swk-rd-260330
+  - py32f403r1.uvoptx
+  - py32f403r1.uvprojx
+  - RTE_Components.h
+  - build/
+  - DebugConfig/
+  - Listings/
+  - Objects/
+  - RTE/
+- User/
+  - Inc/
+  - Src/
+
+> 注：部分目录中的文件以 `...` 表示，表示内部可能包含更多文件或子目录。
