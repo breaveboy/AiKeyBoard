@@ -1,5 +1,5 @@
 ./objects/lib_ws2812.o: ..\Lib\src\lib_ws2812.c ..\Lib\inc\lib_ws2812.h \
-  ..\Bsp\inc\bsp_spi_dma.h ..\Frimware\Inc\py32f4xx_hal.h \
+  ..\Bsp\inc\bsp_board.h ..\Frimware\Inc\py32f4xx_hal.h \
   ..\User\Inc\py32f403_hal_conf.h ..\Frimware\Inc\py32f403_hal_cortex.h \
   ..\Frimware\Inc\py32f403_hal_def.h \
   ..\..\..\Keil_v5\Packs\Puya\PY32F4xx_DFP\1.0.6\Drivers\CMSIS\Device\PUYA\PY32F4xx\Include\py32f4xx.h \
@@ -27,5 +27,6 @@
   ..\Frimware\Inc\py32f403_hal_spi_ex.h \
   ..\Frimware\Inc\py32f403_hal_tim.h \
   ..\Frimware\Inc\py32f403_hal_tim_ex.h \
-  ..\Frimware\Inc\py32f403_hal_uart.h ..\Bsp\inc\bsp_board.h \
+  ..\Frimware\Inc\py32f403_hal_uart.h ..\Bsp\inc\bsp_spi_dma.h \
+  D:\Keil_v5\ARM\ARMCLANG\include\stdbool.h ..\Bsp\inc\bsp_gpio.h \
   D:\Keil_v5\ARM\ARMCLANG\include\string.h

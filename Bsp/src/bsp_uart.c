@@ -1,16 +1,13 @@
 #include "bsp_uart.h"
 
-#ifdef HAL_UART_MODULE_ENABLED
 UART_HandleTypeDef DebugUartHandle;
-#endif
-
 void bsp_usart_init(uint32_t baudrate)
 {
     GPIO_InitTypeDef GPIO_InitStruct = {0};
-
+    // ±÷”
     RCC_USART1_CLK_ENABLE();
     RCC_ADC_PORTA_CLK_ENABLE();
-
+    
     GPIO_InitStruct.Pin       = DEBUG_USART_TX_PIN;
     GPIO_InitStruct.Mode      = GPIO_MODE_AF_PP;
     GPIO_InitStruct.Pull      = GPIO_PULLUP;
@@ -46,6 +43,13 @@ void bsp_uart_send_byte(uint8_t ch)
     HAL_UART_Transmit(&DebugUartHandle, &ch, 1, 10);
 #endif
 }
+int fputc(int ch, FILE *f)
+{
+  /* Send a byte to USART */
+  HAL_UART_Transmit(&DebugUartHandle, (uint8_t *)&ch, 1, 1000);
+  return (ch);
+}
+
 
 void bsp_uart_send_string(char *str)
 {
@@ -54,10 +58,3 @@ void bsp_uart_send_string(char *str)
     }
 }
 
-int fputc(int ch, FILE *f)
-{
-#ifdef HAL_UART_MODULE_ENABLED
-    HAL_UART_Transmit(&DebugUartHandle, (uint8_t *)&ch, 1, 1000);
-#endif
-    return (ch);
-}

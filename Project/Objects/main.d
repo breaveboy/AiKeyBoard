@@ -27,8 +27,7 @@
   ..\Frimware\Inc\py32f403_hal_spi_ex.h \
   ..\Frimware\Inc\py32f403_hal_tim.h \
   ..\Frimware\Inc\py32f403_hal_tim_ex.h \
-  ..\Frimware\Inc\py32f403_hal_uart.h ..\User\Inc\task.h \
-  ..\App\inc\App.h ..\Bsp\inc\bsp_config.h ..\Bsp\inc\bsp_board.h \
-  ..\Bsp\inc\bsp_gpio.h ..\Bsp\inc\bsp_adc_dma.h \
+  ..\Frimware\Inc\py32f403_hal_uart.h ..\Bsp\inc\bsp_config.h \
+  ..\Bsp\inc\bsp_board.h ..\Bsp\inc\bsp_gpio.h ..\Bsp\inc\bsp_adc_dma.h \
   ..\Bsp\inc\bsp_spi_dma.h ..\Bsp\inc\bsp_tim.h ..\Bsp\inc\bsp_uart.h \
-  ..\User\Inc\usb_config.h D:\Keil_v5\ARM\ARMCLANG\include\stdbool.h
+  ..\Lib\inc\lib_ws2812.h D:\Keil_v5\ARM\ARMCLANG\include\stdbool.h

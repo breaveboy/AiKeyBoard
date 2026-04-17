@@ -120,7 +120,7 @@
         <SetRegEntry>
           <Number>0</Number>
           <Key>DLGUARM</Key>
-          <Name>s</Name>
+          <Name>z</Name>
         </SetRegEntry>
         <SetRegEntry>
           <Number>0</Number>
@@ -153,9 +153,17 @@
         <Ww>
           <count>0</count>
           <WinNumber>1</WinNumber>
-          <ItemText>count</ItemText>
+          <ItemText>a_cnt</ItemText>
         </Ww>
       </WatchWindow1>
+      <MemoryWindow1>
+        <Mm>
+          <WinNumber>1</WinNumber>
+          <SubType>1</SubType>
+          <ItemText>0x08002EEC</ItemText>
+          <AccSizeX>4</AccSizeX>
+        </Mm>
+      </MemoryWindow1>
       <Tracepoint>
         <THDelay>0</THDelay>
       </Tracepoint>
@@ -207,10 +215,6 @@
           <Name>System Viewer\TIM1</Name>
           <WinId>35905</WinId>
         </Entry>
-        <Entry>
-          <Name>System Viewer\USART1</Name>
-          <WinId>35903</WinId>
-        </Entry>
       </SystemViewers>
       <DebugDescription>
         <Enable>1</Enable>
@@ -224,7 +228,7 @@
 
   <Group>
     <GroupName>Com</GroupName>
-    <tvExp>0</tvExp>
+    <tvExp>1</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>
@@ -460,7 +464,7 @@
 
   <Group>
     <GroupName>Lib</GroupName>
-    <tvExp>1</tvExp>
+    <tvExp>0</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>
@@ -528,7 +532,7 @@
 
   <Group>
     <GroupName>CherryUSB</GroupName>
-    <tvExp>0</tvExp>
+    <tvExp>1</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>

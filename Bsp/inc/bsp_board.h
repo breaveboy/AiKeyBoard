@@ -84,11 +84,10 @@
 #define LED_DAT_AF               GPIO_AF3_SPI2  // 复用功能
 
 #define LED_SPI_INSTANCE         SPI2                     // SPI 外设
-#define LED_SPI_BAUDRATE         SPI_BAUDRATEPRESCALER_16  // SPI 波特率分频
 #define LED_DMA_CHANNEL          DMA1_Channel2            // DMA 通道
 
 // ==========================================================
-//  调试串口配置
+//  调试串口配置  TXPA9 AF2
 // ==========================================================
 #define DEBUG_USART_INSTANCE     USART1          // 调试串口外设
 #define DEBUG_USART_BAUDRATE     115200          // 默认波特率

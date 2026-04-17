@@ -1,8 +1,7 @@
 #include "task.h"
-
 uint32_t g_cnt = 0;
 
-typedef void (*Task_Func)();
+typedef void (*Task_Func)(void);
 
 typedef struct {
 	uint32_t count;
@@ -10,14 +9,15 @@ typedef struct {
 	Task_Func func;
 } Task_t;
 
-Task_t tasks[] = {
-	{0, 20, App_usb_test_task},
-	 
+static Task_t tasks[] = {
+	{0, 1, App_adkey_scan_task},
+	{0, 1, App_logic_handler_task},
+	{0, 1, App_usb_process_task},
 };
+//定时器
+static uint16_t task_cnt = sizeof(tasks) / sizeof(Task_t);
 
-uint16_t task_cnt = sizeof(tasks) / sizeof(Task_t);
-
-void Task_exec() {
+void Task_exec(void) {
 	for(uint16_t i = 0; i < task_cnt; i++) {
 		if(g_cnt - tasks[i].count >= tasks[i].period) {
 			tasks[i].count = g_cnt;
@@ -26,6 +26,6 @@ void Task_exec() {
 	}
 }
 
-void Task_update() {
+void Task_update(void) {
 	g_cnt++;
 }
