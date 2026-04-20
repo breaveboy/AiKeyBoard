@@ -8,4 +8,6 @@ void App_logic_handler_task(void);
 //void App_usb_process_task(void);
 
 void App_usb_test_task(void);
+void App_ws2812_breath_task(void);
+void App_ws2812_rainbow_task(void);
 #endif

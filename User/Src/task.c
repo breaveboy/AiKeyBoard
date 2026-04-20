@@ -12,9 +12,10 @@ typedef struct {
 static Task_t tasks[] = {
 	//{0, 1, App_adkey_scan_task},
 	//{0, 1, App_logic_handler_task},
-	{0, 1,App_usb_test_task },
+	//{0, 1,App_usb_test_task },
+	{0, 1, App_ws2812_breath_task },
 };
-//定时器
+//?????
 static uint16_t task_cnt = sizeof(tasks) / sizeof(Task_t);
 
 void Task_exec(void) {

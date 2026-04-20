@@ -34,4 +34,7 @@ void lib_ws2812_set_all(uint8_t r, uint8_t g, uint8_t b);
 void lib_ws2812_update(void);
 void lib_ws2812_clear(void);
 
+void lib_ws2812_breath_mode(uint32_t tick);
+void lib_ws2812_rainbow_mode(uint32_t tick);
+
 #endif /* __LIB_WS2812_H__ */

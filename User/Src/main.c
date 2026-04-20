@@ -75,14 +75,15 @@ int main(void)
 {  
     HAL_Init();
     APP_SystemClockConfig();
+	
+	  //////timer初始化
+	  bsp_tim_init();
     bsp_usart_init(115200);
 	  ////////ws2812初始化
     bsp_spi_dma_init();
     lib_ws2812_init();
     printf("init_success\r\n");
-    lib_ws2812_set_all(0,0,0);
-    //lib_ws2812_set_pixel(0, 255, 255, 0);
-    lib_ws2812_update();
+    
     
     APP_USBInit();
     // ///////////adc
@@ -91,7 +92,6 @@ int main(void)
     // printf("init_success\r\n");
 	  ///app初始化
 	 
-	
 	
 	
 	

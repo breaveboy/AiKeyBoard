@@ -117,6 +117,85 @@ void lib_ws2812_clear(void)
     lib_ws2812_set_all(0U, 0U, 0U);
     lib_ws2812_update();
 }
+//hsb转为rgb
+static uint8_t hsv_to_rgb_helper(uint8_t phase, uint8_t t) {
+    if (t < 43) {
+        return (uint8_t)((t * 6) / 255.0f * 255);
+    } else if (t < 128) {
+        return 255;
+    } else if (t < 171) {
+        return (uint8_t)(((171 - t) * 6) / 255.0f * 255);
+    } else {
+        return 0;
+    }
+}
+
+static void hsv_to_rgb(uint16_t hue, uint8_t *r, uint8_t *g, uint8_t *b) {
+    uint8_t phase = hue / 43;
+    uint8_t t = hue % 43;
+    t = t * 6;
+
+    switch (phase) {
+        case 0: *r = 255; *g = t; *b = 0; break;
+        case 1: *r = 255 - t; *g = 255; *b = 0; break;
+        case 2: *r = 0; *g = 255; *b = t; break;
+        case 3: *r = 0; *g = 255 - t; *b = 255; break;
+        case 4: *r = t; *g = 0; *b = 255; break;
+        default: *r = 255; *g = 0; *b = 255 - t; break;
+    }
+}
+// 呼吸模式优化版 - 更快、更符合人体感官
+void lib_ws2812_breath_mode(uint32_t tick) {
+    static const uint8_t colors[5][3] = {
+        {2, 10, 50},    // 紫蓝色
+        {255, 10, 10},  // 红色
+        {10, 50, 255},  // 绿色
+        {10, 10, 50},   // 蓝色
+        {50, 40, 10}    // 橙色
+    };
+
+    // 1. 缩短周期：原来总长10000，现在改为5000（每种颜色1000，呼吸更轻快）
+    // 如果觉得还是慢，可以把 5000 改为 3000
+    uint32_t total_cycle = 5000; 
+    uint32_t color_period = total_cycle / 5; // 每种颜色占 1000
+
+    uint32_t color_cycle = tick % total_cycle;
+    uint8_t color_index = color_cycle / color_period;
+    uint32_t phase = color_cycle % color_period;
+
+    uint32_t raw_brightness;
+
+    // 2. 构造 0 -> 255 -> 0 的原始亮度
+    uint32_t half_period = color_period / 2;
+    if (phase < half_period) {
+        raw_brightness = (phase * 255) / half_period;
+    } else {
+        raw_brightness = ((color_period - phase) * 255) / half_period;
+    }
+
+    // 这会让灯光在低亮度时过渡极其细腻，高亮度时自然饱满，消除闪烁感
+    uint8_t sensory_brightness = (uint8_t)((raw_brightness * raw_brightness) >> 8);
+
+    // 4. 计算最终输出颜色
+    uint8_t r = (colors[color_index][0] * sensory_brightness) / 255;
+    uint8_t g = (colors[color_index][1] * sensory_brightness) / 255;
+    uint8_t b = (colors[color_index][2] * sensory_brightness) / 255;
+
+    lib_ws2812_set_all(r, g, b);
+    lib_ws2812_update();
+}
+//彩虹模式
+void lib_ws2812_rainbow_mode(uint32_t tick) {
+    uint16_t base_hue = (tick / 10) % 256;
+
+    for (uint16_t i = 0; i < WS2812_LED_NUM; i++) {
+        uint16_t hue = (base_hue + (i * 4)) % 256;
+        uint8_t r, g, b;
+        hsv_to_rgb(hue, &r, &g, &b);
+        lib_ws2812_set_pixel(i, r, g, b);
+    }
+    lib_ws2812_update();
+}
  
 
 

@@ -2,6 +2,7 @@
 #include "lib_config.h"
 #include "bsp_uart.h"
 #include "usb_config.h"
+#include "lib_ws2812.h"
 #include <stdio.h>
 #include <string.h>
 #include "usbd_core.h"
@@ -132,4 +133,18 @@ void App_usb_test_task(void)
 	hid_state=1;
 	while(hid_state==1);
 	
+}
+
+static uint32_t ws2812_tick = 0;
+
+void App_ws2812_breath_task(void)
+{
+    ws2812_tick++;
+    lib_ws2812_breath_mode(ws2812_tick);
+}
+
+void App_ws2812_rainbow_task(void)
+{
+    ws2812_tick++;
+    lib_ws2812_rainbow_mode(ws2812_tick);
 }
