@@ -4,7 +4,8 @@
 #include "usb_config.h"
 #include <stdio.h>
 #include <string.h>
-
+#include "usbd_core.h"
+#include "usbd_hid.h"
 #define HID_KEY_A_CODE 0x04
 
 static uint8_t last_modifiers = 0;
@@ -111,7 +112,7 @@ void App_logic_handler_task(void)
         lib_ws2812_update();
     }
 }
-
+#if 0
 void App_usb_process_task(void)
 {
     if (report_dirty && hid_keyboard_is_ready()) {
@@ -119,24 +120,16 @@ void App_usb_process_task(void)
         report_dirty = false;
     }
 }
-
+#endif
+extern volatile uint8_t hid_state;
 void App_usb_test_task(void)
 {
-    static const uint8_t key_a[6] = {HID_KEY_A_CODE, 0, 0, 0, 0, 0};
-    static uint8_t phase = 0;
-
-    if (!hid_keyboard_is_ready()) {
-        return;
-    }
-
-    if ((phase & 0x01U) == 0U) {
-        hid_keyboard_send_report(0, (uint8_t *)key_a);
-    } else {
-        hid_keyboard_send_report(0, NULL);
-    }
-
-    phase++;
-    if (phase >= 10U) {
-        phase = 0;
-    }
+  uint8_t sendbuffer[8]={ 0x00, 0x00, 0x1e, 0x00, 0x00, 0x00, 0x00, 0x00 }; //A
+	int ret=usbd_ep_start_write(0x81,sendbuffer,8);
+	if(ret<0){
+	  return;
+	}
+	hid_state=1;
+	while(hid_state==1);
+	
 }

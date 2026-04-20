@@ -14,24 +14,7 @@
 #define HID_KEYBOARD_REPORT_DESC_SIZE 64
 
 static const uint8_t hid_descriptor[] = {
-      /************** Descriptor of Keyboard device ****************/
-    //USB_DEVICE_DESCRIPTOR_INIT(USB_2_0, 0x00, 0x00, 0x00, USBD_VID, USBD_PID, 0x0002, 0x01),
-    0x12,                       /* bLength */
-    USB_DESCRIPTOR_TYPE_DEVICE, /* bDescriptorType */
-    0x00, 0x02,                 /* bcdUSB = 0x0200 */
-    0x00,                       /* bDeviceClass */
-    0x00,                       /* bDeviceSubClass */
-    0x00,                       /* bDeviceProtocol */
-    0x40,                       /* bMaxPacketSize0 */
-    0xB7, 0x36,                 /* idVendor = 0x36B7 */
-    0xFF, 0xFF,                 /* idProduct = 0xFFFF */
-    0x02, 0x00,                 /* bcdDevice = 0x0002 */
-    0x01,                       /* iManufacturer */
-    0x00,                       /* iProduct */
-    0x00,                       /* iSerialNumber */
-    0x01,                       /* bNumConfigurations */
-
-
+    USB_DEVICE_DESCRIPTOR_INIT(USB_2_0, 0x00, 0x00, 0x00, USBD_VID, USBD_PID, 0x0002, 0x01),
     USB_CONFIG_DESCRIPTOR_INIT(USB_HID_CONFIG_DESC_SIZ, 0x01, 0x01, USB_CONFIG_BUS_POWERED, USBD_MAX_POWER),
 
     /************** Descriptor of Keyboard interface ****************/
@@ -73,44 +56,45 @@ static const uint8_t hid_descriptor[] = {
     ///////////////////////////////////////
     /// string1 descriptor
     ///////////////////////////////////////
-    0x08,                       /* bLength */
+    0x0A,                       /* bLength */
     USB_DESCRIPTOR_TYPE_STRING, /* bDescriptorType */
-    'W', 0x00,                  /* wcChar0 */
-    'S', 0x00,                  /* wcChar1 */
-    'K', 0x00,                  /* wcChar2 */
+    'P', 0x00,                  /* wcChar0 */
+    'U', 0x00,                  /* wcChar1 */
+    'Y', 0x00,                  /* wcChar2 */
+    'A', 0x00,                  /* wcChar3 */
     ///////////////////////////////////////
-    // /// string2 descriptor
-    // ///////////////////////////////////////
-    // 0x1C,                       /* bLength */
-    // USB_DESCRIPTOR_TYPE_STRING, /* bDescriptorType */
-    // 'P', 0x00,                  /* wcChar0 */
-    // 'U', 0x00,                  /* wcChar1 */
-    // 'Y', 0x00,                  /* wcChar2 */
-    // 'A', 0x00,                  /* wcChar3 */
-    // ' ', 0x00,                  /* wcChar4 */
-    // 'H', 0x00,                  /* wcChar5 */
-    // 'I', 0x00,                  /* wcChar6 */
-    // 'D', 0x00,                  /* wcChar7 */
-    // ' ', 0x00,                  /* wcChar8 */
-    // 'D', 0x00,                  /* wcChar9 */
-    // 'E', 0x00,                  /* wcChar10 */
-    // 'M', 0x00,                  /* wcChar11 */
-    // 'O', 0x00,                  /* wcChar12 */
-    // ///////////////////////////////////////
-    // /// string3 descriptor
-    // ///////////////////////////////////////
-    // 0x16,                       /* bLength */
-    // USB_DESCRIPTOR_TYPE_STRING, /* bDescriptorType */
-    // '2', 0x00,                  /* wcChar0 */
-    // '0', 0x00,                  /* wcChar1 */
-    // '2', 0x00,                  /* wcChar2 */
-    // '2', 0x00,                  /* wcChar3 */
-    // '1', 0x00,                  /* wcChar4 */
-    // '2', 0x00,                  /* wcChar5 */
-    // '3', 0x00,                  /* wcChar6 */
-    // '4', 0x00,                  /* wcChar7 */
-    // '5', 0x00,                  /* wcChar8 */
-    // '6', 0x00,                  /* wcChar9 */
+    /// string2 descriptor
+    ///////////////////////////////////////
+    0x1C,                       /* bLength */
+    USB_DESCRIPTOR_TYPE_STRING, /* bDescriptorType */
+    'P', 0x00,                  /* wcChar0 */
+    'U', 0x00,                  /* wcChar1 */
+    'Y', 0x00,                  /* wcChar2 */
+    'A', 0x00,                  /* wcChar3 */
+    ' ', 0x00,                  /* wcChar4 */
+    'H', 0x00,                  /* wcChar5 */
+    'I', 0x00,                  /* wcChar6 */
+    'D', 0x00,                  /* wcChar7 */
+    ' ', 0x00,                  /* wcChar8 */
+    'D', 0x00,                  /* wcChar9 */
+    'E', 0x00,                  /* wcChar10 */
+    'M', 0x00,                  /* wcChar11 */
+    'O', 0x00,                  /* wcChar12 */
+    ///////////////////////////////////////
+    /// string3 descriptor
+    ///////////////////////////////////////
+    0x16,                       /* bLength */
+    USB_DESCRIPTOR_TYPE_STRING, /* bDescriptorType */
+    '2', 0x00,                  /* wcChar0 */
+    '0', 0x00,                  /* wcChar1 */
+    '2', 0x00,                  /* wcChar2 */
+    '2', 0x00,                  /* wcChar3 */
+    '1', 0x00,                  /* wcChar4 */
+    '2', 0x00,                  /* wcChar5 */
+    '3', 0x00,                  /* wcChar6 */
+    '4', 0x00,                  /* wcChar7 */
+    '5', 0x00,                  /* wcChar8 */
+    '6', 0x00,                  /* wcChar9 */
 #ifdef CONFIG_USB_HS
     ///////////////////////////////////////
     /// device qualifier descriptor
@@ -186,7 +170,7 @@ void usbd_configure_done_callback(void)
 #define HID_STATE_BUSY 1
 
 /*!< hid state ! Data can be sent only when state is idle  */
-static volatile uint8_t hid_state = HID_STATE_IDLE;
+volatile uint8_t hid_state = HID_STATE_IDLE;
 
 void usbd_hid_int_callback(uint8_t ep, uint32_t nbytes)
 {
@@ -209,33 +193,17 @@ void hid_keyboard_init(void)
     usbd_initialize();
 }
 
-bool hid_keyboard_is_ready(void)
+void hid_keyboard_test(void)
 {
-    return (hid_state == HID_STATE_IDLE);
-}
-
-void hid_keyboard_send_report(uint8_t modifiers, uint8_t *keys)
-{
-    static uint8_t sendbuffer[8];
-
-    sendbuffer[0] = modifiers;
-    sendbuffer[1] = 0x00;
-
-    if (keys) {
-        for (uint8_t i = 0; i < 6; i++) {
-            sendbuffer[2 + i] = keys[i];
-        }
-    } else {
-        for (uint8_t i = 0; i < 6; i++) {
-            sendbuffer[2 + i] = 0x00;
-        }
-    }
+    uint8_t sendbuffer[8] = { 0x00, 0x00, HID_KBD_USAGE_A, 0x00, 0x00, 0x00, 0x00, 0x00 }; //A
 
     int ret = usbd_ep_start_write(HID_INT_EP, sendbuffer, 8);
     if (ret < 0) {
         return;
     }
     hid_state = HID_STATE_BUSY;
+    while (hid_state == HID_STATE_BUSY) {
+    }
 }
 
 uint8_t idle_speed;

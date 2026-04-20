@@ -28,6 +28,7 @@ void TASK_TIM_IRQHandler(void)
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
     if (htim->Instance == TASK_TIM_INSTANCE) {
+			 
         Task_update();
     }
 }

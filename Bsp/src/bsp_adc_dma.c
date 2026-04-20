@@ -1,16 +1,16 @@
 #include "bsp_adc_dma.h"
 #include "bsp_gpio.h"
 
-// ADC å¥æŸ„
+// ADC ¾ä±ú
 static ADC_HandleTypeDef    AdcHandle;
-// DMA å¥æŸ„
+// DMA ¾ä±ú
 static DMA_HandleTypeDef    HdmaCh1;
-// ADC åŸå§‹æ•°æ®çŸ©é˜µ [è¡Œ][åˆ—]
+// ADC Ô­Ê¼Êı¾İ¾ØÕó [ĞĞ][ÁĞ]
 uint32_t g_adc_raw_matrix[MATRIX_ROWS_COUNT][ADC_CHANNELS_COUNT];
-// å½“å‰æ‰«æçš„è¡Œç´¢å¼•
+// µ±Ç°É¨ÃèµÄĞĞË÷Òı
 static volatile uint8_t current_row = 0;
 
-// ADC é€šé“æ˜ å°„è¡¨
+// ADC Í¨µÀÓ³Éä±í
 static const uint32_t adc_channels[ADC_CHANNELS_COUNT] = {
     ADC_COL0_CH, ADC_COL1_CH, ADC_COL2_CH, ADC_COL3_CH,
     ADC_COL4_CH, ADC_COL5_CH, ADC_COL6_CH, ADC_COL7_CH,
@@ -19,18 +19,18 @@ static const uint32_t adc_channels[ADC_CHANNELS_COUNT] = {
 };
 
 /**
- * @brief  åˆå§‹åŒ– ADC åˆ—å¼•è„šä¸ºæ¨¡æ‹Ÿè¾“å…¥æ¨¡å¼
+ * @brief  ³õÊ¼»¯ ADC ÁĞÒı½ÅÎªÄ£ÄâÊäÈëÄ£Ê½
  */
 static void adc_gpio_init(void)
 {
     GPIO_InitTypeDef GPIO_Init = {0};
 
-    // ä½¿èƒ½ ADC å¼•è„šæ‰€åœ¨ç«¯å£çš„æ—¶é’Ÿ
+    // Ê¹ÄÜ ADC Òı½ÅËùÔÚ¶Ë¿ÚµÄÊ±ÖÓ
     RCC_ADC_PORTA_CLK_ENABLE();
     RCC_ADC_PORTB_CLK_ENABLE();
     RCC_ADC_PORTC_CLK_ENABLE();
 
-    // é…ç½®ä¸ºæ¨¡æ‹Ÿè¾“å…¥æ¨¡å¼
+    // ÅäÖÃÎªÄ£ÄâÊäÈëÄ£Ê½
     GPIO_Init.Mode = GPIO_MODE_ANALOG;
     GPIO_Init.Pull = GPIO_NOPULL;
 
@@ -49,118 +49,118 @@ static void adc_gpio_init(void)
 }
 
 /**
- * @brief  åˆå§‹åŒ– ADC å’Œ DMA å¤–è®¾
+ * @brief  ³õÊ¼»¯ ADC ºÍ DMA ÍâÉè
  */
 static void adc_dma_init(void)
 {
-    // ä½¿èƒ½ ADC å’Œ DMA æ—¶é’Ÿ
+    // ÅäÖÃ ADC ÍâÉèÊ±ÖÓ
     RCC_ADC_CLK_ENABLE();
     RCC_DMA_CLK_ENABLE();
 
-    // é…ç½® ADC å¤–è®¾æ—¶é’Ÿ
+     // ÅäÖÃ ADC ÍâÉèÊ±ÖÓ
     RCC_PeriphCLKInitTypeDef RCC_PeriphCLKInit = {0};
     RCC_PeriphCLKInit.PeriphClockSelection = RCC_PERIPHCLK_ADC;
     RCC_PeriphCLKInit.AdcClockSelection = ADC_CLOCK_DIV;
     HAL_RCCEx_PeriphCLKConfig(&RCC_PeriphCLKInit);
 
-    // é…ç½® DMA1_Channel1
+    // ÅäÖÃ DMA1_Channel1
     HdmaCh1.Instance = DMA1_Channel1;
-    HdmaCh1.Init.Direction           = DMA_PERIPH_TO_MEMORY;  // å¤–è®¾åˆ°å†…å­˜
-    HdmaCh1.Init.PeriphInc           = DMA_PINC_DISABLE;       // å¤–è®¾åœ°å€ä¸å¢é‡
-    HdmaCh1.Init.MemInc              = DMA_MINC_ENABLE;        // å†…å­˜åœ°å€å¢é‡
-    HdmaCh1.Init.PeriphDataAlignment = DMA_PDATAALIGN_WORD;    // 32ä½å¯¹é½
+    HdmaCh1.Init.Direction           = DMA_PERIPH_TO_MEMORY;  // ÄÚ´æµ½ÍâÉè
+    HdmaCh1.Init.PeriphInc           = DMA_PINC_DISABLE;       // ÍâÉèµØÖ·²»Ôö
+    HdmaCh1.Init.MemInc              = DMA_MINC_ENABLE;        // ÄÚ´æµØÖ·Ôö¼Ó
+    HdmaCh1.Init.PeriphDataAlignment = DMA_PDATAALIGN_WORD;    // 32Îª¶ÔÆë
     HdmaCh1.Init.MemDataAlignment    = DMA_MDATAALIGN_WORD;
-    HdmaCh1.Init.Mode                = DMA_CIRCULAR;           // å¾ªç¯æ¨¡å¼
+    HdmaCh1.Init.Mode                = DMA_CIRCULAR;           // Ñ­»·Ä£Ê½
     HdmaCh1.Init.Priority            = DMA_PRIORITY_HIGH;
     HAL_DMA_Init(&HdmaCh1);
-    // å…³è” ADC å’Œ DMA
+    // ¹ØÁª ADC ºÍ DMA
     __HAL_LINKDMA(&AdcHandle, DMA_Handle, HdmaCh1);
 
-    // é…ç½® ADC1
+     // ÅäÖÃ ADC1
     AdcHandle.Instance = ADC1;
-    AdcHandle.Init.Resolution            = ADC_RESOLUTION;       // åˆ†è¾¨ç‡
-    AdcHandle.Init.DataAlign             = ADC_DATAALIGN_RIGHT;  // å³å¯¹é½
-    AdcHandle.Init.ScanConvMode          = ADC_SCAN_ENABLE;      // å¼€å¯æ‰«ææ¨¡å¼
-    AdcHandle.Init.ContinuousConvMode    = ENABLE;               // è¿ç»­è½¬æ¢
-    AdcHandle.Init.NbrOfConversion       = ADC_CHANNELS_COUNT;   // 14ä¸ªé€šé“
+    AdcHandle.Init.Resolution            = ADC_RESOLUTION;       // ·Ö±æÂÊ
+    AdcHandle.Init.DataAlign             = ADC_DATAALIGN_RIGHT;  // ÓÒ¶ÔÆë
+    AdcHandle.Init.ScanConvMode          = ADC_SCAN_ENABLE;      // ¿ªÆôÉ¨ÃèÄ£Ê½
+    AdcHandle.Init.ContinuousConvMode    = ENABLE;               // Á¬Ğø×ª»»
+    AdcHandle.Init.NbrOfConversion       = ADC_CHANNELS_COUNT;   // 14¸öÍ¨µÀ
     AdcHandle.Init.DiscontinuousConvMode = DISABLE;
-    AdcHandle.Init.ExternalTrigConv      = ADC_SOFTWARE_START;   // è½¯ä»¶è§¦å‘
+    AdcHandle.Init.ExternalTrigConv      = ADC_SOFTWARE_START;   // Èí¼ş´¥·¢
     HAL_ADC_Init(&AdcHandle);
 
-    // é…ç½® 14 ä¸ª ADC é€šé“
+    // ÅäÖÃ 14 ¸ö ADC Í¨µÀ
     ADC_ChannelConfTypeDef sConfig = {0};
-    sConfig.SamplingTime = ADC_SAMPLETIME;  // é‡‡æ ·æ—¶é—´
+    sConfig.SamplingTime = ADC_SAMPLETIME;  // ²ÉÑùÊ±¼ä
     for (int i = 0; i < ADC_CHANNELS_COUNT; i++) {
         sConfig.Channel = adc_channels[i];
-        sConfig.Rank    = ADC_REGULAR_RANK_1 + i;  // ç¬¬ 1 åˆ° ç¬¬ 14 é¡ºä½
+        sConfig.Rank    = ADC_REGULAR_RANK_1 + i;  // µÚ 1 µ½ µÚ 14 Ë³ĞòÎ»
         HAL_ADC_ConfigChannel(&AdcHandle, &sConfig);
     }
 
-    // ADC æ ¡å‡†
+    // ADC Ğ£×¼
     HAL_ADCEx_Calibration_Start(&AdcHandle);
-
-    // é…ç½® DMA ä¸­æ–­
+    //HAL_DMA_ChannelMap(&AdcHandle,DMA_CHANNEL_MAP_ADC1);
+   // ÅäÖÃ DMA ÖĞ¶Ï
     HAL_NVIC_SetPriority(DMA1_Channel1_IRQn, 1, 0);
     HAL_NVIC_EnableIRQ(DMA1_Channel1_IRQn);
 }
 
 /**
- * @brief  ç»Ÿä¸€åˆå§‹åŒ– ADC DMA çŸ©é˜µæ‰«ææ¨¡å—
+ * @brief  Í³Ò»³õÊ¼»¯ ADC DMA ¾ØÕóÉ¨ÃèÄ£¿é
  */
 void bsp_adc_dma_init(void)
 {
-    // åˆå§‹åŒ–æŒ‰é”®çŸ©é˜µè¡Œæ§åˆ¶å¼•è„š
+    // ³õÊ¼»¯°´¼ü¾ØÕóĞĞ¿ØÖÆÒı½Å
     bsp_key_matrix_row_init();
-    // åˆå§‹åŒ– ADC åˆ—å¼•è„š
+    // ³õÊ¼»¯ ADC ÁĞÒı½Å
     adc_gpio_init();
-    // åˆå§‹åŒ– ADC å’Œ DMA å¤–è®¾
+   // ³õÊ¼»¯ ADC ºÍ DMA ÍâÉè
     adc_dma_init();
 }
 
 /**
- * @brief  åˆ‡æ¢åˆ°æŒ‡å®šè¡Œå¹¶ç­‰å¾…ç¨³å®š
- * @param  row_idx: è¡Œç´¢å¼• (0-4)
+ * @brief  ÇĞ»»µ½Ö¸¶¨ĞĞ²¢µÈ´ıÎÈ¶¨
+ * @param  row_idx: ĞĞË÷Òı (0-4)
  */
 static void switch_row(uint8_t row_idx)
 {
-    // é€‰æ‹©æ‰«æè¡Œ
+    //Ñ¡ÔñÉ¨ÃèĞĞ
     bsp_key_matrix_row_select(row_idx);
-    // å»¶æ—¶ç­‰å¾…ä¿¡å·ç¨³å®š
+   // ÑÓÊ±µÈ´ıĞÅºÅÎÈ¶¨
     for(volatile uint32_t i = 0; i < 300; i++);
 }
 
 /**
- * @brief  å¯åŠ¨ ADC DMA è‡ªåŠ¨æ‰«æ
+ * @brief  Æô¶¯ ADC DMA ×Ô¶¯É¨Ãè
  */
 void bsp_adc_dma_start(void)
 {
-    // ä»ç¬¬ 0 è¡Œå¼€å§‹
+    // ´ÓµÚ 0 ĞĞ¿ªÊ¼
     current_row = 0;
-    // åˆ‡æ¢åˆ°ç¬¬ 0 è¡Œ
+   // ÇĞ»»µ½µÚ 0 ĞĞ
     switch_row(current_row);
-    // å¯åŠ¨ ADC DMAï¼Œæ•°æ®å­˜å…¥ç¬¬ 0 è¡Œ
+    // Æô¶¯ ADC DMA£¬Êı¾İ´æÈëµÚ 0 ĞĞ
     HAL_ADC_Start_DMA(&AdcHandle, (uint32_t*)g_adc_raw_matrix[0], ADC_CHANNELS_COUNT);
 }
 
 /**
- * @brief  ADC DMA ä¼ è¾“å®Œæˆå›è°ƒå‡½æ•°
- * @note   ä¸€è¡Œé‡‡é›†å®Œæˆåè‡ªåŠ¨åˆ‡æ¢åˆ°ä¸‹ä¸€è¡Œ
+ * @brief  ADC DMA ´«ÊäÍê³É»Øµ÷º¯Êı
+ * @note   Ò»ĞĞ²É¼¯Íê³Éºó×Ô¶¯ÇĞ»»µ½ÏÂÒ»ĞĞ
  */
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
 {
-    // ç´¢å¼•æŒ‡å‘ä¸‹ä¸€è¡Œ
+   // Ë÷ÒıÖ¸ÏòÏÂÒ»ĞĞ
     current_row++;
     if (current_row >= MATRIX_ROWS_COUNT) {
-        current_row = 0;  // å¾ªç¯å›ç¬¬ 0 è¡Œ
+        current_row = 0;  // Ñ­»·»ØµÚ 0 ĞĞ
     }
-    // åˆ‡æ¢åˆ°ä¸‹ä¸€è¡Œ
+    // ÇĞ»»µ½ÏÂÒ»ĞĞ
     switch_row(current_row);
-    // ç»§ç»­é‡‡é›†ï¼Œæ•°æ®å­˜å…¥å¯¹åº”è¡Œ
+   // ¼ÌĞø²É¼¯£¬Êı¾İ´æÈë¶ÔÓ¦ĞĞ
     HAL_ADC_Start_DMA(hadc, (uint32_t*)g_adc_raw_matrix[current_row], ADC_CHANNELS_COUNT);
 }
 
 /**
- * @brief  DMA1_Channel1 ä¸­æ–­æœåŠ¡ç¨‹åº
+ *  @brief  DMA1_Channel1 ÖĞ¶Ï·şÎñ³ÌĞò
  */
 void DMA1_Channel1_IRQHandler(void)
 {

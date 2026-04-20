@@ -31,8 +31,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "py32f403_it.h"
-#include "task.h"
-
+#include "usb_py32_reg.h"
 /* Private includes ----------------------------------------------------------*/
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
@@ -141,9 +140,15 @@ void PendSV_Handler(void)
 void SysTick_Handler(void)
 {
   HAL_IncTick();
-  Task_update();
+  
 }
 
+
+//usb相关的中断
+void USB_IRQHandler(void)
+{
+  USBD_IRQHandler();
+}
 /******************************************************************************/
 /* PY32F403 Peripheral Interrupt Handlers                                     */
 /* Add here the Interrupt Handlers for the used peripherals.                  */

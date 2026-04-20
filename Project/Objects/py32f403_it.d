@@ -28,4 +28,5 @@
   ..\Frimware\Inc\py32f403_hal_tim.h \
   ..\Frimware\Inc\py32f403_hal_tim_ex.h \
   ..\Frimware\Inc\py32f403_hal_uart.h ..\User\Inc\py32f403_it.h \
-  ..\User\Inc\task.h ..\App\inc\App.h
+  ..\CherryUSB\port\usb_py32_reg.h \
+  D:\Keil_v5\ARM\ARMCLANG\include\string.h

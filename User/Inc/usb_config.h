@@ -81,7 +81,7 @@
 
 /* ================ USB Device Port Configuration ================*/
 #include "py32f4xx_hal.h"
-#include "stdbool.h"
+
 #define __HAL_USB_SOFT_RESET()     do { \
                                      __HAL_RCC_USB_CLK_DISABLE(); \
                                      HAL_Delay(10); \
@@ -93,8 +93,7 @@
 #define USBD_IRQHandler USBD_IRQHandler
 
 void hid_keyboard_init(void);
-void hid_keyboard_send_report(uint8_t modifiers, uint8_t *keys);
-bool hid_keyboard_is_ready(void);
+void hid_keyboard_test(void);
 
 
 #endif

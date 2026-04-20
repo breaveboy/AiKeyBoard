@@ -1,200 +1,170 @@
-
-
-
-
-
 #include "main.h"
 #include "bsp_config.h"
 #include "lib_ws2812.h"
-#include <stdio.h> // å¿…é¡»åŒ…å«æ­¤å¤´æ–‡ä»¶ä»¥ä½¿ç”¨ FILE å’Œ printf
+#include "usb_config.h"
+#include "task.h"
+#include "App.h"
 static void APP_SystemClockConfig(void);
+static void APP_USBInit(void);
+
+#if 0
+static ADC_HandleTypeDef hadc1;
+static void adc1_ch1_init(){
+  
+	ADC_ChannelConfTypeDef sConfig = {0};
+	GPIO_InitTypeDef GPIO_Init={0};
+   //PC6  row4 PC7 row3
+	 //PA0  chanel0
+	 //¿ªÆôdma½øÐÐ°áÔË
+  __HAL_RCC_GPIOA_CLK_ENABLE();
+	__HAL_RCC_GPIOC_CLK_ENABLE();
+	__HAL_RCC_ADC1_CLK_ENABLE();
+
+	//³õÊ¼»¯Òý½ÅPA0
+	GPIO_Init.Pin=GPIO_PIN_0;
+	GPIO_Init.Mode=GPIO_MODE_ANALOG;
+	GPIO_Init.Pull=GPIO_NOPULL;
+	HAL_GPIO_Init(GPIOA,&GPIO_Init);
+	/////PC6
+	GPIO_Init.Pin=GPIO_PIN_6;
+	GPIO_Init.Mode=GPIO_MODE_OUTPUT_PP;
+	GPIO_Init.Pull=GPIO_NOPULL;
+	HAL_GPIO_Init(GPIOC,&GPIO_Init);
+  /////////adc///////////
+	
+	hadc1.Instance = ADC1;
+	hadc1.Init.Resolution            = ADC_RESOLUTION_12B;
+	hadc1.Init.DataAlign             = ADC_DATAALIGN_RIGHT;
+	hadc1.Init.ScanConvMode          = ADC_SCAN_DISABLE;  //É¨ÃèÄ£Ê½
+	hadc1.Init.ContinuousConvMode    = DISABLE;  //Ñ­»·Ä£Ê½
+	hadc1.Init.NbrOfConversion       = 1;      //1¸öÍ¨µÀ
+	hadc1.Init.DiscontinuousConvMode = DISABLE;  //²»Á¬Ðø×ª»»Ä£Ê½
+	hadc1.Init.ExternalTrigConv      = ADC_SOFTWARE_START;
+	HAL_ADC_Init(&hadc1);
+
+	sConfig.Channel = ADC_CHANNEL_0;
+	sConfig.Rank = ADC_REGULAR_RANK_1;
+	sConfig.SamplingTime = ADC_SAMPLETIME_41CYCLES_5;
+	HAL_ADC_ConfigChannel(&hadc1, &sConfig);
+
+	HAL_ADCEx_Calibration_Start(&hadc1);
+
+	
+	
+	HAL_GPIO_WritePin(GPIOC,GPIO_PIN_6,GPIO_PIN_RESET);
+	
+}
+static void get_adc(){
+      HAL_ADC_Start(&hadc1);                         // Æô¶¯ ADC ×ª»»
+	  HAL_Delay(20);
+	  //ÅÐ¶ÏÊÇ·ñ×ª»»Íê³É
+	  if(HAL_ADC_PollForConversion(&hadc1,10)==HAL_OK){
+			uint32_t adc_value = HAL_ADC_GetValue(&hadc1);
+			float ad_uc=(adc_value*3.3)/4095;
+			printf("adc = %u\r\n", adc_value);
+			printf("ad_us=%f\r\n",ad_uc);
+		
+		}
+     HAL_ADC_Stop(&hadc1); 
+   
+}
+#endif
 
 
 int main(void)
-{
+{  
     HAL_Init();
     APP_SystemClockConfig();
     bsp_usart_init(115200);
-  
-	  
-    while (1)
-    {
-      printf("hello");
-			HAL_Delay(200);
-    }
-}
-
-
-
-
-
-
-
-
-
-static void APP_SystemClockConfig(void)
-{
-  RCC_OscInitTypeDef  OscInitstruct = {0};
-  RCC_ClkInitTypeDef  ClkInitstruct = {0};
-
-  OscInitstruct.OscillatorType  = RCC_OSCILLATORTYPE_HSE | RCC_OSCILLATORTYPE_HSI | RCC_OSCILLATORTYPE_LSE |
-                                  RCC_OSCILLATORTYPE_LSI | RCC_OSCILLATORTYPE_HSI48M;
-  OscInitstruct.HSEState        = RCC_HSE_ON;                              /* Enable HSE */
-  OscInitstruct.HSEFreq         = RCC_HSE_8_16MHz;                        /* HSE working frequency range: 16M~32M */
-  OscInitstruct.HSI48MState     = RCC_HSI48M_ON;                          /* Enable HSI48M */
-  OscInitstruct.HSIState        = RCC_HSI_ON;                              /* Enable HSI */
-  OscInitstruct.LSEState        = RCC_LSE_OFF;                             /* Disable LSE */
-  OscInitstruct.LSEDriver       = RCC_LSEDRIVE_HIGH;                       /* Drive capability level: High */
-  OscInitstruct.LSIState        = RCC_LSI_OFF;                             /* Disable LSI */
-  OscInitstruct.PLL.PLLState    = RCC_PLL_ON;                              /* Enable PLL */
-  OscInitstruct.PLL.PLLSource   = RCC_PLLSOURCE_HSE;                       /* PLL clock source: HSE */
-  OscInitstruct.PLL.PLLMUL      = RCC_CFGR_PLLMULL18;                            /* PLL multiplication factor is 5 */
-  /* Configure Oscillators */
-  if(HAL_RCC_OscConfig(&OscInitstruct) != HAL_OK)
-  {
-    APP_ErrorHandler();
-  }
-
-  ClkInitstruct.ClockType       = RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
-  ClkInitstruct.SYSCLKSource    = RCC_SYSCLKSOURCE_PLLCLK;              /* SYSCLK source select as PLL */
-  ClkInitstruct.AHBCLKDivider   = RCC_SYSCLK_DIV1;                      /* AHB clock not divided */
-  ClkInitstruct.APB1CLKDivider  = RCC_HCLK_DIV1;                        /* APB1 clock not divided */
-  ClkInitstruct.APB2CLKDivider  = RCC_HCLK_DIV1;                        /* APB2 clock not divided */
-  /* Configure Clocks */
-  if(HAL_RCC_ClockConfig(&ClkInitstruct, FLASH_LATENCY_6) != HAL_OK)
-  {
-    APP_ErrorHandler();
-  }
-}
-
-/**
-  * @brief  This function is executed in case of error occurrence.
-  * @param  None
-  * @retval None
-  */
-void APP_ErrorHandler(void)
-{
-  /* Infinite loop */
-  while (1)
-  {
-  }
-}
-
-
-
-
-
-#if 0
-#include "main.h"
-#include "task.h"
-//#include "App.h"
-#include "bsp_config.h"
-//#include "usb_config.h"
-static void APP_SystemClockConfig(void);
-volatile uint8_t count = 0;
-
-
-
-
-
-void ws218_init(){
-    
-
-
-}
-int main(void)
-{
-    HAL_Init();
-    APP_SystemClockConfig();
-    
-
-    //////////////è¾“å‡º/////////////////////
-    bsp_usart_init(DEBUG_USART_BAUDRATE);
-    bsp_adc_dma_init();
+	  ////////ws2812³õÊ¼»¯
     bsp_spi_dma_init();
-    bsp_tim_init();
-
-    App_init();
-
-    //hid_keyboard_init();
-    //bsp_adc_dma_start();
-
+    lib_ws2812_init();
+    printf("init_success\r\n");
+    lib_ws2812_set_all(0,0,0);
+    //lib_ws2812_set_pixel(0, 255, 255, 0);
+    lib_ws2812_update();
     
-
+    APP_USBInit();
+    // ///////////adc
+    // adc1_ch1_init();
+    // HAL_Delay(50);
+    // printf("init_success\r\n");
+	  ///app³õÊ¼»¯
+	 
+	
+	
+	
+	
+	
     while (1)
     {
-        //Task_exec();
+      
+		  // hid_keyboard_test();
+			Task_exec();
+       
     }
 }
+static void APP_USBInit(void)
+{
+  __HAL_RCC_SYSCFG_CLK_ENABLE();
+
+  SET_BIT(RCC->CFGR1,RCC_CFGR1_USBSELHSI48_Msk);
+  __HAL_RCC_USB_CLK_ENABLE();
+
+  hid_keyboard_init();
+
+  /* Enable USB interrupt */
+  NVIC_EnableIRQ(USBD_IRQn);
+}
+
 
 static void APP_SystemClockConfig(void)
 {
-  RCC_OscInitTypeDef  OscInitstruct = {0};
-  RCC_ClkInitTypeDef  ClkInitstruct = {0};
-  
-  OscInitstruct.OscillatorType  = RCC_OSCILLATORTYPE_HSE | RCC_OSCILLATORTYPE_HSI | RCC_OSCILLATORTYPE_LSE | 
-                                  RCC_OSCILLATORTYPE_LSI | RCC_OSCILLATORTYPE_HSI48M;
-  OscInitstruct.HSEState        = RCC_HSE_ON;                                /* ENABLE HSE */
-  OscInitstruct.HSEFreq         = RCC_HSE_4_8MHz;                   /* Choose HSE frequency of 16-32MHz */
-  
+    RCC_OscInitTypeDef  OscInitstruct = {0};
+    RCC_ClkInitTypeDef  ClkInitstruct = {0};
 
-	OscInitstruct.HSI48MState     = RCC_HSI48M_OFF;                           /* Close HSI48M */
-  OscInitstruct.HSIState        = RCC_HSI_ON;                               /* Enable HSI */
-  OscInitstruct.LSEState        = RCC_LSE_OFF;                              /* Close LSE */
-/* OscInitstruct.LSEDriver       = RCC_LSEDRIVE_HIGH; */                    /* Drive capability level: high */
-  OscInitstruct.LSIState        = RCC_LSI_OFF;  
+    OscInitstruct.OscillatorType  = RCC_OSCILLATORTYPE_HSE | RCC_OSCILLATORTYPE_HSI | RCC_OSCILLATORTYPE_LSE |
+                                    RCC_OSCILLATORTYPE_LSI | RCC_OSCILLATORTYPE_HSI48M;
+    OscInitstruct.HSEState        = RCC_HSE_ON;
+    OscInitstruct.HSEFreq         = RCC_HSE_8_16MHz;
+    OscInitstruct.HSI48MState     = RCC_HSI48M_ON;
+    OscInitstruct.HSIState        = RCC_HSI_ON;
+    OscInitstruct.LSEState        = RCC_LSE_OFF;
+    OscInitstruct.LSEDriver       = RCC_LSEDRIVE_HIGH;
+    OscInitstruct.LSIState        = RCC_LSI_OFF;
+    OscInitstruct.PLL.PLLState    = RCC_PLL_ON;
+    OscInitstruct.PLL.PLLSource   = RCC_PLLSOURCE_HSE;
+    OscInitstruct.PLL.PLLMUL      = RCC_CFGR_PLLMULL18;
 
-	/* Close LSI */
-  OscInitstruct.PLL.PLLState    = RCC_PLL_ON;                              /* Close PLL */
-  OscInitstruct.PLL.PLLSource   = RCC_PLLSOURCE_HSE;                    /* PLL clock source selection HSE */
-  OscInitstruct.PLL.PLLMUL      = RCC_PLL_MUL18;                          /* PLL clock source 6-fold frequency */
-  /* Configure oscillator */
-  if(HAL_RCC_OscConfig(&OscInitstruct) != HAL_OK)
-  {
-    APP_ErrorHandler();
-  }
-  
-  ClkInitstruct.ClockType       = RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
-  ClkInitstruct.SYSCLKSource    = RCC_SYSCLKSOURCE_PLLCLK;                 /* System clock selection HSI */
-  ClkInitstruct.AHBCLKDivider   = RCC_SYSCLK_DIV1;                      /* AHB clock 1 division */
-  ClkInitstruct.APB1CLKDivider  = RCC_HCLK_DIV1;                        /* APB1 clock 1 division */
-  ClkInitstruct.APB2CLKDivider  = RCC_HCLK_DIV2;                        /* APB2 clock 2 division */
-  /* Configure Clock */
-  if(HAL_RCC_ClockConfig(&ClkInitstruct, FLASH_LATENCY_0) != HAL_OK)
-  {
-    APP_ErrorHandler();
-  }
+    if (HAL_RCC_OscConfig(&OscInitstruct) != HAL_OK)
+    {
+        APP_ErrorHandler();
+    }
+
+    ClkInitstruct.ClockType       = RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
+    ClkInitstruct.SYSCLKSource    = RCC_SYSCLKSOURCE_PLLCLK;
+    ClkInitstruct.AHBCLKDivider   = RCC_SYSCLK_DIV1;
+    ClkInitstruct.APB1CLKDivider  = RCC_HCLK_DIV1;
+    ClkInitstruct.APB2CLKDivider  = RCC_HCLK_DIV1;
+
+    if (HAL_RCC_ClockConfig(&ClkInitstruct, FLASH_LATENCY_6) != HAL_OK)
+    {
+        APP_ErrorHandler();
+    }
 }
-/**
-  * @brief  This function is executed in case of error occurrence.
-  * @param  None
-  * @retval None
-  */
+
 void APP_ErrorHandler(void)
 {
-  /* Infinite loop */
-  while (1)
-  {
-  }
+    while (1)
+    {
+    }
 }
-#endif
+
 #ifdef  USE_FULL_ASSERT
-/**
-  * @brief  Reports the name of the source file and the source line number
-  *         where the assert_param error has occurred.
-  * @param  file: pointer to the source file name
-  * @param  line: assert_param error line source number
-  * @retval None
-  */
 void assert_failed(uint8_t *file, uint32_t line)
 {
-  /* User can add his own implementation to report the file name and line number,
-     for example: printf("Wrong parameters value: file %s on line %d\r\n", file, line)  */
-  /* Infinite loop */
-  while (1)
-  {
-  }
+    while (1)
+    {
+    }
 }
 #endif /* USE_FULL_ASSERT */
-
-/************************ (C) COPYRIGHT Puya *****END OF FILE******************/

@@ -134,11 +134,11 @@
             <RunIndependent>0</RunIndependent>
             <UpdateFlashBeforeDebugging>1</UpdateFlashBeforeDebugging>
             <Capability>1</Capability>
-            <DriverSelection>-1</DriverSelection>
+            <DriverSelection>4096</DriverSelection>
           </Flash1>
           <bUseTDR>1</bUseTDR>
           <Flash2>BIN\UL2CM3.DLL</Flash2>
-          <Flash3></Flash3>
+          <Flash3>"" ()</Flash3>
           <Flash4></Flash4>
           <pFcarmOut></pFcarmOut>
           <pFcarmGrp></pFcarmGrp>
@@ -338,7 +338,7 @@
             <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>USE_HAL_DRIVER,PY32F403xC</Define>
+              <Define>USE_HAL_DRIVER,PY32F403xC,HSE_VALUE=8000000</Define>
               <Undefine></Undefine>
               <IncludePath>..\User\Inc;..\Frimware\Inc;..\CherryUSB\class\hid;..\CherryUSB\class\cdc;..\CherryUSB\common;..\CherryUSB\core;..\CherryUSB\port;..\..\..\Keil_v5\Packs\Puya\PY32F4xx_DFP\1.0.6\Drivers\CMSIS\Device\PUYA\PY32F4xx\Include;..\Bsp\inc;..\Lib\inc;..\App\inc</IncludePath>
             </VariousControls>

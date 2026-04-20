@@ -5,7 +5,7 @@
  */
 #ifndef USB_DEF_H
 #define USB_DEF_H
-#include "stdint.h"
+
 /* Useful define */
 #define USB_1_1 0x0110
 #define USB_2_0 0x0200

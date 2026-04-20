@@ -7,20 +7,20 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-// æ ¹æ®å®é™…ç¯å¸¦é•¿åº¦ä¿®æ”¹
+// ¸ù¾İÊµ¼ÊµÆ´ø³¤¶ÈĞŞ¸Ä
 #define WS2812_LED_NUM            61U
 #define WS2812_BITS_PER_LED       24U
 #define WS2812_RESET_LEN          120U
 #define WS2812_TX_BUFFER_SIZE     ((WS2812_LED_NUM * WS2812_BITS_PER_LED) + WS2812_RESET_LEN)
 
 
-// æ¯ä¸€ä¸ªä½å¯¹åº”çš„ SPI æ•°æ®å­—èŠ‚
-// 9MHz ä¸‹ï¼Œ1ä¸ª bit çº¦ 111ns
-// 0: é«˜ç”µå¹³ 222ns (0xC0: 11000000)
-// 1: é«˜ç”µå¹³ 555ns (0xF8: 11111000)
+// Ã¿Ò»¸öÎ»¶ÔÓ¦µÄ SPI Êı¾İ×Ö½Ú
+// 9MHz ÏÂ£¬1¸ö bit Ô¼ 111ns
+// 0: ¸ßµçÆ½ 222ns (0xC0: 11000000)
+// 1: ¸ßµçÆ½ 555ns (0xF8: 11111000)
 #define WS_BIT_0                  0xE0U
 #define WS_BIT_1                  0xF8U
-// å¤ä½ä¿¡å·ï¼šWS2812 éœ€è¦è‡³å°‘ 50us ä½ç”µå¹³ã€‚9MHzé€Ÿç‡ä¸‹ï¼Œçº¦ 60 å­—èŠ‚çš„ 0x00 è¶³å¤Ÿ
+// ¸´Î»ĞÅºÅ£ºWS2812 ĞèÒªÖÁÉÙ 50us µÍµçÆ½¡£9MHzËÙÂÊÏÂ£¬Ô¼ 60 ×Ö½ÚµÄ 0x00 ×ã¹»
 typedef struct {
     uint8_t r;
     uint8_t g;

@@ -4,7 +4,7 @@ UART_HandleTypeDef DebugUartHandle;
 void bsp_usart_init(uint32_t baudrate)
 {
     GPIO_InitTypeDef GPIO_InitStruct = {0};
-    //Ê±ÖÓ
+    //Ê±ï¿½ï¿½
     RCC_USART1_CLK_ENABLE();
     RCC_ADC_PORTA_CLK_ENABLE();
     
@@ -26,14 +26,13 @@ void bsp_usart_init(uint32_t baudrate)
     DebugUartHandle.Init.StopBits     = UART_STOPBITS_1;
     DebugUartHandle.Init.Parity       = UART_PARITY_NONE;
     DebugUartHandle.Init.HwFlowCtl    = UART_HWCONTROL_NONE;
-    DebugUartHandle.Init.Mode         = UART_MODE_TX_RX;
+    DebugUartHandle.Init.Mode         = UART_MODE_TX;
     DebugUartHandle.Init.OverSampling = UART_OVERSAMPLING_16;
     DebugUartHandle.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
     if (HAL_UART_Init(&DebugUartHandle) != HAL_OK) {
         while (1);
     }
-    HAL_NVIC_SetPriority(DEBUG_USART_IRQ, 0, 1);
-    HAL_NVIC_EnableIRQ(DEBUG_USART_IRQ);
+
 #endif
 }
 

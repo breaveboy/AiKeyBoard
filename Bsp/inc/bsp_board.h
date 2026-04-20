@@ -3,12 +3,12 @@
 
 #include "py32f4xx_hal.h"
 // ==========================================================
-//  ADC ç£è½´æŒ‰é”®çŸ©é˜µé…ç½®
+//  ADC ´ÅÖá°´¼ü¾ØÕóÅäÖÃ
 // ==========================================================
-#define ADC_CHANNELS_COUNT       14    // ADC é€šé“æ•°é‡ï¼ˆåˆ—æ•°ï¼‰
-#define MATRIX_ROWS_COUNT        5     // çŸ©é˜µè¡Œæ•°
+#define ADC_CHANNELS_COUNT       14    // ADC Í¨µÀÊýÁ¿£¨ÁÐÊý£©
+#define MATRIX_ROWS_COUNT        5     // ¾ØÕóÐÐÊý
 
-// è¡ŒæŽ§åˆ¶å¼•è„šé…ç½® (ROW1-ROW5) - ä½Žç”µå¹³æœ‰æ•ˆ
+// ÐÐ¿ØÖÆÒý½ÅÅäÖÃ (ROW4-ROW0) - µÍµçÆ½ÓÐÐ§
 #define ROW1_PIN                 GPIO_PIN_6
 #define ROW1_PORT                GPIOC
 #define ROW2_PIN                 GPIO_PIN_7
@@ -23,7 +23,7 @@
 #define ROW_ALL_PINS             (ROW1_PIN | ROW2_PIN | ROW3_PIN | ROW4_PIN | ROW5_PIN)
 #define ROW_ALL_PORT             GPIOC
 
-// ADC åˆ—é€šé“é…ç½® (AIN0-AIN13) - è¿žæŽ¥éœå°”ä¼ æ„Ÿå™¨
+// ADC ÁÐÍ¨µÀÅäÖÃ (AIN0-AIN13) - Á¬½Ó»ô¶û´«¸ÐÆ÷
 #define ADC_COL0_PIN             GPIO_PIN_0
 #define ADC_COL0_PORT            GPIOA
 #define ADC_COL1_PIN             GPIO_PIN_1
@@ -53,7 +53,7 @@
 #define ADC_COL13_PIN            GPIO_PIN_3
 #define ADC_COL13_PORT           GPIOC
 
-// ADC é€šé“æ˜ å°„ - å¯¹åº”å†…éƒ¨ ADC é€šé“å·
+// ADC Í¨µÀÓ³Éä - ¶ÔÓ¦ÄÚ²¿ ADC Í¨µÀºÅ
 #define ADC_COL0_CH              ADC_CHANNEL_0
 #define ADC_COL1_CH              ADC_CHANNEL_1
 #define ADC_COL2_CH              ADC_CHANNEL_2
@@ -69,34 +69,34 @@
 #define ADC_COL12_CH             ADC_CHANNEL_12
 #define ADC_COL13_CH             ADC_CHANNEL_13
 
-// ADC é…ç½®å‚æ•°
-#define ADC_RESOLUTION           ADC_RESOLUTION_12B      // 12ä½åˆ†è¾¨çŽ‡
-#define ADC_SAMPLETIME           ADC_SAMPLETIME_28CYCLES_5  // é‡‡æ ·æ—¶é—´
-#define ADC_CLOCK_DIV            RCC_ADCPCLK2_DIV8      // ADC æ—¶é’Ÿåˆ†é¢‘
+// ADC ÅäÖÃ²ÎÊý
+#define ADC_RESOLUTION           ADC_RESOLUTION_12B      // 12Î»·Ö±æÂÊ
+#define ADC_SAMPLETIME           ADC_SAMPLETIME_28CYCLES_5  // ²ÉÑùÊ±¼ä
+#define ADC_CLOCK_DIV            RCC_ADCPCLK2_DIV8      // ADC Ê±ÖÓ·ÖÆµ
 
 // ==========================================================
-//  WS2812 LED é…ç½® (SPI DMA)
+//  WS2812 LED ÅäÖÃ (SPI DMA)
 // ==========================================================
-#define LED_EN_PIN               GPIO_PIN_14    // LED ä½¿èƒ½å¼•è„š
+#define LED_EN_PIN               GPIO_PIN_14    // LED Ê¹ÄÜÒý½Å
 #define LED_EN_PORT              GPIOB
-#define LED_DAT_PIN              GPIO_PIN_15    // LED æ•°æ®å¼•è„š (SPI2_MOSI)
+#define LED_DAT_PIN              GPIO_PIN_15    // LED Êý¾ÝÒý½Å (SPI2_MOSI)
 #define LED_DAT_PORT             GPIOB
-#define LED_DAT_AF               GPIO_AF3_SPI2  // å¤ç”¨åŠŸèƒ½
+#define LED_DAT_AF               GPIO_AF3_SPI2  // ¸´ÓÃ¹¦ÄÜ
 
-#define LED_SPI_INSTANCE         SPI2                     // SPI å¤–è®¾
-#define LED_DMA_CHANNEL          DMA1_Channel2            // DMA é€šé“
+#define LED_SPI_INSTANCE         SPI2                     // SPI ÍâÉè
+#define LED_DMA_CHANNEL          DMA1_Channel2            // DMA Í¨µÀ
 
 // ==========================================================
-//  è°ƒè¯•ä¸²å£é…ç½®  TXPA9 AF2
+//  µ÷ÊÔ´®¿ÚÅäÖÃ  TXPA9 AF2
 // ==========================================================
-#define DEBUG_USART_INSTANCE     USART1          // è°ƒè¯•ä¸²å£å¤–è®¾
-#define DEBUG_USART_BAUDRATE     115200          // é»˜è®¤æ³¢ç‰¹çŽ‡
+#define DEBUG_USART_INSTANCE     USART1          // µ÷ÊÔ´®¿ÚÍâÉè
+#define DEBUG_USART_BAUDRATE     115200          // Ä¬ÈÏ²¨ÌØÂÊ
 
-#define DEBUG_USART_TX_PIN       GPIO_PIN_9      // TX å¼•è„š
+#define DEBUG_USART_TX_PIN       GPIO_PIN_9      // TX Òý½Å
 #define DEBUG_USART_TX_PORT      GPIOA
 #define DEBUG_USART_TX_AF        GPIO_AF2_USART1
 
-#define DEBUG_USART_RX_PIN       GPIO_PIN_10     // RX å¼•è„š
+#define DEBUG_USART_RX_PIN       GPIO_PIN_10     // RX Òý½Å
 #define DEBUG_USART_RX_PORT      GPIOA
 #define DEBUG_USART_RX_AF        GPIO_AF2_USART1
 
@@ -104,16 +104,16 @@
 #define DEBUG_USART_IRQHandler   USART1_IRQHandler
 
 // ==========================================================
-//  ä»»åŠ¡å®šæ—¶å™¨é…ç½®
+//  ÈÎÎñ¶¨Ê±Æ÷ÅäÖÃ
 // ==========================================================
-#define TASK_TIM_INSTANCE        TIM6            // ä»»åŠ¡è°ƒåº¦å®šæ—¶å™¨
+#define TASK_TIM_INSTANCE        TIM6            // ÈÎÎñµ÷¶È¶¨Ê±Æ÷
 #define TASK_TIM_IRQ             TIM6_IRQn
 #define TASK_TIM_IRQHandler      TIM6_IRQHandler
-#define TASK_TIM_PRESCALER       (1000 - 1)     // é¢„åˆ†é¢‘
-#define TASK_TIM_PERIOD          (SystemCoreClock / 1000000 - 1)  // å‘¨æœŸ
+#define TASK_TIM_PRESCALER       (1000 - 1)     // Ô¤·ÖÆµ
+#define TASK_TIM_PERIOD          (SystemCoreClock / 1000000 - 1)  // ÖÜÆÚ
 
 // ==========================================================
-//  æ—¶é’Ÿä½¿èƒ½å®å®šä¹‰
+//  Ê±ÖÓÊ¹ÄÜºê¶¨Òå
 // ==========================================================
 #define RCC_ROW_PORT_CLK_ENABLE()    __HAL_RCC_GPIOC_CLK_ENABLE()
 #define RCC_ADC_PORTA_CLK_ENABLE()   __HAL_RCC_GPIOA_CLK_ENABLE()

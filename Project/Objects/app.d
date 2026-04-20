@@ -32,4 +32,10 @@
   D:\Keil_v5\ARM\ARMCLANG\include\stdbool.h ..\Lib\inc\lib_ws2812.h \
   ..\Bsp\inc\bsp_spi_dma.h ..\Lib\inc\lib_key_map.h \
   ..\Bsp\inc\bsp_uart.h ..\User\Inc\usb_config.h \
-  D:\Keil_v5\ARM\ARMCLANG\include\string.h
+  D:\Keil_v5\ARM\ARMCLANG\include\string.h ..\CherryUSB\core\usbd_core.h \
+  D:\Keil_v5\ARM\ARMCLANG\include\stdlib.h \
+  ..\CherryUSB\common\usb_util.h ..\CherryUSB\common\usb_errno.h \
+  ..\CherryUSB\common\usb_def.h ..\CherryUSB\common\usb_list.h \
+  ..\CherryUSB\common\usb_mem.h ..\CherryUSB\common\usb_log.h \
+  ..\CherryUSB\common\usb_dc.h ..\CherryUSB\class\hid\usbd_hid.h \
+  ..\CherryUSB\class\hid\usb_hid.h
