@@ -125,13 +125,14 @@ void App_usb_process_task(void)
 extern volatile uint8_t hid_state;
 void App_usb_test_task(void)
 {
-  uint8_t sendbuffer[8]={ 0x00, 0x00, 0x1e, 0x00, 0x00, 0x00, 0x00, 0x00 }; //A
-	int ret=usbd_ep_start_write(0x81,sendbuffer,8);
-	if(ret<0){
-	  return;
-	}
-	hid_state=1;
-	while(hid_state==1);
+//   uint8_t sendbuffer[8]={ 0x00, 0x00, 0x1e, 0x00, 0x00, 0x00, 0x00, 0x00 }; //A
+// 	int ret=usbd_ep_start_write(0x81,sendbuffer,8);
+// 	if(ret<0){
+// 	  return;
+// 	}
+// 	hid_state=1;
+// 	while(hid_state==1);
+printf("success_send");
 	
 }
 

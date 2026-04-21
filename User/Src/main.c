@@ -26,7 +26,7 @@ static void adc1_ch1_init(){
 	GPIO_Init.Pull=GPIO_NOPULL;
 	HAL_GPIO_Init(GPIOA,&GPIO_Init);
 	/////PC6
-	GPIO_Init.Pin=GPIO_PIN_6;
+	GPIO_Init.Pin=GPIO_PIN_6|GPIO_PIN_7;
 	GPIO_Init.Mode=GPIO_MODE_OUTPUT_PP;
 	GPIO_Init.Pull=GPIO_NOPULL;
 	HAL_GPIO_Init(GPIOC,&GPIO_Init);
@@ -52,10 +52,11 @@ static void adc1_ch1_init(){
 	
 	
 	HAL_GPIO_WritePin(GPIOC,GPIO_PIN_6,GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOC,GPIO_PIN_7,GPIO_PIN_SET);
 	
 }
 static void get_adc(){
-      HAL_ADC_Start(&hadc1);                         // 启动 ADC 转换
+    HAL_ADC_Start(&hadc1);                         // 启动 ADC 转换
 	  HAL_Delay(20);
 	  //判断是否转换完成
 	  if(HAL_ADC_PollForConversion(&hadc1,10)==HAL_OK){
@@ -63,12 +64,26 @@ static void get_adc(){
 			float ad_uc=(adc_value*3.3)/4095;
 			printf("adc = %u\r\n", adc_value);
 			printf("ad_us=%f\r\n",ad_uc);
-		
+		  //对adc进行十次采集
+			
 		}
      HAL_ADC_Stop(&hadc1); 
    
 }
 #endif
+
+
+
+void usb_hid_keyboard_init(){
+
+    //注册描述符
+    //注册hid接口
+    //注册hidreportdescritor
+    //初始化usb设备控制器
+  
+
+
+}
 
 
 int main(void)
@@ -87,11 +102,11 @@ int main(void)
     
     APP_USBInit();
     // ///////////adc
-    // adc1_ch1_init();
-    // HAL_Delay(50);
-    // printf("init_success\r\n");
+    adc1_ch1_init();
+    HAL_Delay(50);
+    printf("init_success\r\n");
 	  ///app初始化
-	 
+	  
 	
 	
 	
@@ -99,13 +114,16 @@ int main(void)
     while (1)
     {
       
-		  // hid_keyboard_test();
-			Task_exec();
+			// hid_keyboard_test();
+			//Task_exec();
+			get_adc();
+			HAL_Delay(500);
        
     }
 }
 static void APP_USBInit(void)
 {
+    //初始化USB时钟
   __HAL_RCC_SYSCFG_CLK_ENABLE();
 
   SET_BIT(RCC->CFGR1,RCC_CFGR1_USBSELHSI48_Msk);

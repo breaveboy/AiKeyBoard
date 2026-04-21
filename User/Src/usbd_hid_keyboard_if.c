@@ -56,45 +56,44 @@ static const uint8_t hid_descriptor[] = {
     ///////////////////////////////////////
     /// string1 descriptor
     ///////////////////////////////////////
-    0x0A,                       /* bLength */
+    0x08,                       /* bLength (2 + 3*2 = 8) */
     USB_DESCRIPTOR_TYPE_STRING, /* bDescriptorType */
-    'P', 0x00,                  /* wcChar0 */
-    'U', 0x00,                  /* wcChar1 */
-    'Y', 0x00,                  /* wcChar2 */
-    'A', 0x00,                  /* wcChar3 */
+    'W', 0x00,                  /* W */
+    'S', 0x00,                  /* S */
+    'K', 0x00,                  /* K */
     ///////////////////////////////////////
     /// string2 descriptor
     ///////////////////////////////////////
-    0x1C,                       /* bLength */
+    0x20,                       /* bLength (2 + 15*2 = 32) */
     USB_DESCRIPTOR_TYPE_STRING, /* bDescriptorType */
-    'P', 0x00,                  /* wcChar0 */
-    'U', 0x00,                  /* wcChar1 */
-    'Y', 0x00,                  /* wcChar2 */
-    'A', 0x00,                  /* wcChar3 */
-    ' ', 0x00,                  /* wcChar4 */
-    'H', 0x00,                  /* wcChar5 */
-    'I', 0x00,                  /* wcChar6 */
-    'D', 0x00,                  /* wcChar7 */
-    ' ', 0x00,                  /* wcChar8 */
-    'D', 0x00,                  /* wcChar9 */
-    'E', 0x00,                  /* wcChar10 */
-    'M', 0x00,                  /* wcChar11 */
-    'O', 0x00,                  /* wcChar12 */
+    'H', 0x00,                  /* H */
+    'I', 0x00,                  /* I */
+    'D', 0x00,                  /* D */
+    ' ', 0x00,                  /* 空格 */
+    'A', 0x00,                  /* A */
+    'I', 0x00,                  /* I */
+    ' ', 0x00,                  /* 空格 */
+    'K', 0x00,                  /* K */
+    'E', 0x00,                  /* E */
+    'Y', 0x00,                  /* Y */
+    'B', 0x00,                  /* B */
+    'O', 0x00,                  /* O */
+    'A', 0x00,                  /* A */
+    'R', 0x00,                  /* R */
+    'D', 0x00,                  /* D */
     ///////////////////////////////////////
     /// string3 descriptor
     ///////////////////////////////////////
-    0x16,                       /* bLength */
+    0x12,                       /* bLength (2 + 8*2 = 18) */
     USB_DESCRIPTOR_TYPE_STRING, /* bDescriptorType */
-    '2', 0x00,                  /* wcChar0 */
-    '0', 0x00,                  /* wcChar1 */
-    '2', 0x00,                  /* wcChar2 */
-    '2', 0x00,                  /* wcChar3 */
-    '1', 0x00,                  /* wcChar4 */
-    '2', 0x00,                  /* wcChar5 */
-    '3', 0x00,                  /* wcChar6 */
-    '4', 0x00,                  /* wcChar7 */
-    '5', 0x00,                  /* wcChar8 */
-    '6', 0x00,                  /* wcChar9 */
+    '2', 0x00,                  /* 2 */
+    '0', 0x00,                  /* 0 */
+    '2', 0x00,                  /* 2 */
+    '6', 0x00,                  /* 6 */
+    '0', 0x00,                  /* 0 */
+    '4', 0x00,                  /* 4 */
+    '2', 0x00,                  /* 2 */
+    '2', 0x00,                  /* 2 */
 #ifdef CONFIG_USB_HS
     ///////////////////////////////////////
     /// device qualifier descriptor
@@ -185,11 +184,14 @@ static struct usbd_endpoint hid_in_ep = {
 struct usbd_interface intf0;
 
 void hid_keyboard_init(void)
-{
+{  
+    //组测描述符
     usbd_desc_register(hid_descriptor);
+    //初始化接口
     usbd_add_interface(usbd_hid_init_intf(&intf0, keyboard_hid_desc, hid_keyboard_report_desc, HID_KEYBOARD_REPORT_DESC_SIZE));
+    //初始化断点
     usbd_add_endpoint(&hid_in_ep);
-
+    //初始化
     usbd_initialize();
 }
 
