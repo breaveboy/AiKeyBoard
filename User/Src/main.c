@@ -6,84 +6,133 @@
 #include "App.h"
 static void APP_SystemClockConfig(void);
 static void APP_USBInit(void);
+#if 1
 
-#if 0
-static ADC_HandleTypeDef hadc1;
-static void adc1_ch1_init(){
-  
-	ADC_ChannelConfTypeDef sConfig = {0};
-	GPIO_InitTypeDef GPIO_Init={0};
-   //PC6  row4 PC7 row3
-	 //PA0  chanel0
-	 //开启dma进行搬运
+
+volatile uint8_t adc_done_flag = 0; // 转换完成标志
+ADC_HandleTypeDef AdcHandle;
+DMA_HandleTypeDef HdmaCh1;
+uint16_t   gADCxConvertedData[3];
+void GPIO_Config(void)
+{
+    __HAL_RCC_GPIOA_CLK_ENABLE();
+    __HAL_RCC_GPIOC_CLK_ENABLE();
+
+    GPIO_InitTypeDef GPIO_InitStruct = {0};
+    
+    // 配置 PC6 row4- PC9 row1 PA8 row0
+    GPIO_InitStruct.Pin = GPIO_PIN_6|GPIO_PIN_7|GPIO_PIN_8|GPIO_PIN_9;
+    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+    GPIO_InitStruct.Pin = GPIO_PIN_8;
+    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+		
+		
+    // 配置 PA0, PA1, PA2 为模拟输入
+    GPIO_InitStruct.Pin = GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2;
+    GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+}
+
+static void APP_AdcConfig(void)
+{
+  ADC_ChannelConfTypeDef   sConfig = {0};
+  RCC_PeriphCLKInitTypeDef RCC_PeriphCLKInit = {0};
+
+  __HAL_RCC_ADC1_CLK_ENABLE();
+
+  RCC_PeriphCLKInit.PeriphClockSelection = RCC_PERIPHCLK_ADC;
+  RCC_PeriphCLKInit.AdcClockSelection    = RCC_ADCPCLK2_DIV8;
+  HAL_RCCEx_PeriphCLKConfig(&RCC_PeriphCLKInit);
+
+  AdcHandle.Instance = ADC1;
+
+  AdcHandle.Init.Resolution            = ADC_RESOLUTION_12B;
+  AdcHandle.Init.DataAlign             = ADC_DATAALIGN_RIGHT;
+  AdcHandle.Init.ScanConvMode          = ADC_SCAN_ENABLE;
+  AdcHandle.Init.ContinuousConvMode    = DISABLE;
+  AdcHandle.Init.NbrOfConversion       = 3;
+  AdcHandle.Init.DiscontinuousConvMode = DISABLE;
+  AdcHandle.Init.NbrOfDiscConversion   = 0;
+  AdcHandle.Init.ExternalTrigConv      = ADC_SOFTWARE_START;
+
+  if (HAL_ADC_Init(&AdcHandle) != HAL_OK)
+  {
+    APP_ErrorHandler();
+  }
+
+  sConfig.Channel      = ADC_CHANNEL_0;
+  sConfig.Rank         = ADC_REGULAR_RANK_1;
+  sConfig.SamplingTime = ADC_SAMPLETIME_28CYCLES_5;
+  HAL_ADC_ConfigChannel(&AdcHandle, &sConfig);
+
+  sConfig.Channel      = ADC_CHANNEL_1;
+  sConfig.Rank         = ADC_REGULAR_RANK_2;
+  HAL_ADC_ConfigChannel(&AdcHandle, &sConfig);
+
+  sConfig.Channel      = ADC_CHANNEL_2;
+  sConfig.Rank         = ADC_REGULAR_RANK_3;
+  HAL_ADC_ConfigChannel(&AdcHandle, &sConfig);
+}
+
+
+
+
+void HAL_ADC_MspInit(ADC_HandleTypeDef *hadc)
+{
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
+
+  __HAL_RCC_SYSCFG_CLK_ENABLE();
+  __HAL_RCC_DMA1_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
-	__HAL_RCC_GPIOC_CLK_ENABLE();
-	__HAL_RCC_ADC1_CLK_ENABLE();
 
-	//初始化引脚PA0
-	GPIO_Init.Pin=GPIO_PIN_0;
-	GPIO_Init.Mode=GPIO_MODE_ANALOG;
-	GPIO_Init.Pull=GPIO_NOPULL;
-	HAL_GPIO_Init(GPIOA,&GPIO_Init);
-	/////PC6
-	GPIO_Init.Pin=GPIO_PIN_6|GPIO_PIN_7;
-	GPIO_Init.Mode=GPIO_MODE_OUTPUT_PP;
-	GPIO_Init.Pull=GPIO_NOPULL;
-	HAL_GPIO_Init(GPIOC,&GPIO_Init);
-  /////////adc///////////
-	
-	hadc1.Instance = ADC1;
-	hadc1.Init.Resolution            = ADC_RESOLUTION_12B;
-	hadc1.Init.DataAlign             = ADC_DATAALIGN_RIGHT;
-	hadc1.Init.ScanConvMode          = ADC_SCAN_DISABLE;  //扫描模式
-	hadc1.Init.ContinuousConvMode    = DISABLE;  //循环模式
-	hadc1.Init.NbrOfConversion       = 1;      //1个通道
-	hadc1.Init.DiscontinuousConvMode = DISABLE;  //不连续转换模式
-	hadc1.Init.ExternalTrigConv      = ADC_SOFTWARE_START;
-	HAL_ADC_Init(&hadc1);
+  GPIO_InitStruct.Pin  = GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2 ;
+  GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-	sConfig.Channel = ADC_CHANNEL_0;
-	sConfig.Rank = ADC_REGULAR_RANK_1;
-	sConfig.SamplingTime = ADC_SAMPLETIME_41CYCLES_5;
-	HAL_ADC_ConfigChannel(&hadc1, &sConfig);
+  HdmaCh1.Instance                 = DMA1_Channel1;
+  HdmaCh1.Init.Direction           = DMA_PERIPH_TO_MEMORY;
+  HdmaCh1.Init.PeriphInc           = DMA_PINC_DISABLE;
+  HdmaCh1.Init.MemInc              = DMA_MINC_ENABLE;
+  HdmaCh1.Init.PeriphDataAlignment = DMA_PDATAALIGN_HALFWORD;
+  HdmaCh1.Init.MemDataAlignment    = DMA_MDATAALIGN_HALFWORD;
+  HdmaCh1.Init.Mode                = DMA_NORMAL;
+  HdmaCh1.Init.Priority            = DMA_PRIORITY_VERY_HIGH;
 
-	HAL_ADCEx_Calibration_Start(&hadc1);
+  HAL_DMA_DeInit(&HdmaCh1);
+  HAL_DMA_Init(&HdmaCh1);
 
-	
-	
-	HAL_GPIO_WritePin(GPIOC,GPIO_PIN_6,GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(GPIOC,GPIO_PIN_7,GPIO_PIN_SET);
-	
+  HAL_DMA_ChannelMap(&HdmaCh1, DMA_CHANNEL_MAP_ADC1);
+  __HAL_LINKDMA(hadc, DMA_Handle, HdmaCh1);
 }
-static void get_adc(){
-    HAL_ADC_Start(&hadc1);                         // 启动 ADC 转换
-	  HAL_Delay(20);
-	  //判断是否转换完成
-	  if(HAL_ADC_PollForConversion(&hadc1,10)==HAL_OK){
-			uint32_t adc_value = HAL_ADC_GetValue(&hadc1);
-			float ad_uc=(adc_value*3.3)/4095;
-			printf("adc = %u\r\n", adc_value);
-			printf("ad_us=%f\r\n",ad_uc);
-		  //对adc进行十次采集
-			
-		}
-     HAL_ADC_Stop(&hadc1); 
-   
+
+
+//切换行
+static void select_row(uint8_t index){
+    // 1. 首先将所有行置为高电平 (截止状态)
+    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_SET);
+    HAL_GPIO_WritePin(GPIOC, GPIO_PIN_9 | GPIO_PIN_8 | GPIO_PIN_7 | GPIO_PIN_6, GPIO_PIN_SET); // Row1-4 
+   // 2. 将目标行置为低电平 (导通状态)
+   switch (index)
+   {
+    case 0: HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_RESET); break;
+    case 1: HAL_GPIO_WritePin(GPIOC, GPIO_PIN_9, GPIO_PIN_RESET); break;
+    case 2: HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8, GPIO_PIN_RESET); break;
+    case 3: HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_RESET); break;
+    case 4: HAL_GPIO_WritePin(GPIOC, GPIO_PIN_6, GPIO_PIN_RESET); break;
+    default: break; // 索引错误时不导通任何行
+   }
+    // 3. 关键：切换引脚后需要极短的延迟让电压稳定（由于引脚电容和霍尔响应）
+    // 对于磁轴键盘，这里通常使用几个 NOP 指令或者 1-5微秒延迟
+    for(volatile int i=0; i<100; i++); 
 }
+
 #endif
-
-
-
-void usb_hid_keyboard_init(){
-
-    //注册描述符
-    //注册hid接口
-    //注册hidreportdescritor
-    //初始化usb设备控制器
-  
-
-
-}
 
 
 int main(void)
@@ -92,7 +141,7 @@ int main(void)
     APP_SystemClockConfig();
 	
 	  //////timer初始化
-	  bsp_tim_init();
+  	bsp_tim_init();
     bsp_usart_init(115200);
 	  ////////ws2812初始化
     bsp_spi_dma_init();
@@ -102,25 +151,38 @@ int main(void)
     
     APP_USBInit();
     // ///////////adc
-    adc1_ch1_init();
-    HAL_Delay(50);
+     GPIO_Config();
+    APP_AdcConfig();
     printf("init_success\r\n");
 	  ///app初始化
-	  
-	
-	
-	
-	
-    while (1)
-    {
-      
-			// hid_keyboard_test();
-			//Task_exec();
-			get_adc();
-			HAL_Delay(500);
-       
-    }
+		
+		if (HAL_ADCEx_Calibration_Start(&AdcHandle) != HAL_OK)
+		{
+			APP_ErrorHandler();
+		}
+	  select_row(4); // 选中某一行
+ 
+		
+		while (1){
+		gADCxConvertedData[0] = 0;
+    gADCxConvertedData[1] = 0;
+    gADCxConvertedData[2] = 0;
+
+    HAL_StatusTypeDef ret = HAL_ADC_Start_DMA(&AdcHandle, (uint32_t *)gADCxConvertedData, 3);
+    printf("HAL_ADC_Start_DMA ret = %d\r\n", ret);
+
+    HAL_Delay(10);
+
+    printf("Channel1: %u\r\n", gADCxConvertedData[0]);
+    printf("Channel2: %u\r\n", gADCxConvertedData[1]);
+    printf("Channel3: %u\r\n", gADCxConvertedData[2]);
+
+    HAL_ADC_Stop_DMA(&AdcHandle);
+
+    HAL_Delay(1000);
+  }
 }
+
 static void APP_USBInit(void)
 {
     //初始化USB时钟
@@ -153,7 +215,6 @@ static void APP_SystemClockConfig(void)
     OscInitstruct.PLL.PLLState    = RCC_PLL_ON;
     OscInitstruct.PLL.PLLSource   = RCC_PLLSOURCE_HSE;
     OscInitstruct.PLL.PLLMUL      = RCC_CFGR_PLLMULL18;
-
     if (HAL_RCC_OscConfig(&OscInitstruct) != HAL_OK)
     {
         APP_ErrorHandler();

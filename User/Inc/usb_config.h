@@ -1,7 +1,6 @@
 /*
- * Copyright (c) 2022, sakumisu
- *
- * SPDX-License-Identifier: Apache-2.0
+ * Copyright (c) 2026
+ * Minimal USB HID keyboard demo for PY32F403 + CherryUSB.
  */
 #ifndef CHERRYUSB_CONFIG_H
 #define CHERRYUSB_CONFIG_H
@@ -17,30 +16,16 @@
 #define CONFIG_USB_DBG_LEVEL USB_DBG_ERROR
 #endif
 
-/* Enable print with color */
 #define CONFIG_USB_PRINTF_COLOR_ENABLE
 
-/* data align size when use dma */
 #ifndef CONFIG_USB_ALIGN_SIZE
 #define CONFIG_USB_ALIGN_SIZE 4
 #endif
 
-/* attribute data into no cache ram */
 #define USB_NOCACHE_RAM_SECTION __attribute__((section(".noncacheable")))
 
 /* ================= USB Device Stack Configuration ================ */
-
-/* Ep0 max transfer buffer, specially for receiving data from ep0 out */
 #define CONFIG_USBDEV_REQUEST_BUFFER_LEN 256
-
-/* Setup packet log for debug */
-// #define CONFIG_USBDEV_SETUP_LOG_PRINT
-
-/* Check if the input descriptor is correct */
-// #define CONFIG_USBDEV_DESC_CHECK
-
-/* Enable test mode */
-// #define CONFIG_USBDEV_TEST_MODE
 
 #ifndef CONFIG_USBDEV_MSC_BLOCK_SIZE
 #define CONFIG_USBDEV_MSC_BLOCK_SIZE 512
@@ -58,18 +43,6 @@
 #define CONFIG_USBDEV_MSC_VERSION_STRING "0.01"
 #endif
 
-// #define CONFIG_USBDEV_MSC_THREAD
-
-#ifdef CONFIG_USBDEV_MSC_THREAD
-#ifndef CONFIG_USBDEV_MSC_STACKSIZE
-#define CONFIG_USBDEV_MSC_STACKSIZE 2048
-#endif
-
-#ifndef CONFIG_USBDEV_MSC_PRIO
-#define CONFIG_USBDEV_MSC_PRIO 4
-#endif
-#endif
-
 #ifndef CONFIG_USBDEV_AUDIO_VERSION
 #define CONFIG_USBDEV_AUDIO_VERSION 0x0100
 #endif
@@ -78,22 +51,21 @@
 #define CONFIG_USBDEV_AUDIO_MAX_CHANNEL 8
 #endif
 
-
-/* ================ USB Device Port Configuration ================*/
 #include "py32f4xx_hal.h"
 
 #define __HAL_USB_SOFT_RESET()     do { \
                                      __HAL_RCC_USB_CLK_DISABLE(); \
                                      HAL_Delay(10); \
                                      __HAL_RCC_USB_CLK_ENABLE();  \
-                                   } while(0U)
+                                   } while (0U)
 
 #define USBD_IRQn       USB_IRQn
-
 #define USBD_IRQHandler USBD_IRQHandler
 
 void hid_keyboard_init(void);
+uint8_t hid_keyboard_is_configured(void);
+int hid_keyboard_send_report(const uint8_t report[8]);
+int hid_keyboard_send_key(uint8_t keycode);
 void hid_keyboard_test(void);
-
 
 #endif

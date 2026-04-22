@@ -146,23 +146,23 @@ void bsp_adc_dma_start(void)
  * @brief  ADC DMA 传输完成回调函数
  * @note   一行采集完成后自动切换到下一行
  */
-void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
-{
-   // 索引指向下一行
-    current_row++;
-    if (current_row >= MATRIX_ROWS_COUNT) {
-        current_row = 0;  // 循环回第 0 行
-    }
-    // 切换到下一行
-    switch_row(current_row);
-   // 继续采集，数据存入对应行
-    HAL_ADC_Start_DMA(hadc, (uint32_t*)g_adc_raw_matrix[current_row], ADC_CHANNELS_COUNT);
-}
+// void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
+// {
+//    // 索引指向下一行
+//     current_row++;
+//     if (current_row >= MATRIX_ROWS_COUNT) {
+//         current_row = 0;  // 循环回第 0 行
+//     }
+//     // 切换到下一行
+//     switch_row(current_row);
+//    // 继续采集，数据存入对应行
+//     HAL_ADC_Start_DMA(hadc, (uint32_t*)g_adc_raw_matrix[current_row], ADC_CHANNELS_COUNT);
+// }
 
 /**
  *  @brief  DMA1_Channel1 中断服务程序
  */
-void DMA1_Channel1_IRQHandler(void)
-{
-    HAL_DMA_IRQHandler(&HdmaCh1);
-}
+// void DMA1_Channel1_IRQHandler(void)
+// {
+//     HAL_DMA_IRQHandler(&HdmaCh1);
+// }
