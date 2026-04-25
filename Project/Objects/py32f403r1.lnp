@@ -12,6 +12,7 @@
 ".\objects\bsp_tim.o"
 ".\objects\bsp_uart.o"
 ".\objects\bsp_gpio.o"
+".\objects\bsp_delay.o"
 ".\objects\lib_hall_sensor.o"
 ".\objects\lib_ws2812.o"
 ".\objects\lib_key_map.o"

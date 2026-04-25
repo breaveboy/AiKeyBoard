@@ -1,47 +1,62 @@
 #include "main.h"
 #include "bsp_config.h"
-#include "lib_ws2812.h"
-#include "usb_config.h"
-#include "task.h"
-#include "App.h"
-#include <stdlib.h> // 必须包含 abs 函数
-static void APP_SystemClockConfig(void);
-static void APP_USBInit(void);
-#if 1
 
-/* --- 变量定义 --- */
+#include "usb_config.h"
+
+
+#include <string.h>
+static void APP_SystemClockConfig(void);
+/* --- 宏定义与配置 --- */
+#define ROW_COUNT          5
+#define COL_COUNT          14
+#define SCAN_ROUNDS        3      // 运行时每波扫描3次取平均
+#define SETTLING_TIME_US   50     // 行切换后等待电压稳定的时间
+
+/* --- 全局变量 --- */
 ADC_HandleTypeDef AdcHandle;
 DMA_HandleTypeDef HdmaCh1;
 
+volatile uint8_t  g_current_row = 0;    // 当前扫描行 (0-4)
+volatile uint8_t  g_scan_round = 0;     // 当前轮次 (0-2)
+volatile uint8_t  g_scan_complete = 0;  // 一波扫描完成标志
 
-volatile uint8_t g_current_row=0; //当前行
-volatile uint8_t g_scan_complete=0; //61按键扫描完毕的标志
-volatile uint16_t gADCxConvertedData[14]; //14路adc的数值
-volatile uint16_t g_adc_raw_col[5][14]={0}; //存61路adc的数值
-volatile uint8_t  g_scan_round = 0; // 当前扫描的轮次数 (0, 1, 2)
+uint16_t gADCxConvertedData[14];        // DMA 直接搬运的目标（14路）
+uint16_t g_adc_raw_col[5][14] = {0};    // 原始累加缓冲区
 
-void Drv_Mcu_Delay_Us(uint32_t us) ;
-uint16_t g_adc_filtered[5][14] = {0};           // 存放计算平均值后的新数组（在主循环使用，无需volatile）
-
-
-
-
-
-/* --- 按键逻辑定义 --- */
-#define RT_SENSITIVITY 30
-#define PRESS_DEADBAND 80
-
+/* --- 逻辑结构体 --- */
 typedef struct {
-    uint16_t idle_adc;//校准值
-    uint16_t cur_dac; //当前值
-    int16_t max_offset; 
-    int16_t min_offset;
-    uint8_t is_pressed;
+    uint16_t idele_adc;       // 校准基准值
+    uint16_t actuation_point; // AP点
+    uint16_t rt_press_sens;   // RT按下灵敏度
+    uint16_t rt_release_sens; // RT抬起灵敏度
+    uint16_t top_deadzone;    // 顶部死区
+    uint16_t bottom_deadzone; // 底部死区
+    
+    uint16_t max_offset;      // 按下过程中的最高点
+    uint16_t min_offset;      // 抬起过程中的最低点
+    uint8_t  is_pressed;      // 逻辑按下状态
+    uint8_t  in_rt_cycle;     // 是否进入RT激活状态
 } Key_t;
 
 Key_t keys[5][14];
 
-/* --- 硬件初始化 --- */
+/* --- 掩码与灯效索引 --- */
+const uint8_t key_mask[5][14] = {
+    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1},
+    {1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1},
+    {1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 1}
+};
+
+const uint8_t led_map[5][14] = {
+    {0,1,2,3,4,5,6,7,8,9,10,11,12,13},
+    {14,15,16,17,18,19,20,21,22,23,24,25,26,27},
+    {28,29,30,31,32,33,34,35,36,37,38,39,255,40},
+    {41,255,42,43,44,45,46,47,48,49,50,51,255,52},
+    {53,54,55,255,255,255,56,255,255,255,57,58,59,60}
+};
+////////////////////////////////////////////////////////////bsp层初始化/////////////////////////////////////////////////
 
 void GPIO_Config(void) {
     __HAL_RCC_GPIOA_CLK_ENABLE();
@@ -71,7 +86,7 @@ void GPIO_Config(void) {
 
 }
 
-static void APP_AdcConfig(void) {
+void APP_AdcConfig(void) {
     ADC_ChannelConfTypeDef sConfig = {0};
     __HAL_RCC_ADC1_CLK_ENABLE();
     // 配置 ADC 外设时钟
@@ -126,142 +141,8 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef *hadc) {
     HAL_NVIC_SetPriority(DMA1_Channel1_IRQn, 1, 0); // 设置优先级，数字越小优先级越高
     HAL_NVIC_EnableIRQ(DMA1_Channel1_IRQn);        // 开启 DMA1 通道1 的中断响应
 }
-/* --- 业务逻辑 --- */
-static void select_row(uint8_t index) {
-    SET_IO(GPIOA, GPIO_PIN_8); //高电平
-    SET_IO(GPIOC, GPIO_PIN_6 | GPIO_PIN_7 | GPIO_PIN_8 | GPIO_PIN_9);
-		Drv_Mcu_Delay_Us(500);
-	  if(index==0)
-		{	
-			CLR_IO(GPIOA, GPIO_PIN_8);
-		}
-		else if(index==1)
-		{
-			CLR_IO(GPIOC, GPIO_PIN_9);
-		}
-		else if(index==2)
-		{
-			CLR_IO(GPIOC, GPIO_PIN_8);
-		}
-		else if(index==3)
-		{
-			CLR_IO(GPIOC, GPIO_PIN_7);
-		}
-		else if(index==4)
-		{
-			CLR_IO(GPIOC, GPIO_PIN_6);
-		}
-		
-		
-//    switch (index) {
-//        case 0: CLR_IO(GPIOA, GPIO_PIN_8); break; //低电平
-//        case 1: CLR_IO(GPIOC, GPIO_PIN_9); break;
-//        case 2: CLR_IO(GPIOC, GPIO_PIN_8); break;
-//        case 3: CLR_IO(GPIOC, GPIO_PIN_7); break;
-//        case 4: CLR_IO(GPIOC, GPIO_PIN_6); break;
-//    }
-}
-
-void process_key_scan(uint8_t r, uint8_t c, uint16_t raw_adc) {
-    Key_t* k = &keys[r][c]; 
-    int16_t current_offset = abs((int16_t)k->idle_adc - (int16_t)raw_adc);
-
-    if (!k->is_pressed) {
-        if (current_offset < k->min_offset) k->min_offset = current_offset;
-        if (current_offset > k->min_offset + RT_SENSITIVITY && current_offset > PRESS_DEADBAND) {
-            k->is_pressed = 1;
-            k->max_offset = current_offset;
-            //printf("R%d-C%d Press! Offset:%d\r\n", r, c, current_offset);
-        }
-    } else {
-        if (current_offset > k->max_offset) k->max_offset = current_offset;
-        if (current_offset < k->max_offset - RT_SENSITIVITY) {
-            k->is_pressed = 0;
-            k->min_offset = current_offset;
-            //printf("R%d-C%d Up! Offset:%d\r\n", r, c, current_offset);
-        }
-        if (current_offset < PRESS_DEADBAND - 20) {
-            k->is_pressed = 0;
-            k->min_offset = current_offset;
-        }
-    }
-}
-
-/**
- * @brief          微秒延时
- * @param          us [in],微秒
- * @warning         warning
- * @note         硬件延时已验证 HSI 8Mhz PLL x18 144Mhz 5us-5.1us 10us-10.2us 100us-101us 1000us-1000us 优化03
- */
-void Drv_Mcu_Delay_Us(uint32_t us) 
-{
-       volatile uint8_t i;
-        while ( us-- )
-        {
-					i = 15;
-					while ( i-- )
-          {
-            __nop();
-          }
-        }
-}
-
-/**
- * @brief          brief
- * @param          ms [in],毫秒
- * @warning         warning
- * @note         硬件延时 已验证 HSI 8Mhz PLL x18 144Mhz 1ms-1.01ms 10ms-10ms 1000ms-1010ms 优化03
- */
-void Drv_Mcu_Delay_Ms(uint32_t ms)
-{
-        while ( ms-- )
-        {
-					Drv_Mcu_Delay_Us(1000);
-        }
-}
-#endif
-void test(){
-	HAL_GPIO_WritePin(GPIOC,GPIO_PIN_9,GPIO_PIN_RESET);
-	
-	HAL_ADC_Start_DMA(&AdcHandle,(uint32_t*)gADCxConvertedData,14);
-	
-	  HAL_ADC_Stop_DMA(&AdcHandle);
-    while(!__HAL_DMA_GET_FLAG(&HdmaCh1, DMA_ISR_TCIF1));                               
-        /* Clear DMA Complete Flag */
-    __HAL_DMA_CLEAR_FLAG(&HdmaCh1, DMA_IFCR_CTCIF1); 
-    // 4. 搬运完成，立刻拉低 PA5
-    	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_9, GPIO_PIN_SET); 
-  
-}
-
-void test2(){
-       // --- 开始测试 ---
-    HAL_GPIO_WritePin(GPIOC, GPIO_PIN_9, GPIO_PIN_SET); // 1. 引脚拉高
-  
-    HAL_ADC_Start_DMA(&AdcHandle, (uint32_t*)gADCxConvertedData, 14); 
-		
-	  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_9, GPIO_PIN_RESET); // 2. 搬运完成，立刻拉低
-    // 此时 ADC 正在转换，DMA 正在后台搬运
-    while(!__HAL_DMA_GET_FLAG(&HdmaCh1, DMA_ISR_TCIF1)); 
-    
-   
-    // --- 结束测试 ---
-
-    /* 后续处理 */
-    __HAL_DMA_CLEAR_FLAG(&HdmaCh1, DMA_IFCR_CTCIF1); 
-    HAL_ADC_Stop_DMA(&AdcHandle); 		
-
-    // 后面再接 printf 打印，printf 的时间千万不要计入引脚拉高期间
-    for (int i = 0; i < 14; i++) {
-        printf("%u ", gADCxConvertedData[i]);
-    }
-    printf("\n");
-    
-    HAL_Delay(100); 
 
 
-}
-///////寄存器快速配置
 #define ADC_DMA1_CH1_ALL_FLAGS (DMA_IFCR_CGIF1 | DMA_IFCR_CTCIF1 | DMA_IFCR_CHTIF1 | DMA_IFCR_CTEIF1)
 static void adc_dma_fast_init(void)
 {
@@ -275,313 +156,201 @@ static void adc_dma_fast_init(void)
     DMA1_Channel1->CCR = DMA_CCR_MINC | DMA_CCR_PSIZE_0 | DMA_CCR_MSIZE_0 | DMA_CCR_PL;
     DMA1->IFCR = ADC_DMA1_CH1_ALL_FLAGS;
 }
-//寄存器方式阻塞搬运
-void adc_dma_start(void)
-{
-     	DMA1_Channel1->CCR &= ~DMA_CCR_EN; //关闭dma的通道
-			DMA1_Channel1->CMAR = (uint32_t)gADCxConvertedData;  //设置目标地址
-			DMA1_Channel1->CNDTR = 14; //14个通道
-			DMA1->IFCR = ADC_DMA1_CH1_ALL_FLAGS; //清除中断
 
-			ADC1->SR = ~(ADC_SR_EOC | ADC_SR_STRT);//清除 ADC 历史状态标志
-			DMA1_Channel1->CCR |= DMA_CCR_EN;//DMA1_Channel1->CCR |= DMA_CCR_EN;
-			ADC1->CR2 |= ADC_CR2_SWSTART; //正式触发 ADC 启动转换。
+/* --- 硬件底层驱动 --- */
 
-			while ((DMA1->ISR & DMA_ISR_TCIF1) == 0U) {
-			}
-
-			DMA1_Channel1->CCR &= ~DMA_CCR_EN;
-			DMA1->IFCR = ADC_DMA1_CH1_ALL_FLAGS;
-}
-
- 
- 
-
- 
-
-
-///////////////////////非阻塞方式///////////////////////////////
-void adc_dma_start_it(){
-    DMA1_Channel1->CCR &= ~DMA_CCR_EN; //关闭dma的通道
-	  DMA1_Channel1->CMAR=(uint32_t)gADCxConvertedData;  //设置目标地址
-	  DMA1_Channel1->CNDTR = 14; //14个通道
-	  DMA1->IFCR = ADC_DMA1_CH1_ALL_FLAGS; //清除中断
-	  ADC1->SR = ~(ADC_SR_EOC | ADC_SR_STRT);//清除 ADC 历史状态标志
-	
-    //开启传输完成中断 (TCIE)
-    DMA1_Channel1->CCR |= (DMA_CCR_TCIE | DMA_CCR_EN); 
-	  ADC1->CR2 |= ADC_CR2_SWSTART;                  // 触发ADC启动
-}
-/*
-
-    SET_IO(GPIOA, GPIO_PIN_8); //高电平
+void ROW_ALL_OFF(void) {
+    SET_IO(GPIOA, GPIO_PIN_8);
     SET_IO(GPIOC, GPIO_PIN_6 | GPIO_PIN_7 | GPIO_PIN_8 | GPIO_PIN_9);
-		Drv_Mcu_Delay_Us(500);
-	  if(index==0)
-		{	
-			CLR_IO(GPIOA, GPIO_PIN_8);
-		}
-		else if(index==1)
-		{
-			CLR_IO(GPIOC, GPIO_PIN_9);
-		}
-		else if(index==2)
-		{
-			CLR_IO(GPIOC, GPIO_PIN_8);
-		}
-		else if(index==3)
-		{
-			CLR_IO(GPIOC, GPIO_PIN_7);
-		}
-		else if(index==4)
-		{
-			CLR_IO(GPIOC, GPIO_PIN_6);
-		}
-*/
-#define  ROW_ALL_OFF()   SET_IO(GPIOA, GPIO_PIN_8);SET_IO(GPIOC, GPIO_PIN_6 | GPIO_PIN_7 | GPIO_PIN_8 | GPIO_PIN_9) 
-
-
-//dma的中断服务函数
-void DMA1_Channel1_IRQHandler(void){
-
-	
-	if(DMA1->ISR & DMA_ISR_TCIF1){
-		
-	   //清除中断标志位
-		 DMA1->IFCR=ADC_DMA1_CH1_ALL_FLAGS;
-	   DMA1_Channel1->CCR &= ~DMA_CCR_EN;
-		 
-		ROW_ALL_OFF();
-		 //2.将采集到的14路adc放到
-		 for(uint8_t c=0;c<14;c++){
-		    g_adc_raw_col[g_current_row][c]+=gADCxConvertedData[c];
-		 }
-		 
-		 //递增行
-		 g_current_row++;
-		   Drv_Mcu_Delay_Us(5);
-		 if(g_current_row<5){
-		    //切换下一行
-				if(g_current_row==0)
-				{	
-					CLR_IO(GPIOA, GPIO_PIN_8);
-				}
-				else if(g_current_row==1)
-				{
-					CLR_IO(GPIOC, GPIO_PIN_9);
-				}
-				else if(g_current_row==2)
-				{
-					CLR_IO(GPIOC, GPIO_PIN_8);
-				}
-				else if(g_current_row==3)
-				{
-					CLR_IO(GPIOC, GPIO_PIN_7);
-				}
-				else if(g_current_row==4)
-				{
-					CLR_IO(GPIOC, GPIO_PIN_6);
-				}
-			  //us及延时
-			  Drv_Mcu_Delay_Us(10);
-			  adc_dma_start_it();
-			  
-		 }else{ 
-			   //扫描完毕
-		    g_current_row=0;
-			  g_scan_round++;
-			  Drv_Mcu_Delay_Us(5);
-			 
-			 //三次判断
-			 if(g_scan_round<3){
-				 
-						if(g_current_row==0){	CLR_IO(GPIOA, GPIO_PIN_8);}
-						else if(g_current_row==1){CLR_IO(GPIOC, GPIO_PIN_9);}
-						else if(g_current_row==2){CLR_IO(GPIOC, GPIO_PIN_8);}
-						else if(g_current_row==3){CLR_IO(GPIOC, GPIO_PIN_7);}
-						else if(g_current_row==4){CLR_IO(GPIOC, GPIO_PIN_6);}
-						//标志位1
-						//  g_scan_complete=1;
-						Drv_Mcu_Delay_Us(10);
-						adc_dma_start_it();
-			 }else{
-			     g_scan_complete = 1; 
-			 }
-		 
-		 }
-	
-		 
-		 
-		 
-	}
-	
-
 }
 
+void select_row(uint8_t index) {
+    ROW_ALL_OFF();
+    switch(index) {
+        case 0: CLR_IO(GPIOA, GPIO_PIN_8); break;
+        case 1: CLR_IO(GPIOC, GPIO_PIN_9); break;
+        case 2: CLR_IO(GPIOC, GPIO_PIN_8); break;
+        case 3: CLR_IO(GPIOC, GPIO_PIN_7); break;
+        case 4: CLR_IO(GPIOC, GPIO_PIN_6); break;
+    }
+}
 
+// 非阻塞启动 DMA 采集
+#define ADC_DMA1_CH1_ALL_FLAGS (DMA_IFCR_CGIF1 | DMA_IFCR_CTCIF1 | DMA_IFCR_CHTIF1 | DMA_IFCR_CTEIF1)
+void adc_dma_start_it(void) {
+    DMA1_Channel1->CCR &= ~DMA_CCR_EN;
+    DMA1_Channel1->CMAR = (uint32_t)gADCxConvertedData;
+    DMA1_Channel1->CNDTR = 14;
+    DMA1->IFCR = ADC_DMA1_CH1_ALL_FLAGS; // 核心：强制清除上次残留
+    ADC1->SR = ~(ADC_SR_EOC | ADC_SR_STRT);
+    
+    DMA1_Channel1->CCR |= (DMA_CCR_TCIE | DMA_CCR_EN);
+    ADC1->CR2 |= ADC_CR2_SWSTART;
+}
 
-////dma的中断服务函数
-//void DMA1_Channel1_IRQHandler(void){
-//	 SET_IO(GPIOA,GPIO_PIN_9);
-//	if(DMA1->ISR & DMA_ISR_TCIF1){
-//		
-//	   //清除中断标志位
-//		 DMA1->IFCR=ADC_DMA1_CH1_ALL_FLAGS;
-//	   DMA1_Channel1->CCR &= ~DMA_CCR_EN;
-//		 //2.将采集到的14路adc放到
-//		 for(uint8_t c=0;c<14;c++){
-//		    g_adc_raw_col[g_current_row][c]=gADCxConvertedData[c];
-//		 }
-//		 //递增行
-//		 g_current_row++;
-//		 if(g_current_row<5){
-//		    //切换下一行
-//			  select_row(g_current_row);
-//			  //us及延时
-//			  Drv_Mcu_Delay_Us(500);
-//			  adc_dma_start_it();
-//			  
-//		 }else{ //扫描完毕
-//		    g_current_row=0;
-//			 select_row(g_current_row);
-//			 //标志位1
-//			//  g_scan_complete=1;
-//			 	  Drv_Mcu_Delay_Us(500);
-//			 adc_dma_start_it();
-//		 
-//		 }
-//	
-//	}
-//	
-//   CLR_IO(GPIOA,GPIO_PIN_9);
-//}
+// 核心中断：链式触发逻辑
+void DMA1_Channel1_IRQHandler(void) {
+    if(DMA1->ISR & DMA_ISR_TCIF1) {
+        DMA1->IFCR = ADC_DMA1_CH1_ALL_FLAGS;
+        DMA1_Channel1->CCR &= ~DMA_CCR_EN;
 
+        // 1. 数据累加
+        for(uint8_t c = 0; c < 14; c++) {
+            g_adc_raw_col[g_current_row][c] += gADCxConvertedData[c];
+        }
 
+        // 2. 状态机：切换行或轮次
+        g_current_row++;
+        if(g_current_row < 5) {
+            select_row(g_current_row);
+            Bsp_Delay_Us(SETTLING_TIME_US);
+            adc_dma_start_it();
+        } else {
+            g_current_row = 0;
+            g_scan_round++;
+            if(g_scan_round < SCAN_ROUNDS) {
+                select_row(0);
+                Bsp_Delay_Us(SETTLING_TIME_US);
+                adc_dma_start_it();
+            } else {
+                g_scan_complete = 1; // 标记扫描全结束，等待 main 处理
+            }
+        }
+    }
+}
 
+/* --- 业务逻辑 --- */
 
-extern volatile uint32_t g_cnt; 
-// 掩码表
-const uint8_t key_mask[5][14] = {
-    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}, // 第0行：全满 (14键)
-    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}, // 第1行：全满 (14键)
-    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1}, // 第2行：[12]是空的 (13键)
-    {1, 0xff, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0xff, 1}, // 第3行：[1]和[12]是空的 (12键)
-    {1, 1, 1, 0xff, 0xff, 0xff, 1, 0xff, 0xff, 0xff, 1, 1, 1, 1}  // 第4行：底排大量空位 (8键)
-}; // 总计：14+14+13+12+8 = 61键！
-int main(void)
-{  
+uint8_t process_key_logic(Key_t* k, uint16_t cur_adc) {
+    // 1. 计算偏移量（防止负数溢出）
+    int32_t diff = (int32_t)k->idele_adc - (int32_t)cur_adc;
+    int16_t offset = (diff > 0) ? (int16_t)diff : 0;
+
+    // 2. 顶部死区判断
+    if (offset < k->top_deadzone) {
+        k->is_pressed = 0;
+        k->in_rt_cycle = 0;
+        k->max_offset = 0;
+        k->min_offset = 0;
+        return 0;
+    }
+
+    // 3. 底部死区限制
+    if (offset > k->bottom_deadzone) offset = k->bottom_deadzone;
+
+    // 4. RT 与 AP 逻辑状态机
+    if (!k->is_pressed) {
+        if (offset < k->min_offset) k->min_offset = offset;
+        uint16_t trigger_line = k->in_rt_cycle ? (k->min_offset + k->rt_press_sens) : k->actuation_point;
+        if (offset >= trigger_line) {
+            k->is_pressed = 1;
+            k->in_rt_cycle = 1;
+            k->max_offset = offset;
+        }
+    } else {
+        if (offset > k->max_offset) k->max_offset = offset;
+        uint16_t release_line = k->max_offset - k->rt_release_sens;
+        if (offset <= release_line) {
+            k->is_pressed = 0;
+            k->min_offset = offset;
+        }
+    }
+    return k->is_pressed;
+}
+
+void key_init_calibration(void) {
+    printf("Calibration Start...\r\n");
+    g_scan_complete = 0;
+    g_scan_round = 0;
+    g_current_row = 0;
+    memset(g_adc_raw_col, 0, sizeof(g_adc_raw_col));
+
+    select_row(0);
+    Bsp_Delay_Us(100); // 校准给更长稳定时间
+    adc_dma_start_it();
+
+    while(!g_scan_complete); // 等待三轮扫完
+
+    for(uint8_t r = 0; r < 5; r++) {
+        for(uint8_t c = 0; c < 14; c++) {
+            keys[r][c].idele_adc = g_adc_raw_col[r][c] / SCAN_ROUNDS;
+            g_adc_raw_col[r][c] = 0; // 必须清零累加器！
+            
+            keys[r][c].actuation_point = 350;
+            keys[r][c].top_deadzone = 80;
+            keys[r][c].bottom_deadzone = 1050;
+            keys[r][c].rt_press_sens = 50;
+            keys[r][c].rt_release_sens = 50;
+            keys[r][c].is_pressed = 0;
+        }
+    }
+    
+    // 关键复位：确保 main 启动正常
+    g_scan_complete = 0;
+    g_scan_round = 0;
+    g_current_row = 0;
+    printf("Calibration OK!\r\n");
+}
+
+/* --- 主循环 --- */
+
+int main(void) {
     HAL_Init();
     APP_SystemClockConfig();
-	
-	  //////timer初始化
-  	bsp_tim_init();
-    //bsp_usart_init(115200);
-	  ////////ws2812初始化
-    bsp_spi_dma_init();
-    lib_ws2812_init();
-     
-    
-    
-    //APP_USBInit();
-    // ///////////adc
+   
+    bsp_usart_init(115200);
     GPIO_Config();
     APP_AdcConfig();
+    adc_dma_fast_init();
 
-    
-	  adc_dma_fast_init();
-	  
-	  // --- 关键：手动启动第一轮扫描的第 0 行 ---
-    g_current_row = 0;
+    // 1. 系统校准
+    key_init_calibration();
+
+    // 2. 第一次“点火”启动运行扫描
     g_scan_complete = 0;
+    g_scan_round = 0;
+    g_current_row = 0;
     select_row(0);
-    Drv_Mcu_Delay_Us(15);
-    adc_dma_start_it(); 
-    printf("init_success");
+    Bsp_Delay_Us(SETTLING_TIME_US);
+    adc_dma_start_it();
 
-		//adc_keys_initscan();
-	  uint32_t  cur_cnt=0;
-	  while (1)
-		{
+    while (1) {
+        if (g_scan_complete == 1) {
+            for(uint8_t r = 0; r < 5; r++) {
+                for (uint8_t c = 0; c < 14; c++) {
+                    if (key_mask[r][c] == 0) {
+                        g_adc_raw_col[r][c] = 0;
+                        continue;
+                    }
 
-       
-				 if(g_cnt-cur_cnt>=2){
-						cur_cnt=g_cnt;
-						//执行扫描任务
+                    uint16_t avg_adc = g_adc_raw_col[r][c] / SCAN_ROUNDS;
+                    g_adc_raw_col[r][c] = 0; // 处理完即清零
 
-   
-						if (g_scan_complete == 1) {
-								
-								for(uint8_t r = 0; r < 5; r++) {
-										for (uint8_t c = 0; c < 14; c++) {
-												
-												// 1. 直接除以 3 求平均，存入新数组
-												g_adc_filtered[r][c] = g_adc_raw_col[r][c] / 3;
-												//进行逻辑判断
-											  if(key_mask[r][c]==1){
-												  //进行按键盘判断
-												  process_key_scan(r, c, g_adc_filtered[r][c]);  
-												
-												}
-											
-											
-											
-											
-											
-												
-												// 清零累加器，为下一波的3次扫描做准备！
-												g_adc_raw_col[r][c] = 0; 
-										}
-								}
-								
-								// 4. 重置状态，重新开启下一波扫描
-								g_scan_complete = 0;    // 清除完成标志
-								g_scan_round = 0;       // 轮次归零
-								g_current_row = 0;      // 行号归零
-								
-								select_row(0);          // 重新选中第一行
-								Drv_Mcu_Delay_Us(20);   // 必须延时，确保电压稳定
-								adc_dma_start_it();     // 启动 DMA，开启新的一波中断
-						}		 
-		 }		 
+                    Key_t *k = &keys[r][c];
+                    uint8_t old_s = k->is_pressed;
+                    process_key_logic(k, avg_adc);
 
+                    // 只有状态变化才处理灯光或串口
+                    if (old_s != k->is_pressed) {
+                        if (k->is_pressed) {
+                            printf("P[%d,%d] ADC:%d\r\n", r, c, avg_adc);
+                        } else {
+                            printf("R[%d,%d]\r\n", r, c);
+                        }
+                    }
+                }
+            }
 
-		}
-   	   
+            // 3. 一波逻辑处理结束，重启新的一波扫描
+            g_scan_complete = 0;
+            g_scan_round = 0;
+            g_current_row = 0;
+            select_row(0);
+            Bsp_Delay_Us(SETTLING_TIME_US);
+            adc_dma_start_it();
+        }
+    }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

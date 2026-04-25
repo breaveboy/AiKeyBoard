@@ -38,9 +38,6 @@
 .\objects\main.o: ..\Bsp\inc\bsp_spi_dma.h
 .\objects\main.o: ..\Bsp\inc\bsp_tim.h
 .\objects\main.o: ..\Bsp\inc\bsp_uart.h
-.\objects\main.o: ..\Lib\inc\lib_ws2812.h
-.\objects\main.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
+.\objects\main.o: ..\Bsp\inc\bsp_delay.h
 .\objects\main.o: ..\User\Inc\usb_config.h
-.\objects\main.o: ..\User\Inc\task.h
-.\objects\main.o: ..\App\inc\App.h
-.\objects\main.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
+.\objects\main.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h

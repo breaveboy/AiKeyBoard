@@ -8,5 +8,6 @@
 #include "bsp_spi_dma.h"
 #include "bsp_tim.h"
 #include "bsp_uart.h"
+#include "bsp_delay.h"
 
 #endif 

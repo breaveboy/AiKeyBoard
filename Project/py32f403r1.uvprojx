@@ -484,6 +484,11 @@
               <FileType>1</FileType>
               <FilePath>..\Bsp\src\bsp_gpio.c</FilePath>
             </File>
+            <File>
+              <FileName>bsp_delay.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Bsp\src\bsp_delay.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
