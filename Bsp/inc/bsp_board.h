@@ -8,20 +8,23 @@
 #define ADC_CHANNELS_COUNT       14    // ADC 通道数量（列数）
 #define MATRIX_ROWS_COUNT        5     // 矩阵行数
 
-// 行控制引脚配置 (ROW4-ROW0) - 低电平有效
-#define ROW1_PIN                 GPIO_PIN_6
-#define ROW1_PORT                GPIOC
-#define ROW2_PIN                 GPIO_PIN_7
-#define ROW2_PORT                GPIOC
-#define ROW3_PIN                 GPIO_PIN_8
-#define ROW3_PORT                GPIOC
-#define ROW4_PIN                 GPIO_PIN_9
-#define ROW4_PORT                GPIOC
-#define ROW5_PIN                 GPIO_PIN_10
-#define ROW5_PORT                GPIOC
+#define SET_IO(port,pin)    port->BSRR = pin  //高电平
+#define CLR_IO(port,pin)    port->BRR = pin   //低电平
 
-#define ROW_ALL_PINS             (ROW1_PIN | ROW2_PIN | ROW3_PIN | ROW4_PIN | ROW5_PIN)
-#define ROW_ALL_PORT             GPIOC
+// 行控制引脚配置 (ROW0-ROW4) - 低电平有效
+#define ROW0_PIN                 GPIO_PIN_8
+#define ROW0_PORT                GPIOA
+#define ROW1_PIN                 GPIO_PIN_9
+#define ROW1_PORT                GPIOC
+#define ROW2_PIN                 GPIO_PIN_8
+#define ROW2_PORT                GPIOC
+#define ROW3_PIN                 GPIO_PIN_7
+#define ROW3_PORT                GPIOC
+#define ROW4_PIN                 GPIO_PIN_6
+#define ROW4_PORT                GPIOC
+
+#define ROW_ALL_PINS             (ROW0_PIN | ROW1_PIN | ROW2_PIN | ROW3_PIN | ROW4_PIN)
+#define ROW_ALL_PORT             (GPIOA)  // ROW0在GPIOA, 其他在GPIOC
 
 // ADC 列通道配置 (AIN0-AIN13) - 连接霍尔传感器
 #define ADC_COL0_PIN             GPIO_PIN_0
@@ -72,7 +75,7 @@
 // ADC 配置参数
 #define ADC_RESOLUTION           ADC_RESOLUTION_12B      // 12位分辨率
 #define ADC_SAMPLETIME           ADC_SAMPLETIME_28CYCLES_5  // 采样时间
-#define ADC_CLOCK_DIV            RCC_ADCPCLK2_DIV8      // ADC 时钟分频
+#define ADC_CLOCK_DIV            RCC_ADCPCLK2_DIV2      // ADC 时钟分频
 
 // ==========================================================
 //  WS2812 LED 配置 (SPI DMA)
@@ -115,7 +118,7 @@
 // ==========================================================
 //  时钟使能宏定义
 // ==========================================================
-#define RCC_ROW_PORT_CLK_ENABLE()    __HAL_RCC_GPIOC_CLK_ENABLE()
+#define RCC_ROW_PORT_CLK_ENABLE()    do { __HAL_RCC_GPIOA_CLK_ENABLE(); __HAL_RCC_GPIOC_CLK_ENABLE(); } while(0)
 #define RCC_ADC_PORTA_CLK_ENABLE()   __HAL_RCC_GPIOA_CLK_ENABLE()
 #define RCC_ADC_PORTB_CLK_ENABLE()   __HAL_RCC_GPIOB_CLK_ENABLE()
 #define RCC_ADC_PORTC_CLK_ENABLE()   __HAL_RCC_GPIOC_CLK_ENABLE()

@@ -1,34 +1,46 @@
-./objects/main.o: ..\User\Src\main.c ..\User\Inc\main.h \
-  ..\Frimware\Inc\py32f4xx_hal.h ..\User\Inc\py32f403_hal_conf.h \
-  ..\Frimware\Inc\py32f403_hal_cortex.h \
-  ..\Frimware\Inc\py32f403_hal_def.h \
-  ..\..\..\Keil_v5\Packs\Puya\PY32F4xx_DFP\1.0.6\Drivers\CMSIS\Device\PUYA\PY32F4xx\Include\py32f4xx.h \
-  ..\..\..\Keil_v5\Packs\Puya\PY32F4xx_DFP\1.0.6\Drivers\CMSIS\Device\PUYA\PY32F4xx\Include\py32f403xC.h \
-  D:\Keil_v5\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include\core_cm4.h \
-  D:\Keil_v5\ARM\ARMCLANG\include\stdint.h \
-  D:\Keil_v5\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include\cmsis_version.h \
-  D:\Keil_v5\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include\cmsis_compiler.h \
-  D:\Keil_v5\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include\cmsis_armclang.h \
-  ..\..\..\Keil_v5\Packs\Puya\PY32F4xx_DFP\1.0.6\Drivers\CMSIS\Device\PUYA\PY32F4xx\Include\system_py32f4xx.h \
-  D:\Keil_v5\ARM\ARMCLANG\include\stddef.h \
-  D:\Keil_v5\ARM\ARMCLANG\include\stdio.h \
-  ..\Frimware\Inc\py32f403_hal_dma.h \
-  ..\Frimware\Inc\py32f403_hal_dma_ex.h \
-  ..\Frimware\Inc\py32f403_hal_flash.h \
-  ..\Frimware\Inc\py32f403_hal_gpio.h \
-  ..\Frimware\Inc\py32f403_hal_gpio_ex.h \
-  ..\Frimware\Inc\py32f403_hal_rcc.h \
-  ..\Frimware\Inc\py32f403_hal_rcc_ex.h \
-  ..\Frimware\Inc\py32f403_hal_adc.h \
-  ..\Frimware\Inc\py32f403_hal_adc_ex.h \
-  ..\Frimware\Inc\py32f403_hal_pwr.h \
-  ..\Frimware\Inc\py32f403_hal_pwr_ex.h \
-  ..\Frimware\Inc\py32f403_hal_spi.h \
-  ..\Frimware\Inc\py32f403_hal_spi_ex.h \
-  ..\Frimware\Inc\py32f403_hal_tim.h \
-  ..\Frimware\Inc\py32f403_hal_tim_ex.h \
-  ..\Frimware\Inc\py32f403_hal_uart.h ..\Bsp\inc\bsp_config.h \
-  ..\Bsp\inc\bsp_board.h ..\Bsp\inc\bsp_gpio.h ..\Bsp\inc\bsp_adc_dma.h \
-  ..\Bsp\inc\bsp_spi_dma.h ..\Bsp\inc\bsp_tim.h ..\Bsp\inc\bsp_uart.h \
-  ..\Lib\inc\lib_ws2812.h D:\Keil_v5\ARM\ARMCLANG\include\stdbool.h \
-  ..\User\Inc\usb_config.h ..\User\Inc\task.h ..\App\inc\App.h
+.\objects\main.o: ..\User\Src\main.c
+.\objects\main.o: ..\User\Inc\main.h
+.\objects\main.o: ..\Frimware\Inc\py32f4xx_hal.h
+.\objects\main.o: ..\User\Inc\py32f403_hal_conf.h
+.\objects\main.o: ..\Frimware\Inc\py32f403_hal_cortex.h
+.\objects\main.o: ..\Frimware\Inc\py32f403_hal_def.h
+.\objects\main.o: ..\..\..\Keil_v5\Packs\Puya\PY32F4xx_DFP\1.0.6\Drivers\CMSIS\Device\PUYA\PY32F4xx\Include\py32f4xx.h
+.\objects\main.o: ..\..\..\Keil_v5\Packs\Puya\PY32F4xx_DFP\1.0.6\Drivers\CMSIS\Device\PUYA\PY32F4xx\Include\py32f403xC.h
+.\objects\main.o: D:\Keil_v5\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include\core_cm4.h
+.\objects\main.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+.\objects\main.o: D:\Keil_v5\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include\cmsis_version.h
+.\objects\main.o: D:\Keil_v5\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include\cmsis_compiler.h
+.\objects\main.o: D:\Keil_v5\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include\cmsis_armcc.h
+.\objects\main.o: ..\..\..\Keil_v5\Packs\Puya\PY32F4xx_DFP\1.0.6\Drivers\CMSIS\Device\PUYA\PY32F4xx\Include\system_py32f4xx.h
+.\objects\main.o: ..\Frimware\Inc\py32f4xx_hal.h
+.\objects\main.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
+.\objects\main.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
+.\objects\main.o: ..\Frimware\Inc\py32f403_hal_dma.h
+.\objects\main.o: ..\Frimware\Inc\py32f403_hal_dma_ex.h
+.\objects\main.o: ..\Frimware\Inc\py32f403_hal_flash.h
+.\objects\main.o: ..\Frimware\Inc\py32f403_hal_gpio.h
+.\objects\main.o: ..\Frimware\Inc\py32f403_hal_gpio_ex.h
+.\objects\main.o: ..\Frimware\Inc\py32f403_hal_rcc.h
+.\objects\main.o: ..\Frimware\Inc\py32f403_hal_rcc_ex.h
+.\objects\main.o: ..\Frimware\Inc\py32f403_hal_adc.h
+.\objects\main.o: ..\Frimware\Inc\py32f403_hal_adc_ex.h
+.\objects\main.o: ..\Frimware\Inc\py32f403_hal_pwr.h
+.\objects\main.o: ..\Frimware\Inc\py32f403_hal_pwr_ex.h
+.\objects\main.o: ..\Frimware\Inc\py32f403_hal_spi.h
+.\objects\main.o: ..\Frimware\Inc\py32f403_hal_spi_ex.h
+.\objects\main.o: ..\Frimware\Inc\py32f403_hal_tim.h
+.\objects\main.o: ..\Frimware\Inc\py32f403_hal_tim_ex.h
+.\objects\main.o: ..\Frimware\Inc\py32f403_hal_uart.h
+.\objects\main.o: ..\Bsp\inc\bsp_config.h
+.\objects\main.o: ..\Bsp\inc\bsp_board.h
+.\objects\main.o: ..\Bsp\inc\bsp_gpio.h
+.\objects\main.o: ..\Bsp\inc\bsp_adc_dma.h
+.\objects\main.o: ..\Bsp\inc\bsp_spi_dma.h
+.\objects\main.o: ..\Bsp\inc\bsp_tim.h
+.\objects\main.o: ..\Bsp\inc\bsp_uart.h
+.\objects\main.o: ..\Lib\inc\lib_ws2812.h
+.\objects\main.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
+.\objects\main.o: ..\User\Inc\usb_config.h
+.\objects\main.o: ..\User\Inc\task.h
+.\objects\main.o: ..\App\inc\App.h
+.\objects\main.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h

@@ -9,12 +9,12 @@ License Information: as swk-rd-260330, sa, LIC=CRMW3-AYUYP-E03N4-FZH8F-3DTAY-9EK
  
 Tool Versions:
 Toolchain:       MDK-ARM Professional  Version: 5.39.0.0
-Toolchain Path:  D:\Keil_v5\ARM\ARMCLANG\Bin
-C Compiler:      ArmClang.exe V6.21
-Assembler:       Armasm.exe V6.21
-Linker/Locator:  ArmLink.exe V6.21
-Library Manager: ArmAr.exe V6.21
-Hex Converter:   FromElf.exe V6.21
+Toolchain Path:  D:\Keil_v5\ARM\ARMCC\Bin
+C Compiler:      Armcc.exe V5.06 update 6 (build 750)
+Assembler:       Armasm.exe V5.06 update 6 (build 750)
+Linker/Locator:  ArmLink.exe V5.06 update 6 (build 750)
+Library Manager: ArmAr.exe V5.06 update 6 (build 750)
+Hex Converter:   FromElf.exe V5.06 update 6 (build 750)
 CPU DLL:         SARMCM3.DLL V5.39.0.0
 Dialog DLL:      DCM.DLL V1.17.5.0
 Target DLL:      Segger\JL2CM3.dll V2.99.43.0
@@ -22,16 +22,27 @@ Dialog DLL:      TCM.DLL V1.56.4.0
  
 <h2>Project:</h2>
 D:\sike_local\AiKeyBoard\Project\py32f403r1.uvprojx
-Project File Date:  04/17/2026
+Project File Date:  04/23/2026
 
 <h2>Output:</h2>
-*** Using Compiler 'V6.21', folder: 'D:\Keil_v5\ARM\ARMCLANG\Bin'
+*** Using Compiler 'V5.06 update 6 (build 750)', folder: 'D:\Keil_v5\ARM\ARMCC\Bin'
 Build target 'Target 1'
 compiling main.c...
+..\Bsp\inc\bsp_adc_dma.h(15): warning:  #2532-D: support for trigraphs is disabled
+   *         row: 0-4 (??), col: 0-13 (??)
+..\Bsp\inc\bsp_uart.h(12): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\User\Inc\task.h(11): warning:  #1295-D: Deprecated declaration Task_exec - give arg types
+  void Task_exec();
+..\User\Inc\task.h(14): warning:  #1295-D: Deprecated declaration Task_update - give arg types
+  void Task_update();
+..\User\Src\main.c(596): warning:  #177-D: function "APP_USBInit"  was declared but never referenced
+  static void APP_USBInit(void)
+..\User\Src\main.c: 5 warnings, 0 errors
 linking...
-Program Size: Code=16120 RO-data=848 RW-data=376 ZI-data=3704  
+Program Size: Code=17796 RO-data=640 RW-data=404 ZI-data=4620  
 FromELF: creating hex file...
-".\Objects\py32f403r1.axf" - 0 Error(s), 0 Warning(s).
+".\Objects\py32f403r1.axf" - 0 Error(s), 5 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -54,7 +65,7 @@ Package Vendor: Puya
 <h2>Collection of Component Files used:</h2>
 
    * Component: ARM::CMSIS:CORE@5.6.0
-Build Time Elapsed:  00:00:00
+Build Time Elapsed:  00:00:01
 </pre>
 </body>
 </html>

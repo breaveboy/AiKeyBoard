@@ -1,5 +1,5 @@
 #include "task.h"
-uint32_t g_cnt = 0;
+volatile  uint32_t g_cnt = 0;
 
 typedef void (*Task_Func)(void);
 

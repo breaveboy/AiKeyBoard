@@ -1,37 +1,44 @@
-./objects/usbd_core.o: ..\CherryUSB\core\usbd_core.c \
-  ..\CherryUSB\core\usbd_core.h \
-  D:\Keil_v5\ARM\ARMCLANG\include\stdbool.h \
-  D:\Keil_v5\ARM\ARMCLANG\include\string.h \
-  D:\Keil_v5\ARM\ARMCLANG\include\stdint.h \
-  D:\Keil_v5\ARM\ARMCLANG\include\stdlib.h ..\User\Inc\usb_config.h \
-  ..\Frimware\Inc\py32f4xx_hal.h ..\User\Inc\py32f403_hal_conf.h \
-  ..\Frimware\Inc\py32f403_hal_cortex.h \
-  ..\Frimware\Inc\py32f403_hal_def.h \
-  ..\..\..\Keil_v5\Packs\Puya\PY32F4xx_DFP\1.0.6\Drivers\CMSIS\Device\PUYA\PY32F4xx\Include\py32f4xx.h \
-  ..\..\..\Keil_v5\Packs\Puya\PY32F4xx_DFP\1.0.6\Drivers\CMSIS\Device\PUYA\PY32F4xx\Include\py32f403xC.h \
-  D:\Keil_v5\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include\core_cm4.h \
-  D:\Keil_v5\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include\cmsis_version.h \
-  D:\Keil_v5\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include\cmsis_compiler.h \
-  D:\Keil_v5\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include\cmsis_armclang.h \
-  ..\..\..\Keil_v5\Packs\Puya\PY32F4xx_DFP\1.0.6\Drivers\CMSIS\Device\PUYA\PY32F4xx\Include\system_py32f4xx.h \
-  D:\Keil_v5\ARM\ARMCLANG\include\stddef.h \
-  D:\Keil_v5\ARM\ARMCLANG\include\stdio.h \
-  ..\Frimware\Inc\py32f403_hal_dma.h \
-  ..\Frimware\Inc\py32f403_hal_dma_ex.h \
-  ..\Frimware\Inc\py32f403_hal_flash.h \
-  ..\Frimware\Inc\py32f403_hal_gpio.h \
-  ..\Frimware\Inc\py32f403_hal_gpio_ex.h \
-  ..\Frimware\Inc\py32f403_hal_rcc.h \
-  ..\Frimware\Inc\py32f403_hal_rcc_ex.h \
-  ..\Frimware\Inc\py32f403_hal_adc.h \
-  ..\Frimware\Inc\py32f403_hal_adc_ex.h \
-  ..\Frimware\Inc\py32f403_hal_pwr.h \
-  ..\Frimware\Inc\py32f403_hal_pwr_ex.h \
-  ..\Frimware\Inc\py32f403_hal_spi.h \
-  ..\Frimware\Inc\py32f403_hal_spi_ex.h \
-  ..\Frimware\Inc\py32f403_hal_tim.h \
-  ..\Frimware\Inc\py32f403_hal_tim_ex.h \
-  ..\Frimware\Inc\py32f403_hal_uart.h ..\CherryUSB\common\usb_util.h \
-  ..\CherryUSB\common\usb_errno.h ..\CherryUSB\common\usb_def.h \
-  ..\CherryUSB\common\usb_list.h ..\CherryUSB\common\usb_mem.h \
-  ..\CherryUSB\common\usb_log.h ..\CherryUSB\common\usb_dc.h
+.\objects\usbd_core.o: ..\CherryUSB\core\usbd_core.c
+.\objects\usbd_core.o: ..\CherryUSB\core\usbd_core.h
+.\objects\usbd_core.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
+.\objects\usbd_core.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
+.\objects\usbd_core.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+.\objects\usbd_core.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
+.\objects\usbd_core.o: ..\User\Inc\usb_config.h
+.\objects\usbd_core.o: ..\Frimware\Inc\py32f4xx_hal.h
+.\objects\usbd_core.o: ..\User\Inc\py32f403_hal_conf.h
+.\objects\usbd_core.o: ..\Frimware\Inc\py32f403_hal_cortex.h
+.\objects\usbd_core.o: ..\Frimware\Inc\py32f403_hal_def.h
+.\objects\usbd_core.o: ..\..\..\Keil_v5\Packs\Puya\PY32F4xx_DFP\1.0.6\Drivers\CMSIS\Device\PUYA\PY32F4xx\Include\py32f4xx.h
+.\objects\usbd_core.o: ..\..\..\Keil_v5\Packs\Puya\PY32F4xx_DFP\1.0.6\Drivers\CMSIS\Device\PUYA\PY32F4xx\Include\py32f403xC.h
+.\objects\usbd_core.o: D:\Keil_v5\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include\core_cm4.h
+.\objects\usbd_core.o: D:\Keil_v5\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include\cmsis_version.h
+.\objects\usbd_core.o: D:\Keil_v5\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include\cmsis_compiler.h
+.\objects\usbd_core.o: D:\Keil_v5\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include\cmsis_armcc.h
+.\objects\usbd_core.o: ..\..\..\Keil_v5\Packs\Puya\PY32F4xx_DFP\1.0.6\Drivers\CMSIS\Device\PUYA\PY32F4xx\Include\system_py32f4xx.h
+.\objects\usbd_core.o: ..\Frimware\Inc\py32f4xx_hal.h
+.\objects\usbd_core.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
+.\objects\usbd_core.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
+.\objects\usbd_core.o: ..\Frimware\Inc\py32f403_hal_dma.h
+.\objects\usbd_core.o: ..\Frimware\Inc\py32f403_hal_dma_ex.h
+.\objects\usbd_core.o: ..\Frimware\Inc\py32f403_hal_flash.h
+.\objects\usbd_core.o: ..\Frimware\Inc\py32f403_hal_gpio.h
+.\objects\usbd_core.o: ..\Frimware\Inc\py32f403_hal_gpio_ex.h
+.\objects\usbd_core.o: ..\Frimware\Inc\py32f403_hal_rcc.h
+.\objects\usbd_core.o: ..\Frimware\Inc\py32f403_hal_rcc_ex.h
+.\objects\usbd_core.o: ..\Frimware\Inc\py32f403_hal_adc.h
+.\objects\usbd_core.o: ..\Frimware\Inc\py32f403_hal_adc_ex.h
+.\objects\usbd_core.o: ..\Frimware\Inc\py32f403_hal_pwr.h
+.\objects\usbd_core.o: ..\Frimware\Inc\py32f403_hal_pwr_ex.h
+.\objects\usbd_core.o: ..\Frimware\Inc\py32f403_hal_spi.h
+.\objects\usbd_core.o: ..\Frimware\Inc\py32f403_hal_spi_ex.h
+.\objects\usbd_core.o: ..\Frimware\Inc\py32f403_hal_tim.h
+.\objects\usbd_core.o: ..\Frimware\Inc\py32f403_hal_tim_ex.h
+.\objects\usbd_core.o: ..\Frimware\Inc\py32f403_hal_uart.h
+.\objects\usbd_core.o: ..\CherryUSB\common\usb_util.h
+.\objects\usbd_core.o: ..\CherryUSB\common\usb_errno.h
+.\objects\usbd_core.o: ..\CherryUSB\common\usb_def.h
+.\objects\usbd_core.o: ..\CherryUSB\common\usb_list.h
+.\objects\usbd_core.o: ..\CherryUSB\common\usb_mem.h
+.\objects\usbd_core.o: ..\CherryUSB\common\usb_log.h
+.\objects\usbd_core.o: ..\CherryUSB\common\usb_dc.h

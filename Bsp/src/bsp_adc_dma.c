@@ -17,7 +17,6 @@ static const uint32_t adc_channels[ADC_CHANNELS_COUNT] = {
     ADC_COL8_CH, ADC_COL9_CH, ADC_COL10_CH, ADC_COL11_CH,
     ADC_COL12_CH, ADC_COL13_CH
 };
-
 /**
  * @brief  初始化 ADC 列引脚为模拟输入模式
  */

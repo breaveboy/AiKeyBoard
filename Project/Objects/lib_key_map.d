@@ -1,32 +1,37 @@
-./objects/lib_key_map.o: ..\Lib\src\lib_key_map.c \
-  ..\Lib\inc\lib_key_map.h ..\Frimware\Inc\py32f4xx_hal.h \
-  ..\User\Inc\py32f403_hal_conf.h ..\Frimware\Inc\py32f403_hal_cortex.h \
-  ..\Frimware\Inc\py32f403_hal_def.h \
-  ..\..\..\Keil_v5\Packs\Puya\PY32F4xx_DFP\1.0.6\Drivers\CMSIS\Device\PUYA\PY32F4xx\Include\py32f4xx.h \
-  ..\..\..\Keil_v5\Packs\Puya\PY32F4xx_DFP\1.0.6\Drivers\CMSIS\Device\PUYA\PY32F4xx\Include\py32f403xC.h \
-  D:\Keil_v5\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include\core_cm4.h \
-  D:\Keil_v5\ARM\ARMCLANG\include\stdint.h \
-  D:\Keil_v5\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include\cmsis_version.h \
-  D:\Keil_v5\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include\cmsis_compiler.h \
-  D:\Keil_v5\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include\cmsis_armclang.h \
-  ..\..\..\Keil_v5\Packs\Puya\PY32F4xx_DFP\1.0.6\Drivers\CMSIS\Device\PUYA\PY32F4xx\Include\system_py32f4xx.h \
-  D:\Keil_v5\ARM\ARMCLANG\include\stddef.h \
-  D:\Keil_v5\ARM\ARMCLANG\include\stdio.h \
-  ..\Frimware\Inc\py32f403_hal_dma.h \
-  ..\Frimware\Inc\py32f403_hal_dma_ex.h \
-  ..\Frimware\Inc\py32f403_hal_flash.h \
-  ..\Frimware\Inc\py32f403_hal_gpio.h \
-  ..\Frimware\Inc\py32f403_hal_gpio_ex.h \
-  ..\Frimware\Inc\py32f403_hal_rcc.h \
-  ..\Frimware\Inc\py32f403_hal_rcc_ex.h \
-  ..\Frimware\Inc\py32f403_hal_adc.h \
-  ..\Frimware\Inc\py32f403_hal_adc_ex.h \
-  ..\Frimware\Inc\py32f403_hal_pwr.h \
-  ..\Frimware\Inc\py32f403_hal_pwr_ex.h \
-  ..\Frimware\Inc\py32f403_hal_spi.h \
-  ..\Frimware\Inc\py32f403_hal_spi_ex.h \
-  ..\Frimware\Inc\py32f403_hal_tim.h \
-  ..\Frimware\Inc\py32f403_hal_tim_ex.h \
-  ..\Frimware\Inc\py32f403_hal_uart.h \
-  D:\Keil_v5\ARM\ARMCLANG\include\stdbool.h ..\Bsp\inc\bsp_board.h \
-  ..\Lib\inc\lib_hall_sensor.h ..\Bsp\inc\bsp_adc_dma.h
+.\objects\lib_key_map.o: ..\Lib\src\lib_key_map.c
+.\objects\lib_key_map.o: ..\Lib\inc\lib_key_map.h
+.\objects\lib_key_map.o: ..\Frimware\Inc\py32f4xx_hal.h
+.\objects\lib_key_map.o: ..\User\Inc\py32f403_hal_conf.h
+.\objects\lib_key_map.o: ..\Frimware\Inc\py32f403_hal_cortex.h
+.\objects\lib_key_map.o: ..\Frimware\Inc\py32f403_hal_def.h
+.\objects\lib_key_map.o: ..\..\..\Keil_v5\Packs\Puya\PY32F4xx_DFP\1.0.6\Drivers\CMSIS\Device\PUYA\PY32F4xx\Include\py32f4xx.h
+.\objects\lib_key_map.o: ..\..\..\Keil_v5\Packs\Puya\PY32F4xx_DFP\1.0.6\Drivers\CMSIS\Device\PUYA\PY32F4xx\Include\py32f403xC.h
+.\objects\lib_key_map.o: D:\Keil_v5\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include\core_cm4.h
+.\objects\lib_key_map.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+.\objects\lib_key_map.o: D:\Keil_v5\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include\cmsis_version.h
+.\objects\lib_key_map.o: D:\Keil_v5\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include\cmsis_compiler.h
+.\objects\lib_key_map.o: D:\Keil_v5\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include\cmsis_armcc.h
+.\objects\lib_key_map.o: ..\..\..\Keil_v5\Packs\Puya\PY32F4xx_DFP\1.0.6\Drivers\CMSIS\Device\PUYA\PY32F4xx\Include\system_py32f4xx.h
+.\objects\lib_key_map.o: ..\Frimware\Inc\py32f4xx_hal.h
+.\objects\lib_key_map.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
+.\objects\lib_key_map.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
+.\objects\lib_key_map.o: ..\Frimware\Inc\py32f403_hal_dma.h
+.\objects\lib_key_map.o: ..\Frimware\Inc\py32f403_hal_dma_ex.h
+.\objects\lib_key_map.o: ..\Frimware\Inc\py32f403_hal_flash.h
+.\objects\lib_key_map.o: ..\Frimware\Inc\py32f403_hal_gpio.h
+.\objects\lib_key_map.o: ..\Frimware\Inc\py32f403_hal_gpio_ex.h
+.\objects\lib_key_map.o: ..\Frimware\Inc\py32f403_hal_rcc.h
+.\objects\lib_key_map.o: ..\Frimware\Inc\py32f403_hal_rcc_ex.h
+.\objects\lib_key_map.o: ..\Frimware\Inc\py32f403_hal_adc.h
+.\objects\lib_key_map.o: ..\Frimware\Inc\py32f403_hal_adc_ex.h
+.\objects\lib_key_map.o: ..\Frimware\Inc\py32f403_hal_pwr.h
+.\objects\lib_key_map.o: ..\Frimware\Inc\py32f403_hal_pwr_ex.h
+.\objects\lib_key_map.o: ..\Frimware\Inc\py32f403_hal_spi.h
+.\objects\lib_key_map.o: ..\Frimware\Inc\py32f403_hal_spi_ex.h
+.\objects\lib_key_map.o: ..\Frimware\Inc\py32f403_hal_tim.h
+.\objects\lib_key_map.o: ..\Frimware\Inc\py32f403_hal_tim_ex.h
+.\objects\lib_key_map.o: ..\Frimware\Inc\py32f403_hal_uart.h
+.\objects\lib_key_map.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
+.\objects\lib_key_map.o: ..\Bsp\inc\bsp_board.h
+.\objects\lib_key_map.o: ..\Lib\inc\lib_hall_sensor.h
+.\objects\lib_key_map.o: ..\Bsp\inc\bsp_adc_dma.h

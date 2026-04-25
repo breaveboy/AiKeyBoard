@@ -1,29 +1,34 @@
-./objects/task.o: ..\User\Src\task.c ..\User\Inc\task.h ..\App\inc\App.h \
-  D:\Keil_v5\ARM\ARMCLANG\include\stdio.h ..\Frimware\Inc\py32f4xx_hal.h \
-  ..\User\Inc\py32f403_hal_conf.h ..\Frimware\Inc\py32f403_hal_cortex.h \
-  ..\Frimware\Inc\py32f403_hal_def.h \
-  ..\..\..\Keil_v5\Packs\Puya\PY32F4xx_DFP\1.0.6\Drivers\CMSIS\Device\PUYA\PY32F4xx\Include\py32f4xx.h \
-  ..\..\..\Keil_v5\Packs\Puya\PY32F4xx_DFP\1.0.6\Drivers\CMSIS\Device\PUYA\PY32F4xx\Include\py32f403xC.h \
-  D:\Keil_v5\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include\core_cm4.h \
-  D:\Keil_v5\ARM\ARMCLANG\include\stdint.h \
-  D:\Keil_v5\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include\cmsis_version.h \
-  D:\Keil_v5\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include\cmsis_compiler.h \
-  D:\Keil_v5\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include\cmsis_armclang.h \
-  ..\..\..\Keil_v5\Packs\Puya\PY32F4xx_DFP\1.0.6\Drivers\CMSIS\Device\PUYA\PY32F4xx\Include\system_py32f4xx.h \
-  D:\Keil_v5\ARM\ARMCLANG\include\stddef.h \
-  ..\Frimware\Inc\py32f403_hal_dma.h \
-  ..\Frimware\Inc\py32f403_hal_dma_ex.h \
-  ..\Frimware\Inc\py32f403_hal_flash.h \
-  ..\Frimware\Inc\py32f403_hal_gpio.h \
-  ..\Frimware\Inc\py32f403_hal_gpio_ex.h \
-  ..\Frimware\Inc\py32f403_hal_rcc.h \
-  ..\Frimware\Inc\py32f403_hal_rcc_ex.h \
-  ..\Frimware\Inc\py32f403_hal_adc.h \
-  ..\Frimware\Inc\py32f403_hal_adc_ex.h \
-  ..\Frimware\Inc\py32f403_hal_pwr.h \
-  ..\Frimware\Inc\py32f403_hal_pwr_ex.h \
-  ..\Frimware\Inc\py32f403_hal_spi.h \
-  ..\Frimware\Inc\py32f403_hal_spi_ex.h \
-  ..\Frimware\Inc\py32f403_hal_tim.h \
-  ..\Frimware\Inc\py32f403_hal_tim_ex.h \
-  ..\Frimware\Inc\py32f403_hal_uart.h
+.\objects\task.o: ..\User\Src\task.c
+.\objects\task.o: ..\User\Inc\task.h
+.\objects\task.o: ..\App\inc\App.h
+.\objects\task.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
+.\objects\task.o: ..\Frimware\Inc\py32f4xx_hal.h
+.\objects\task.o: ..\User\Inc\py32f403_hal_conf.h
+.\objects\task.o: ..\Frimware\Inc\py32f403_hal_cortex.h
+.\objects\task.o: ..\Frimware\Inc\py32f403_hal_def.h
+.\objects\task.o: ..\..\..\Keil_v5\Packs\Puya\PY32F4xx_DFP\1.0.6\Drivers\CMSIS\Device\PUYA\PY32F4xx\Include\py32f4xx.h
+.\objects\task.o: ..\..\..\Keil_v5\Packs\Puya\PY32F4xx_DFP\1.0.6\Drivers\CMSIS\Device\PUYA\PY32F4xx\Include\py32f403xC.h
+.\objects\task.o: D:\Keil_v5\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include\core_cm4.h
+.\objects\task.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+.\objects\task.o: D:\Keil_v5\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include\cmsis_version.h
+.\objects\task.o: D:\Keil_v5\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include\cmsis_compiler.h
+.\objects\task.o: D:\Keil_v5\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include\cmsis_armcc.h
+.\objects\task.o: ..\..\..\Keil_v5\Packs\Puya\PY32F4xx_DFP\1.0.6\Drivers\CMSIS\Device\PUYA\PY32F4xx\Include\system_py32f4xx.h
+.\objects\task.o: ..\Frimware\Inc\py32f4xx_hal.h
+.\objects\task.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
+.\objects\task.o: ..\Frimware\Inc\py32f403_hal_dma.h
+.\objects\task.o: ..\Frimware\Inc\py32f403_hal_dma_ex.h
+.\objects\task.o: ..\Frimware\Inc\py32f403_hal_flash.h
+.\objects\task.o: ..\Frimware\Inc\py32f403_hal_gpio.h
+.\objects\task.o: ..\Frimware\Inc\py32f403_hal_gpio_ex.h
+.\objects\task.o: ..\Frimware\Inc\py32f403_hal_rcc.h
+.\objects\task.o: ..\Frimware\Inc\py32f403_hal_rcc_ex.h
+.\objects\task.o: ..\Frimware\Inc\py32f403_hal_adc.h
+.\objects\task.o: ..\Frimware\Inc\py32f403_hal_adc_ex.h
+.\objects\task.o: ..\Frimware\Inc\py32f403_hal_pwr.h
+.\objects\task.o: ..\Frimware\Inc\py32f403_hal_pwr_ex.h
+.\objects\task.o: ..\Frimware\Inc\py32f403_hal_spi.h
+.\objects\task.o: ..\Frimware\Inc\py32f403_hal_spi_ex.h
+.\objects\task.o: ..\Frimware\Inc\py32f403_hal_tim.h
+.\objects\task.o: ..\Frimware\Inc\py32f403_hal_tim_ex.h
+.\objects\task.o: ..\Frimware\Inc\py32f403_hal_uart.h
