@@ -4,59 +4,38 @@
 #include "py32f4xx_hal.h"
 #include "bsp_adc_dma.h"
 #include <stdbool.h>
+#include <string.h>
+#include <stdio.h>
 
-// ==========================================================
-//  配置参数
-// ==========================================================
-#define HALL_DEPTH_MAX          1000
-#define HALL_CALIB_DEFAULT_MIN  2048
-#define HALL_CALIB_DEFAULT_MAX  4000
-
-// 按键按下/释放阈值 (0-1000)
-#define HALL_THRESHOLD_PRESS    300   // 按下阈值
-#define HALL_THRESHOLD_RELEASE  200   // 释放阈值（带迟滞）
-
-// 消抖计数
-#define HALL_DEBOUNCE_CNT       3
-
-// ==========================================================
-//  按键状态枚举
-// ==========================================================
-typedef enum {
-    KEY_STATE_RELEASED = 0,   // 已释放
-    KEY_STATE_PRESSED,        // 已按下
-    KEY_STATE_DEBOUNCE_PRESS, // 按下消抖中
-    KEY_STATE_DEBOUNCE_RELEASE // 释放消抖中
-} key_state_t;
-
-// ==========================================================
-//  按键数据结构体
-// ==========================================================
-typedef struct {
-    uint16_t min_adc;
-    uint16_t max_adc;
-    uint16_t range;
-    bool     is_valid;
-} hall_config_t;
+#define ROW_COUNT          5
+#define COL_COUNT          14
+#define SCAN_ROUNDS        3      
+#define SETTLING_TIME_US   50     
 
 typedef struct {
-    key_state_t state;        // 当前状态
-    uint8_t     debounce_cnt;  // 消抖计数器
-    uint16_t    last_depth;    // 上次深度
-    bool        was_pressed;   // 上一次扫描是否按下
-} key_data_t;
+    uint16_t idele_adc;       // ???????
+    uint16_t actuation_point; // AP??
+    uint16_t rt_press_sens;   // RT??????????
+    uint16_t rt_release_sens; // RT?????????
+    uint16_t top_deadzone;    // ????????
+    uint16_t bottom_deadzone; // ???????
+    
+    uint16_t max_offset;      // ???????????????
+    uint16_t min_offset;      // ??????????????
+    uint8_t  is_pressed;      // ?????????
+    uint8_t  in_rt_cycle;     // ??????RT??????
+} Key_t;
 
-// ==========================================================
-//  函数声明
-// ==========================================================
-void lib_hall_init(void);
-bool lib_hall_is_key_valid(uint8_t row, uint8_t col);
-uint16_t lib_hall_get_depth(uint8_t row, uint8_t col);
+extern Key_t keys[ROW_COUNT][COL_COUNT];
+extern volatile uint8_t g_scan_complete;
+extern const uint8_t key_mask[ROW_COUNT][COL_COUNT];
 
-// 按键状态扫描函数
-void lib_hall_scan_all(void);
-bool lib_hall_is_pressed(uint8_t row, uint8_t col);
-bool lib_hall_just_pressed(uint8_t row, uint8_t col);
-bool lib_hall_just_released(uint8_t row, uint8_t col);
+void lib_hall_sensor_init(void);
+void lib_hall_sensor_calibration(void);
+void lib_hall_sensor_task(void);
+
+// ???????????????????????????????
+void select_row(uint8_t index);
+void ROW_ALL_OFF(void);
 
 #endif

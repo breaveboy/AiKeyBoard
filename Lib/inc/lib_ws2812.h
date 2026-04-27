@@ -31,7 +31,7 @@ void lib_ws2812_init(void);
 bool lib_ws2812_set_pixel(uint16_t led_index, uint8_t r, uint8_t g, uint8_t b);
 bool lib_ws2812_set_key_color(uint8_t row, uint8_t col, uint8_t r, uint8_t g, uint8_t b);
 void lib_ws2812_set_all(uint8_t r, uint8_t g, uint8_t b);
-void lib_ws2812_update(void);
+uint8_t lib_ws2812_update(void);
 void lib_ws2812_clear(void);
 
 void lib_ws2812_breath_mode(uint32_t tick);

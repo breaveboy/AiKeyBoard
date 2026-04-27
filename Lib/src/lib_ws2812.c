@@ -22,7 +22,7 @@ static const uint8_t g_key_to_led_map[MATRIX_ROWS_COUNT][ADC_CHANNELS_COUNT] = {
     {52, INVALID_INDEX, 51, 50, 49, 48, 47, 46, 45, 44, 43, 42, INVALID_INDEX, 41},
     
     // 第五行：
-    {60, 59, 58, 57, INVALID_INDEX, INVALID_INDEX, INVALID_INDEX, 56, INVALID_INDEX, INVALID_INDEX, INVALID_INDEX, 55, 54, 53}
+    {60, 59, 58, INVALID_INDEX, INVALID_INDEX, INVALID_INDEX, 57, INVALID_INDEX, INVALID_INDEX, INVALID_INDEX, 56, 55, 54, 53}
    
 };
 //字节转化为spi的字节高字节先发送 dma从低字节进行搬运
@@ -50,6 +50,8 @@ static void ws2812_encode_pixel(uint16_t led_index)
 
 void lib_ws2812_init(void)
 {   
+    bsp_spi_dma_init();
+
 	  ///清空数值
     memset(g_ws2812_tx_buffer, 0, sizeof(g_ws2812_tx_buffer));
     memset(g_ws2812_colors, 0, sizeof(g_ws2812_colors));
@@ -107,9 +109,9 @@ void lib_ws2812_set_all(uint8_t r, uint8_t g, uint8_t b)
 
 
 //进行数据搬运
-void lib_ws2812_update(void)
+uint8_t lib_ws2812_update(void)
 {
-    (void)bsp_spi_dma_send(g_ws2812_tx_buffer, (uint16_t)sizeof(g_ws2812_tx_buffer));
+    return (uint8_t)bsp_spi_dma_send(g_ws2812_tx_buffer, (uint16_t)sizeof(g_ws2812_tx_buffer));
 }
 //清楚所有的灯光
 void lib_ws2812_clear(void)

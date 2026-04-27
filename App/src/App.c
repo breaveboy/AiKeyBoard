@@ -3,116 +3,66 @@
 #include "bsp_uart.h"
 #include "usb_config.h"
 #include "lib_ws2812.h"
+#include "lib_hall_sensor.h"
 #include <stdio.h>
 #include <string.h>
 #include "usbd_core.h"
 #include "usbd_hid.h"
+
 #define HID_KEY_A_CODE 0x04
 
 static uint8_t last_modifiers = 0;
 static uint8_t last_keys[6] = {0};
 static bool report_dirty = false;
-
-static void app_ws2812_apply_key_colors(void)
-{
-    for (uint8_t r = 0; r < MATRIX_ROWS_COUNT; r++) {
-        for (uint8_t c = 0; c < ADC_CHANNELS_COUNT; c++) {
-            if (!lib_hall_is_key_valid(r, c)) {
-                continue;
-            }
-
-            if (lib_hall_is_pressed(r, c)) {
-                if (lib_key_is_modifier(r, c)) {
-                    (void)lib_ws2812_set_key_color(r, c, 20U, 4U, 0U);
-                } else {
-                    (void)lib_ws2812_set_key_color(r, c, 0U, 18U, 2U);
-                }
-            } else {
-                if (lib_key_is_modifier(r, c)) {
-                    (void)lib_ws2812_set_key_color(r, c, 4U, 1U, 0U);
-                } else {
-                    (void)lib_ws2812_set_key_color(r, c, 0U, 0U, 3U);
-                }
-            }
-        }
-    }
-}
+static bool g_led_dirty = false;
+static uint8_t last_key_state[ROW_COUNT][COL_COUNT] = {0};
 
 void App_init(void)
 {
     last_modifiers = 0;
     memset(last_keys, 0, sizeof(last_keys));
     report_dirty = false;
+    g_led_dirty = false;
+    memset(last_key_state, 0, sizeof(last_key_state));
 
-    lib_hall_init();
-    lib_ws2812_init();
-    app_ws2812_apply_key_colors();
-    lib_ws2812_update();
+   
 }
 
 void App_adkey_scan_task(void)
 {
-    lib_hall_scan_all();
-}
+    lib_hall_sensor_task();
 
-void App_logic_handler_task(void)
-{
-    uint8_t current_modifiers = 0;
-    uint8_t current_keys[6] = {0};
-    uint8_t key_idx = 0;
-    bool led_dirty = false;
+    // 按键联动灯光逻辑
+    for (uint8_t r = 0; r < ROW_COUNT; r++) {
+        for (uint8_t c = 0; c < COL_COUNT; c++) {
+            // 增加掩码判断，只处理有效的按键
+            if (key_mask[r][c] == 0) continue;
 
-    for (uint8_t r = 0; r < MATRIX_ROWS_COUNT; r++) {
-        for (uint8_t c = 0; c < ADC_CHANNELS_COUNT; c++) {
-            if (lib_hall_is_pressed(r, c)) {
-                uint8_t code = lib_key_get_code(r, c);
-
-                if (lib_key_is_modifier(r, c)) {
-                    current_modifiers |= lib_key_get_modifier_mask(r, c);
+            if (keys[r][c].is_pressed != last_key_state[r][c]) {
+                last_key_state[r][c] = keys[r][c].is_pressed;
+                if (keys[r][c].is_pressed) {
+                    // 按下时显示青色 (0, 255, 255)
+                    lib_ws2812_set_key_color(r, c, 0, 255, 255);
                 } else {
-                    if (key_idx < 6 && code != 0) {
-                        current_keys[key_idx++] = code;
-                    }
+                    // 松开时关闭
+                    lib_ws2812_set_key_color(r, c, 0, 0, 0);
                 }
-
-                if (lib_hall_just_pressed(r, c)) {
-                    printf("[DOWN] Row=%d, Col=%d, Code=0x%02X\n", r, c, code);
-                    led_dirty = true;
-                }
-            }
-
-            if (lib_hall_just_released(r, c)) {
-                uint8_t code = lib_key_get_code(r, c);
-                printf("[UP]   Row=%d, Col=%d, Code=0x%02X\n", r, c, code);
-                led_dirty = true;
+                g_led_dirty = true;
             }
         }
-    }
-
-    bool report_changed = false;
-
-    if (current_modifiers != last_modifiers) {
-        report_changed = true;
-    }
-
-    for (uint8_t i = 0; i < 6; i++) {
-        if (current_keys[i] != last_keys[i]) {
-            report_changed = true;
-            break;
-        }
-    }
-
-    if (report_changed) {
-        last_modifiers = current_modifiers;
-        memcpy(last_keys, current_keys, sizeof(last_keys));
-        report_dirty = true;
-    }
-
-    if (led_dirty) {
-        app_ws2812_apply_key_colors();
-        lib_ws2812_update();
     }
 }
+
+void App_display_task(void)
+{
+    if (g_led_dirty) {
+        if (lib_ws2812_update() == 0) { // 0 is HAL_OK
+            g_led_dirty = false;
+        }
+    }
+}
+
+
 #if 0
 void App_usb_process_task(void)
 {

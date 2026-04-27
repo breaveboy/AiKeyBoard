@@ -34,3 +34,5 @@
 .\objects\lib_hall_sensor.o: ..\Bsp\inc\bsp_adc_dma.h
 .\objects\lib_hall_sensor.o: ..\Bsp\inc\bsp_board.h
 .\objects\lib_hall_sensor.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
+.\objects\lib_hall_sensor.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
+.\objects\lib_hall_sensor.o: ..\Bsp\inc\bsp_delay.h

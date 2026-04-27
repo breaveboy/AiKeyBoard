@@ -1,130 +1,211 @@
 #include "lib_hall_sensor.h"
+#include "bsp_delay.h"
 
-// é™æ€ç§æœ‰å˜é‡
-static hall_config_t hall_keys[MATRIX_ROWS_COUNT][ADC_CHANNELS_COUNT];
-static key_data_t   key_state[MATRIX_ROWS_COUNT][ADC_CHANNELS_COUNT];
-//å®šä¹‰é”®ç›˜çš„çŸ©é˜µæ’å¸ƒ
-static void _hall_map_init(void) {
-    for (uint8_t r = 0; r < MATRIX_ROWS_COUNT; r++) {
-        for (uint8_t c = 0; c < ADC_CHANNELS_COUNT; c++) {
-            bool valid = true;
-            
-            // ç¬¬ä¸€äºŒè¡Œ (row 0, 1): å…¨æ»¡ï¼Œé»˜è®¤æœ‰æ•ˆ
-            // ç¬¬ä¸‰è¡Œ (row 2): ç¼º 12 (åªæœ‰0-11, 13)
-            if (r == 2 && c == 12) valid = false;
-            // ç¬¬å››è¡Œ (row 3): ç¼º 1, 12 (åªæœ‰0, 2-11, 13)
-            if (r == 3 && (c == 1 || c == 12)) valid = false;
-            // ç¬¬äº”è¡Œ (row 4): ä¸éœ€è¦ 3, 4, 5, 7, 8, 9
-            if (r == 4 && (c == 3 || c == 4 || c == 5 || c == 7 || c == 8 || c == 9)) {
-                valid = false;
-            }
-            
-            hall_keys[r][c].is_valid = valid;
-            
-            // é»˜è®¤æ ¡å‡†å‚æ•°åˆå§‹åŒ–
-            hall_keys[r][c].min_adc = HALL_CALIB_DEFAULT_MIN;
-            hall_keys[r][c].max_adc = HALL_CALIB_DEFAULT_MAX;
-            hall_keys[r][c].range   = HALL_CALIB_DEFAULT_MAX - HALL_CALIB_DEFAULT_MIN;
-            
-            // æŒ‰é”®çŠ¶æ€åˆå§‹åŒ–
-            key_state[r][c].state = KEY_STATE_RELEASED;
-            key_state[r][c].debounce_cnt = 0;
-            key_state[r][c].last_depth = 0;
-            key_state[r][c].was_pressed = false;
-        }
+/* --- È«¾Ö±äÁ¿ --- */
+volatile uint8_t  g_current_row = 0;    // µ±Ç°É¨ÃèĞĞ (0-4)
+volatile uint8_t  g_scan_round = 0;     // µ±Ç°ÂÖ´Î (0-2)
+volatile uint8_t  g_scan_complete = 0;  // Ò»²¨É¨ÃèÍê³É±êÖ¾
+
+uint16_t g_adc_raw_col[ROW_COUNT][COL_COUNT] = {0};    // Ô­Ê¼ÀÛ¼Ó»º³åÇø
+
+Key_t keys[ROW_COUNT][COL_COUNT];
+
+const uint8_t key_mask[ROW_COUNT][COL_COUNT] = {
+    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1},
+    {1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1},
+    {1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 1}
+};
+
+/* --- Ó²¼şµ×²ãÇı¶¯ --- */
+
+void ROW_ALL_OFF(void) {
+    SET_IO(GPIOA, GPIO_PIN_8);
+    SET_IO(GPIOC, GPIO_PIN_6 | GPIO_PIN_7 | GPIO_PIN_8 | GPIO_PIN_9);
+}
+
+void select_row(uint8_t index) {
+    ROW_ALL_OFF();
+    switch(index) {
+        case 0: CLR_IO(GPIOA, GPIO_PIN_8); break;
+        case 1: CLR_IO(GPIOC, GPIO_PIN_9); break;
+        case 2: CLR_IO(GPIOC, GPIO_PIN_8); break;
+        case 3: CLR_IO(GPIOC, GPIO_PIN_7); break;
+        case 4: CLR_IO(GPIOC, GPIO_PIN_6); break;
     }
 }
 
-void lib_hall_init(void) {
-    _hall_map_init();
-}
+/* --- ÒµÎñÂß¼­ --- */
 
-bool lib_hall_is_key_valid(uint8_t row, uint8_t col) {
-    if (row >= MATRIX_ROWS_COUNT || col >= ADC_CHANNELS_COUNT) return false;
-    return hall_keys[row][col].is_valid;
-}
+uint8_t process_key_logic(Key_t* k, uint16_t cur_adc) {
+    // 1. ¼ÆËãÆ«ÒÆÁ¿£¨·ÀÖ¹¸ºÊıÒç³ö£©
+    int32_t diff = (int32_t)k->idele_adc - (int32_t)cur_adc;
+    int16_t offset = (diff > 0) ? (int16_t)diff : 0;
 
-uint16_t lib_hall_get_depth(uint8_t row, uint8_t col) {
-    if (!lib_hall_is_key_valid(row, col)) return 0;
-    uint32_t raw_adc = g_adc_raw_matrix[row][col];
-    hall_config_t *cfg = &hall_keys[row][col];
-	  //åˆ¤æ–­adcçš„é‡‡é›†æŒ‰é”®çš„æ•°å€¼æ˜¯ä¸æ˜¯åœ¨èŒƒå›´å†…
-    if (raw_adc <= cfg->min_adc) return 0;
-    if (raw_adc >= cfg->max_adc) return HALL_DEPTH_MAX;
-    return (uint16_t)((raw_adc - cfg->min_adc) * HALL_DEPTH_MAX / cfg->range);
-}
+    // 2. ¶¥²¿ËÀÇøÅĞ¶Ï
+    if (offset < k->top_deadzone) {
+        k->is_pressed = 0;
+        k->in_rt_cycle = 0;
+        k->max_offset = 0;
+        k->min_offset = 0;
+        return 0;
+    }
 
-void lib_hall_scan_all(void) {
-    for (uint8_t r = 0; r < MATRIX_ROWS_COUNT; r++) {
-        for (uint8_t c = 0; c < ADC_CHANNELS_COUNT; c++) {
-					  //æ— æ•ˆæŒ‰é”®é€€å‡º
-            if (!lib_hall_is_key_valid(r, c)) continue;
-            //è·å–æŒ‰é”®çš„æ·±åº¦
-            uint16_t depth = lib_hall_get_depth(r, c); //è®¡ç®—å½“å‰çš„æ·±åº¦
-            key_data_t *k = &key_state[r][c];
-					  // æ ¹æ®æ·±åº¦åˆ¤å®šå½“å‰æ˜¯å¦æœ‰â€œæŒ‰ä¸‹è¶‹åŠ¿â€æˆ–â€œæŠ¬èµ·è¶‹åŠ¿â€
-            bool is_pressed_now = (depth >= HALL_THRESHOLD_PRESS);
-            bool is_released_now = (depth <= HALL_THRESHOLD_RELEASE);
-            // è®°å½•ä¸Šä¸€æ—¶åˆ»çš„çŠ¶æ€ï¼Œç”¨äºåé¢åˆ¤æ–­â€œåˆšåˆšæŒ‰ä¸‹â€çš„ä¸€ç¬é—´
-            k->was_pressed = (k->state == KEY_STATE_PRESSED);
+    // 3. µ×²¿ËÀÇøÏŞÖÆ
+    if (offset > k->bottom_deadzone) offset = k->bottom_deadzone;
 
-            switch (k->state) {
-                case KEY_STATE_RELEASED:
-									  
-                    if (is_pressed_now) {
-                        k->state = KEY_STATE_DEBOUNCE_PRESS;
-                        k->debounce_cnt = 0;
-                    }
-                    break;
-
-                case KEY_STATE_DEBOUNCE_PRESS:  //ï¼ˆæŒ‰ä¸‹ï¼‰
-                    if (is_pressed_now) {
-                        k->debounce_cnt++;
-                        if (k->debounce_cnt >= HALL_DEBOUNCE_CNT) {
-                            k->state = KEY_STATE_PRESSED;
-                        }
-                    } else {
-                        k->state = KEY_STATE_RELEASED;
-                    }
-                    break;
-
-                case KEY_STATE_PRESSED:  //çŠ¶æ€ï¼šå·²æŒ‰ä¸‹
-                    if (is_released_now) {
-                        k->state = KEY_STATE_DEBOUNCE_RELEASE;
-                        k->debounce_cnt = 0;
-                    }
-                    break;
-
-                case KEY_STATE_DEBOUNCE_RELEASE:
-                    if (is_released_now) {
-                        k->debounce_cnt++;
-                        if (k->debounce_cnt >= HALL_DEBOUNCE_CNT) {
-                            k->state = KEY_STATE_RELEASED;
-                        }
-                    } else {
-                        k->state = KEY_STATE_PRESSED;
-                    }
-                    break;
-            }
-            k->last_depth = depth;
+    // 4. RT Óë AP Âß¼­×´Ì¬»ú
+    if (!k->is_pressed) {
+        if (offset < k->min_offset) k->min_offset = offset;
+        uint16_t trigger_line = k->in_rt_cycle ? (k->min_offset + k->rt_press_sens) : k->actuation_point;
+        if (offset >= trigger_line) {
+            k->is_pressed = 1;
+            k->in_rt_cycle = 1;
+            k->max_offset = offset;
         }
+    } else {
+        if (offset > k->max_offset) k->max_offset = offset;
+        uint16_t release_line = k->max_offset - k->rt_release_sens;
+        if (offset <= release_line) {
+            k->is_pressed = 0;
+            k->min_offset = offset;
+        }
+    }
+    return k->is_pressed;
+}
+
+void lib_hall_sensor_init(void) {
+    // 1. ³õÊ¼»¯ GPIO (ÓÉ main.c ÖĞµÄ GPIO_Config ÒÆ¹ıÀ´£¬µ«Ò²¿ÉÒÔµ÷ÓÃ bsp_gpio.c ÖĞµÄº¯Êı)
+    // ÕâÀï±£³ÖÔ­ÑùÂß¼­£¬Ö±½ÓÔÚ lib ÖĞ³õÊ¼»¯ĞèÒªµÄ GPIO
+    __HAL_RCC_GPIOA_CLK_ENABLE();
+    __HAL_RCC_GPIOB_CLK_ENABLE();
+    __HAL_RCC_GPIOC_CLK_ENABLE();
+    GPIO_InitTypeDef GPIO_InitStruct = {0};
+
+    // ÅäÖÃĞĞÉ¨Ãè£ºPC6-9, PA8
+    GPIO_InitStruct.Pin = GPIO_PIN_6 | GPIO_PIN_7 | GPIO_PIN_8 | GPIO_PIN_9;
+    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+    HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+    GPIO_InitStruct.Pin = GPIO_PIN_8;
+    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+    // ÅäÖÃÁĞÄ£ÄâÊäÈë£º// PA0-PA7(8) + PB0-PB1(2) + PC0-PC3(4) = 14
+    GPIO_InitStruct.Pin =  GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3 | GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6 | GPIO_PIN_7;
+    GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
+    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+    GPIO_InitStruct.Pin  = GPIO_PIN_0 | GPIO_PIN_1;
+    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+    // 3. ÅäÖÃ PC0 - PC3
+    GPIO_InitStruct.Pin  = GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3;
+    HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+    // 2. ³õÊ¼»¯ ADC DMA
+    bsp_adc_dma_init();
+}
+
+void lib_hall_sensor_calibration(void) {
+    printf("Calibration Start...\r\n");
+    g_scan_complete = 0;
+    g_scan_round = 0;
+    g_current_row = 0;
+    memset(g_adc_raw_col, 0, sizeof(g_adc_raw_col));
+
+    select_row(0);
+    Bsp_Delay_Us(100); // Ğ£×¼¸ø¸ü³¤ÎÈ¶¨Ê±¼ä
+    bsp_adc_dma_start();
+
+    while(!g_scan_complete); // µÈ´ıÈıÂÖÉ¨Íê
+
+    for(uint8_t r = 0; r < ROW_COUNT; r++) {
+        for(uint8_t c = 0; c < COL_COUNT; c++) {
+            keys[r][c].idele_adc = g_adc_raw_col[r][c] / SCAN_ROUNDS;
+            g_adc_raw_col[r][c] = 0; // ±ØĞëÇåÁãÀÛ¼ÓÆ÷£¡
+            
+            keys[r][c].actuation_point = 350;
+            keys[r][c].top_deadzone = 80;
+            keys[r][c].bottom_deadzone = 1050;
+            keys[r][c].rt_press_sens = 50;
+            keys[r][c].rt_release_sens = 50;
+            keys[r][c].is_pressed = 0;
+        }
+    }
+    
+    // ¹Ø¼ü¸´Î»£ºÈ·±£ main Æô¶¯Õı³£
+    g_scan_complete = 0;
+    g_scan_round = 0;
+    g_current_row = 0;
+    printf("Calibration OK!\r\n");
+}
+
+void lib_hall_sensor_task(void) {
+    if (g_scan_complete == 1) {
+        for(uint8_t r = 0; r < ROW_COUNT; r++) {
+            for (uint8_t c = 0; c < COL_COUNT; c++) {
+                if (key_mask[r][c] == 0) {
+                    g_adc_raw_col[r][c] = 0;
+                    continue;
+                }
+
+                uint16_t avg_adc = g_adc_raw_col[r][c] / SCAN_ROUNDS;
+                g_adc_raw_col[r][c] = 0; // ´¦ÀíÍê¼´ÇåÁã
+
+                Key_t *k = &keys[r][c];
+                uint8_t old_s = k->is_pressed;
+                process_key_logic(k, avg_adc);
+
+                // Ö»ÓĞ×´Ì¬±ä»¯²Å´¦ÀíµÆ¹â»ò´®¿Ú
+                if (old_s != k->is_pressed) {
+                    if (k->is_pressed) {
+                        printf("P[%d,%d] ADC:%d\r\n", r, c, avg_adc);
+                    } else {
+                        printf("R[%d,%d]\r\n", r, c);
+                    }
+                }
+            }
+        }
+
+        // 3. Ò»²¨Âß¼­´¦Àí½áÊø£¬ÖØÆôĞÂµÄÒ»²¨É¨Ãè
+        g_scan_complete = 0;
+        g_scan_round = 0;
+        g_current_row = 0;
+        select_row(0);
+        Bsp_Delay_Us(SETTLING_TIME_US);
+        bsp_adc_dma_start();
     }
 }
 
-bool lib_hall_is_pressed(uint8_t row, uint8_t col) {
-    if (!lib_hall_is_key_valid(row, col)) return false;
-    return (key_state[row][col].state == KEY_STATE_PRESSED);
-}
+// ºËĞÄÖĞ¶Ï£ºÁ´Ê½´¥·¢Âß¼­
+#define ADC_DMA1_CH1_ALL_FLAGS (DMA_IFCR_CGIF1 | DMA_IFCR_CTCIF1 | DMA_IFCR_CHTIF1 | DMA_IFCR_CTEIF1)
+void DMA1_Channel1_IRQHandler(void) {
+    if(DMA1->ISR & DMA_ISR_TCIF1) {
+        DMA1->IFCR = ADC_DMA1_CH1_ALL_FLAGS;
+        DMA1_Channel1->CCR &= ~DMA_CCR_EN;
 
+        // 1. Êı¾İÀÛ¼Ó
+        for(uint8_t c = 0; c < COL_COUNT; c++) {
+            g_adc_raw_col[g_current_row][c] += gADCxConvertedData[c];
+        }
 
-bool lib_hall_just_pressed(uint8_t row, uint8_t col) {
-    if (!lib_hall_is_key_valid(row, col)) return false;
-    key_data_t *k = &key_state[row][col];
-    return (k->state == KEY_STATE_PRESSED) && (!k->was_pressed);
-}
-
-bool lib_hall_just_released(uint8_t row, uint8_t col) {
-    if (!lib_hall_is_key_valid(row, col)) return false;
-    key_data_t *k = &key_state[row][col];
-    return (k->state == KEY_STATE_RELEASED) && (k->was_pressed);
+        // 2. ×´Ì¬»ú£ºÇĞ»»ĞĞ»òÂÖ´Î
+        g_current_row++;
+        if(g_current_row < ROW_COUNT) {
+            select_row(g_current_row);
+            Bsp_Delay_Us(SETTLING_TIME_US);
+            bsp_adc_dma_start();
+        } else {
+            g_current_row = 0;
+            g_scan_round++;
+            if(g_scan_round < SCAN_ROUNDS) {
+                select_row(0);
+                Bsp_Delay_Us(SETTLING_TIME_US);
+                bsp_adc_dma_start();
+            } else {
+                g_scan_complete = 1; // ±ê¼ÇÉ¨ÃèÈ«½áÊø£¬µÈ´ı task ´¦Àí
+            }
+        }
+    }
 }

@@ -36,12 +36,12 @@
 .\objects\app.o: ..\Bsp\inc\bsp_adc_dma.h
 .\objects\app.o: ..\Bsp\inc\bsp_board.h
 .\objects\app.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
+.\objects\app.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
 .\objects\app.o: ..\Lib\inc\lib_ws2812.h
 .\objects\app.o: ..\Bsp\inc\bsp_spi_dma.h
 .\objects\app.o: ..\Lib\inc\lib_key_map.h
 .\objects\app.o: ..\Bsp\inc\bsp_uart.h
 .\objects\app.o: ..\User\Inc\usb_config.h
-.\objects\app.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
 .\objects\app.o: ..\CherryUSB\core\usbd_core.h
 .\objects\app.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
 .\objects\app.o: ..\CherryUSB\common\usb_util.h
