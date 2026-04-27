@@ -8,10 +8,10 @@
 
 
 // 执行任务
-void Task_exec();
+void Task_exec(void);
 
 // 更新计数
-void Task_update();
+void Task_update(void);
 
 
 #endif

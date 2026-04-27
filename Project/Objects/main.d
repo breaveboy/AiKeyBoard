@@ -48,3 +48,14 @@
 .\objects\main.o: ..\Lib\inc\lib_key_map.h
 .\objects\main.o: ..\User\Inc\task.h
 .\objects\main.o: ..\App\inc\App.h
+.\objects\main.o: ..\CherryUSB\core\usbd_core.h
+.\objects\main.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
+.\objects\main.o: ..\CherryUSB\common\usb_util.h
+.\objects\main.o: ..\CherryUSB\common\usb_errno.h
+.\objects\main.o: ..\CherryUSB\common\usb_def.h
+.\objects\main.o: ..\CherryUSB\common\usb_list.h
+.\objects\main.o: ..\CherryUSB\common\usb_mem.h
+.\objects\main.o: ..\CherryUSB\common\usb_log.h
+.\objects\main.o: ..\CherryUSB\common\usb_dc.h
+.\objects\main.o: ..\CherryUSB\class\hid\usbd_hid.h
+.\objects\main.o: ..\CherryUSB\class\hid\usb_hid.h

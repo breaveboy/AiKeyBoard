@@ -8,18 +8,12 @@
 #include "bsp_tim.h"
 #include <string.h>
 
-static void APP_SystemClockConfig(void);
 
-const uint8_t led_map[5][14] = {
-    {0,1,2,3,4,5,6,7,8,9,10,11,12,13},
-    {14,15,16,17,18,19,20,21,22,23,24,25,26,27},
-    {28,29,30,31,32,33,34,35,36,37,38,39,255,40},
-    {41,255,42,43,44,45,46,47,48,49,50,51,255,52},
-    {53,54,55,255,255,255,56,255,255,255,57,58,59,60}
-};
+
+static void APP_SystemClockConfig(void);
+static void APP_USBInit(void);
 
 /* --- 主循环 --- */
-
 int main(void) {
     HAL_Init();
     APP_SystemClockConfig();
@@ -43,18 +37,32 @@ int main(void) {
 	
     // 2. 初始化 App 层
     App_init();
-
+    APP_USBInit();
+		
+		
+		
+		
+		
+		
+		
+		
     // 3. 启动运行扫描
     g_scan_complete = 0;
     select_row(0);
     Bsp_Delay_Us(SETTLING_TIME_US);
     bsp_adc_dma_start();
-   
-		
-		lib_ws2812_set_key_color(0,0,255,0,0);
-		lib_ws2812_update();
+//   
+//		for(uint8_t r=0;r<5;r++){
+//			for(uint8_t c=0;c<14;c++){
+//			
+//				lib_ws2812_set_key_color(r,c,255,0,0);
+//				lib_ws2812_update();
+//				Bsp_Delay_Ms(200);
+//			}
+//		} 
+	
     while (1) {
-        //Task_exec();
+        Task_exec();
     }
 }
 

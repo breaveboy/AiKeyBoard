@@ -7,8 +7,18 @@
 //dma搬运的数组值
   uint8_t g_ws2812_tx_buffer[WS2812_TX_BUFFER_SIZE];
   ws2812_color_t g_ws2812_colors[WS2812_LED_NUM];
-
-static const uint8_t g_key_to_led_map[MATRIX_ROWS_COUNT][ADC_CHANNELS_COUNT] = {
+static const uint8_t g_key_to_led_map[MATRIX_ROWS_COUNT][ADC_CHANNELS_COUNT]={
+	   // 第一行
+    {0,1,2,3,4,5,6,7,8,9,10,11,12,13},
+     // 第二行：最左是 27，最右是 14
+    {27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14},
+    {28,29,30,31,32,33,34,35,36,37,38,39,INVALID_INDEX,40},
+     // 第四行：最左是 52，接下来是无效位... 最右是 41
+    {52, INVALID_INDEX, 51, 50, 49, 48, 47, 46, 45, 44, 43, 42, INVALID_INDEX, 41},
+		// 第五行
+    {53,54,55,INVALID_INDEX,INVALID_INDEX,INVALID_INDEX,56,INVALID_INDEX,INVALID_INDEX,INVALID_INDEX,57,58,59,60}
+};
+static const uint8_t g_key_to_led_map1[MATRIX_ROWS_COUNT][ADC_CHANNELS_COUNT] = {
     // 第一行：14颗灯，从右到左 (0在最右)
     {13, 12, 11, 10,  9,  8,  7,  6,  5,  4,  3,  2,  1,  0},
     
@@ -62,7 +72,7 @@ void lib_ws2812_init(void)
 
     bsp_led_en_set(GPIO_PIN_SET);
 }
-
+//ws2812的颜色值
 bool lib_ws2812_set_pixel(uint16_t led_index, uint8_t r, uint8_t g, uint8_t b)
 {
     if (led_index >= WS2812_LED_NUM) {
@@ -184,7 +194,7 @@ void lib_ws2812_breath_mode(uint32_t tick) {
     uint8_t b = (colors[color_index][2] * sensory_brightness) / 255;
 
     lib_ws2812_set_all(r, g, b);
-    lib_ws2812_update();
+  
 }
 //彩虹模式
 void lib_ws2812_rainbow_mode(uint32_t tick) {
@@ -196,7 +206,7 @@ void lib_ws2812_rainbow_mode(uint32_t tick) {
         hsv_to_rgb(hue, &r, &g, &b);
         lib_ws2812_set_pixel(i, r, g, b);
     }
-    lib_ws2812_update();
+  
 }
  
 

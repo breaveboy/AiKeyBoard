@@ -145,11 +145,13 @@ void lib_hall_sensor_task(void) {
     if (g_scan_complete == 1) {
         for(uint8_t r = 0; r < ROW_COUNT; r++) {
             for (uint8_t c = 0; c < COL_COUNT; c++) {
+							  //跳出无效的按键
                 if (key_mask[r][c] == 0) {
                     g_adc_raw_col[r][c] = 0;
                     continue;
                 }
-
+                
+								//进行三次滤波
                 uint16_t avg_adc = g_adc_raw_col[r][c] / SCAN_ROUNDS;
                 g_adc_raw_col[r][c] = 0; // 处理完即清零
 
@@ -159,11 +161,13 @@ void lib_hall_sensor_task(void) {
 
                 // 只有状态变化才处理灯光或串口
                 if (old_s != k->is_pressed) {
+                    /*
                     if (k->is_pressed) {
                         printf("P[%d,%d] ADC:%d\r\n", r, c, avg_adc);
                     } else {
                         printf("R[%d,%d]\r\n", r, c);
                     }
+                    */
                 }
             }
         }
