@@ -47,8 +47,8 @@ uint8_t process_key_logic(Key_t* k, uint16_t cur_adc) {
     if (offset < k->top_deadzone) {
         k->is_pressed = 0;
         k->in_rt_cycle = 0;
-        k->max_offset = 0;
-        k->min_offset = 0;
+        k->max_offset = 0; //按下的最大值
+        k->min_offset = 0; //最小值
         return 0;
     }
 
@@ -124,7 +124,7 @@ void lib_hall_sensor_calibration(void) {
         for(uint8_t c = 0; c < COL_COUNT; c++) {
             keys[r][c].idele_adc = g_adc_raw_col[r][c] / SCAN_ROUNDS;
             g_adc_raw_col[r][c] = 0; // 必须清零累加器！
-            
+					
             keys[r][c].actuation_point = 350;
             keys[r][c].top_deadzone = 80;
             keys[r][c].bottom_deadzone = 1050;

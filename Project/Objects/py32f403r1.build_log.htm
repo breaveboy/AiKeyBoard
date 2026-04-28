@@ -27,7 +27,18 @@ Project File Date:  04/25/2026
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 6 (build 750)', folder: 'D:\Keil_v5\ARM\ARMCC\Bin'
 Build target 'Target 1'
-".\Objects\py32f403r1.axf" - 0 Error(s), 0 Warning(s).
+compiling App.c...
+..\Lib\inc\lib_hall_sensor.h(41): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\App\src\App.c(152): warning:  #188-D: enumerated type mixed with another type
+          g_light_mode = (g_light_mode + 1) % LIGHT_MODE_MAX;
+..\App\src\App.c(194): warning:  #1-D: last line of file ends without a newline
+  }
+..\App\src\App.c: 3 warnings, 0 errors
+linking...
+Program Size: Code=22148 RO-data=1052 RW-data=500 ZI-data=5228  
+FromELF: creating hex file...
+".\Objects\py32f403r1.axf" - 0 Error(s), 3 Warning(s).
 
 <h2>Software Packages used:</h2>
 

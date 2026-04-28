@@ -36,3 +36,4 @@
 .\objects\lib_ws2812.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
 .\objects\lib_ws2812.o: ..\Bsp\inc\bsp_gpio.h
 .\objects\lib_ws2812.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
+.\objects\lib_ws2812.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
