@@ -120,6 +120,7 @@
         <SetRegEntry>
           <Number>0</Number>
           <Key>DLGUARM</Key>
+          <Name>:</Name>
         </SetRegEntry>
         <SetRegEntry>
           <Number>0</Number>
@@ -158,6 +159,11 @@
           <count>1</count>
           <WinNumber>1</WinNumber>
           <ItemText>g_adc_raw_col,0x0A</ItemText>
+        </Ww>
+        <Ww>
+          <count>2</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>keys</ItemText>
         </Ww>
       </WatchWindow1>
       <Tracepoint>

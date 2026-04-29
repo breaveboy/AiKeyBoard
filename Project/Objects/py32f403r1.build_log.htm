@@ -22,23 +22,45 @@ Dialog DLL:      TCM.DLL V1.56.4.0
  
 <h2>Project:</h2>
 D:\sike_local\AiKeyBoard\Project\py32f403r1.uvprojx
-Project File Date:  04/25/2026
+Project File Date:  04/28/2026
 
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 6 (build 750)', folder: 'D:\Keil_v5\ARM\ARMCC\Bin'
 Build target 'Target 1'
+compiling usbd_hid_keyboard_if.c...
+..\User\Src\usbd_hid_keyboard_if.c(394): warning:  #177-D: variable "r"  was declared but never referenced
+              uint8_t r = custom_hid_rx_buf[7];
+..\User\Src\usbd_hid_keyboard_if.c(395): warning:  #177-D: variable "g"  was declared but never referenced
+              uint8_t g = custom_hid_rx_buf[8];
+..\User\Src\usbd_hid_keyboard_if.c(396): warning:  #177-D: variable "b"  was declared but never referenced
+              uint8_t b = custom_hid_rx_buf[9];
+..\User\Src\usbd_hid_keyboard_if.c(383): warning:  #177-D: variable "sof"  was declared but never referenced
+          uint8_t sof       = custom_hid_rx_buf[1];
+..\User\Src\usbd_hid_keyboard_if.c(384): warning:  #177-D: variable "version"  was declared but never referenced
+          uint8_t version   = custom_hid_rx_buf[2];
+..\User\Src\usbd_hid_keyboard_if.c(385): warning:  #177-D: variable "type"  was declared but never referenced
+          uint8_t type      = custom_hid_rx_buf[3];
+..\User\Src\usbd_hid_keyboard_if.c(386): warning:  #177-D: variable "cmd"  was declared but never referenced
+          uint8_t cmd       = custom_hid_rx_buf[4];
+..\User\Src\usbd_hid_keyboard_if.c(387): warning:  #177-D: variable "plen"  was declared but never referenced
+          uint8_t plen      = custom_hid_rx_buf[6];
+..\User\Src\usbd_hid_keyboard_if.c(519): warning:  #1-D: last line of file ends without a newline
+  }
+..\User\Src\usbd_hid_keyboard_if.c: 9 warnings, 0 errors
 compiling App.c...
 ..\Lib\inc\lib_hall_sensor.h(41): warning:  #1-D: last line of file ends without a newline
   #endif
-..\App\src\App.c(152): warning:  #188-D: enumerated type mixed with another type
+..\App\src\App.c(68): warning:  #2532-D: support for trigraphs is disabled
+  /* --- ???????? (60% ????) --- */
+..\App\src\App.c(162): warning:  #188-D: enumerated type mixed with another type
           g_light_mode = (g_light_mode + 1) % LIGHT_MODE_MAX;
-..\App\src\App.c(194): warning:  #1-D: last line of file ends without a newline
+..\App\src\App.c(204): warning:  #1-D: last line of file ends without a newline
   }
-..\App\src\App.c: 3 warnings, 0 errors
+..\App\src\App.c: 4 warnings, 0 errors
 linking...
-Program Size: Code=22148 RO-data=1052 RW-data=500 ZI-data=5228  
+Program Size: Code=22280 RO-data=1132 RW-data=520 ZI-data=5304  
 FromELF: creating hex file...
-".\Objects\py32f403r1.axf" - 0 Error(s), 3 Warning(s).
+".\Objects\py32f403r1.axf" - 0 Error(s), 13 Warning(s).
 
 <h2>Software Packages used:</h2>
 

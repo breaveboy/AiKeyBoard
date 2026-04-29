@@ -7,14 +7,29 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdint.h>
+/*
 
-/* --- 状态标志位 --- */
-static bool report_dirty = false;   // USB 报告更新标志位
-static bool g_led_dirty = false;    // 灯光物理刷新标志位
-static uint8_t last_key_state[ROW_COUNT][COL_COUNT] = {0};  // 上次物理按键状态
-static uint8_t last_fn_state[ROW_COUNT][COL_COUNT] = {0};   // 上次内部功能键状态
+USB ?豸
+ ?????? Interface 0????????? HID
+ ??    ?????? Class = 0x03
+ ??    ?????? Protocol = 0x01 Keyboard
+ ??    ?????? Endpoint = 0x81
+ ??    ?????? Report ID????????У???? 8 ???????
+ ??
+ ?????? Interface 1????????? HID
+      ?????? Class = 0x03
+      ?????? Protocol = 0x00
+      ?????? Endpoint OUT = 0x02
+      ?????? Endpoint IN  = 0x82
+      ?????? Report ID = 0x05
+*/
+/* --- ??????? --- */
+static bool report_dirty = false;   // USB ????????????
+static bool g_led_dirty = false;    // ???????????????
+static uint8_t last_key_state[ROW_COUNT][COL_COUNT] = {0};  // ?????????????
+static uint8_t last_fn_state[ROW_COUNT][COL_COUNT] = {0};   // ?????????????
 
-/* --- USB 通讯相关 --- */
+/* --- USB ????? --- */
 extern volatile uint8_t hid_state; 
 #ifndef HID_STATE_IDLE
     #define HID_STATE_IDLE 0  
@@ -26,7 +41,7 @@ extern volatile uint8_t hid_state;
     #define HID_INT_EP  0x81
 #endif
 
-/* --- 内部功能键定义 --- */
+/* --- ???????????? --- */
 #define KEY_NONE    0x00
 #define KEY_FN      0xF0
 #define KEY_LIGHT   0xF1
@@ -34,23 +49,23 @@ extern volatile uint8_t hid_state;
 #define KEY_MAC     0xF3
 #define KEY_WIN     0xF4
 
-/* --- 灯光模式定义 --- */
+/* --- ????????? --- */
 typedef enum {
     LIGHT_MODE_OFF = 0,
     LIGHT_MODE_BREATH,
     LIGHT_MODE_RAINBOW,
     LIGHT_MODE_KEY_PRESS,
     LIGHT_MODE_STATIC,
-	  LIGHT_MODE_COLLIDE, //碰撞的流星模式
-	  LIGHT_MODE_DAZZLE_MARQUEE, // 新增：炫彩跑马灯
-    LIGHT_MODE_MAX  //总大小灯光模式
+	  LIGHT_MODE_COLLIDE, //???????????
+	  LIGHT_MODE_DAZZLE_MARQUEE, // ???????????????
+    LIGHT_MODE_MAX  //??????????
 } LightMode_t;
 
 static LightMode_t g_light_mode = LIGHT_MODE_OFF;
 static uint8_t g_pending_internal_key = KEY_NONE; 
 static uint32_t ws2812_tick = 0;
 
-/* --- 键盘映射表 (60% 布局) --- */
+/* --- ???????? (60% ????) --- */
 static const uint8_t g_key_map[5][14] = {
     {0x29, 0x1E, 0x1F, 0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x2D, 0x2E, 0x2A},
     {0x2B, 0x14, 0x1A, 0x08, 0x15, 0x17, 0x1C, 0x18, 0x0C, 0x12, 0x13, 0x2F, 0x30, 0x31},
@@ -64,57 +79,52 @@ static const uint8_t g_fn_key_map[5][14] = {
     {KEY_NONE, KEY_NONE, 0x52, KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE},
     {KEY_NONE, 0x50, 0x51, 0x4F, KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE},
     {KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE},
-    {KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE, KEY_LIGHT,/*灯光触发*/ KEY_NONE, KEY_NONE, KEY_FN}
+    {KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE, KEY_LIGHT,/*?????*/ KEY_NONE, KEY_NONE, KEY_FN}
 };
 
 
-/* --- 1. 初始化 --- */
+/* --- 1. ????? --- */
 void App_init(void) {
     report_dirty = false;
-    g_led_dirty = true;  //初始化刷新保证第一个模式的显示
+    g_led_dirty = true;  //???????????????????????
     memset(last_key_state, 0, sizeof(last_key_state));
     memset(last_fn_state, 0, sizeof(last_fn_state));
     g_light_mode = LIGHT_MODE_OFF;
 }
 
-/* --- 2. 扫描任务 (1ms) --- */
+/* --- 2. ??????? (1ms) --- */
 void App_adkey_scan_task(void) {
-    lib_hall_sensor_task(); // 硬件采集
+    lib_hall_sensor_task(); // ??????
     for (uint8_t r = 0; r < ROW_COUNT; r++) {
         for (uint8_t c = 0; c < COL_COUNT; c++) {
-            if (key_mask[r][c] == 0) continue; //无效按键移除
+            if (key_mask[r][c] == 0) continue; //???????????
             if (keys[r][c].is_pressed != last_key_state[r][c]) {
                 last_key_state[r][c] = keys[r][c].is_pressed;
-                report_dirty = true; // 标记有按键变化
+                report_dirty = true; // ????????????
             }
         }
     }
 }
 
-/* --- 3. USB 报告任务 (1ms) --- */
+/* --- 3. USB ???????? (1ms) --- */
 void App_usb_process_task(void) {
-    if (!report_dirty) return; // 拦截：无变化不计算
+    if (!report_dirty) return; // ???????????????
     
 	
-	  //超时退出
-    if (hid_state == HID_STATE_BUSY) {
-        static uint8_t busy_timeout = 0;
-        if (++busy_timeout > 10) { hid_state = HID_STATE_IDLE; busy_timeout = 0; }
-        return; 
-    }
+	
 
     uint8_t current_report[8] = {0};
     uint8_t key_count = 0;
     bool fn_pressed = false;
 
-    // A. 检测 Fn 状态
+    // A. ??? Fn ??
     for (uint8_t r = 0; r < ROW_COUNT; r++) {
         for (uint8_t c = 0; c < COL_COUNT; c++) {
             if (keys[r][c].is_pressed && g_key_map[r][c] == KEY_FN) { fn_pressed = true; break; }
         }
     }
 
-    // B. 处理键值
+    // B. ???????
     for (uint8_t r = 0; r < ROW_COUNT; r++) {
         for (uint8_t c = 0; c < COL_COUNT; c++) {
             if (key_mask[r][c] == 0 || !keys[r][c].is_pressed) {
@@ -124,13 +134,13 @@ void App_usb_process_task(void) {
             if (code == KEY_NONE) code = g_key_map[r][c];
             if (code == KEY_NONE || code == KEY_FN) continue;
 
-            if (code >= 0xF0) { // 内部键
+            if (code >= 0xF0) { // ?????
                 if (last_fn_state[r][c] == 0) { g_pending_internal_key = code; last_fn_state[r][c] = 1; }
                 continue;
             }
-            if (code >= 0xE0 && code <= 0xE7) { // 修饰键
+            if (code >= 0xE0 && code <= 0xE7) { // ??????
                 current_report[0] |= (1U << (code - 0xE0));
-            } else if (key_count < 6) { // 普通键
+            } else if (key_count < 6) { // ?????
                 current_report[2 + key_count++] = code;
             }
         }
@@ -146,16 +156,16 @@ void App_usb_process_task(void) {
     } else { report_dirty = false; }
 }
 
-/* --- 4. 灯光逻辑 (10ms) --- */
+/* --- 4. ?????? (10ms) --- */
 static void App_handle_internal_key(uint8_t code) {
     if (code == KEY_LIGHT) {
         g_light_mode = (g_light_mode + 1) % LIGHT_MODE_MAX;
         ws2812_tick = 0;
-        lib_ws2812_set_all(0, 0, 0); // 切换清空
+        lib_ws2812_set_all(0, 0, 0); // ???????
         g_led_dirty = true;
     }
 }
-//按键处理逻辑
+//???????????
 void App_led_logic_task(void) {
     if (g_pending_internal_key != KEY_NONE) {
         App_handle_internal_key(g_pending_internal_key);
@@ -163,7 +173,7 @@ void App_led_logic_task(void) {
     }
 }
 
-/* --- 5. 灯光动画 (25ms) --- */
+/* --- 5. ????? (25ms) --- */
 void App_led_animation_task(void) {
     switch (g_light_mode) {
         case LIGHT_MODE_BREATH:  lib_ws2812_breath_mode(++ws2812_tick); g_led_dirty = true; break;
@@ -186,7 +196,7 @@ void App_led_animation_task(void) {
     }
 }
 
-/* --- 6. 灯光显示 (30ms) --- */
+/* --- 6. ?????? (30ms) --- */
 void App_led_display_task(void) {
     if (g_led_dirty) {
         if (lib_ws2812_update() == 0) g_led_dirty = false;

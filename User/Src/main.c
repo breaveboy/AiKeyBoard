@@ -30,7 +30,7 @@ int main(void) {
     // 1. ϵͳУ׼
     lib_hall_sensor_calibration();
 
-	
+	   
 	
 	
 	
