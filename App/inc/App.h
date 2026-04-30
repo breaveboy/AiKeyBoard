@@ -2,8 +2,25 @@
 #define __APP_H__
 #include "usbd_core.h"
 #include "usbd_hid.h"
-void App_init(void);
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+void App_init(void);
 void App_adkey_scan_task(void);
 void App_lighting_process_task(void);
 void App_display_task(void);
@@ -27,4 +44,7 @@ void App_led_animation_task(void);
  * 调用硬件驱动接口（SPI/DMA）将颜色数据推送到 WS2812 灯珠
  */
 void App_led_display_task(void);
+
+extern void App_protocol_task(void);
+
 #endif

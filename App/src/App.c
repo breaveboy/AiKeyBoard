@@ -48,7 +48,15 @@ typedef enum {
 
 static LightMode_t g_light_mode = LIGHT_MODE_OFF;
 static uint8_t g_pending_internal_key = KEY_NONE; 
+//灯光相关的配置参数
 static uint32_t ws2812_tick = 0;
+static uint8_t g_light_r = 30;
+static uint8_t g_light_g = 180;
+static uint8_t g_light_b = 255;
+static uint8_t g_light_brightness = 100;
+static uint8_t g_light_speed = 10;
+
+
 
 /* --- 键盘的键码表 --- */
 static const uint8_t g_key_map[5][14] = {
@@ -101,9 +109,6 @@ void App_adkey_scan_task(void) {
 /* --- 3. USB 上报(1ms) --- */
 void App_usb_process_task(void) {
     if (!report_dirty) return; 
-    
-	
-	
 
     uint8_t current_report[8] = {0};
     uint8_t key_count = 0;
@@ -153,7 +158,7 @@ static void App_handle_internal_key(uint8_t code) {
     if (code == KEY_LIGHT) {
         g_light_mode = (g_light_mode + 1) % LIGHT_MODE_MAX;
         ws2812_tick = 0;
-        lib_ws2812_set_all(0, 0, 0); // ???????
+        lib_ws2812_set_all(0, 0, 0); 
         g_led_dirty = true;
     }
 }
@@ -166,27 +171,62 @@ void App_led_logic_task(void) {
 }
 
 /* --- 模式切换任务 --- */
+/* --- 模式切换任务 --- */
 void App_led_animation_task(void) {
+    // 【新增】速度控制逻辑：基于 g_light_speed 
+    static uint8_t speed_prescaler = 0;
+    uint8_t target_delay = 11 - (g_light_speed > 10 ? 10 : g_light_speed); 
+    if (++speed_prescaler < target_delay) {
+        return; 
+    }
+    speed_prescaler = 0;
+
+    // 【新增】亮度按比例缩放运算
+    uint8_t cur_r = (g_light_r * g_light_brightness) / 100;
+    uint8_t cur_g = (g_light_g * g_light_brightness) / 100;
+    uint8_t cur_b = (g_light_b * g_light_brightness) / 100;
+
     switch (g_light_mode) {
-        case LIGHT_MODE_BREATH:  lib_ws2812_breath_mode(++ws2812_tick); g_led_dirty = true; break;
-        case LIGHT_MODE_RAINBOW: lib_ws2812_rainbow_mode(++ws2812_tick); g_led_dirty = true; break;
-        case LIGHT_MODE_STATIC:  lib_ws2812_set_all(30, 180, 255); g_led_dirty = true; break;
+        case LIGHT_MODE_BREATH:  
+            lib_ws2812_breath_mode(++ws2812_tick); 
+            g_led_dirty = true; 
+            break;
+        case LIGHT_MODE_RAINBOW: 
+            lib_ws2812_rainbow_mode(++ws2812_tick); 
+            g_led_dirty = true; 
+            break;
+        case LIGHT_MODE_STATIC:  
+            // 【修改】使用带有亮度缩放的 cur_r, cur_g, cur_b
+            lib_ws2812_set_all(cur_r, cur_g, cur_b); 
+            g_led_dirty = true; 
+            break;
         case LIGHT_MODE_KEY_PRESS:
             for (uint8_t r = 0; r < ROW_COUNT; r++) {
                 for (uint8_t c = 0; c < COL_COUNT; c++) {
                     if (key_mask[r][c] == 0) continue;
-                    if (keys[r][c].is_pressed) lib_ws2812_set_key_color(r,c,0,255,255);
+                    // 【修改】使用带有亮度缩放的 cur_r, cur_g, cur_b
+                    if (keys[r][c].is_pressed) lib_ws2812_set_key_color(r,c,cur_r,cur_g,cur_b);
                     else lib_ws2812_set_key_color(r,c,0,0,0);
                 }
             }
             g_led_dirty = true;
             break;
-				case LIGHT_MODE_COLLIDE: lib_ws2812_collide_ripple_mode(++ws2812_tick);g_led_dirty=true;break;
-        case LIGHT_MODE_DAZZLE_MARQUEE: lib_ws2812_dazzle_marquee_mode(++ws2812_tick); g_led_dirty = true; 
-    break;
+        case LIGHT_MODE_COLLIDE: 
+            lib_ws2812_collide_ripple_mode(++ws2812_tick);
+            g_led_dirty=true;
+            break;
+        case LIGHT_MODE_DAZZLE_MARQUEE: 
+            lib_ws2812_dazzle_marquee_mode(++ws2812_tick); 
+            g_led_dirty = true; 
+            break;
         default: break;
     }
 }
+
+/* ========================================================================= *
+ *                         供外部协议调用的业务层接口
+ * ========================================================================= */
+
 
 /* --- 6.灯光显示任务 --- */
 void App_led_display_task(void) {
@@ -196,3 +236,26 @@ void App_led_display_task(void) {
 }
 
 
+void App_set_light_config(uint8_t mode, uint8_t r, uint8_t g, uint8_t b, uint8_t br, uint8_t speed) {
+    if (mode < LIGHT_MODE_MAX) {
+        g_light_mode = (LightMode_t)mode;
+    }
+    g_light_r = r;
+    g_light_g = g;
+    g_light_b = b;
+    g_light_brightness = (br > 100) ? 100 : br; // 限制亮度最大100
+    g_light_speed = speed;
+
+    ws2812_tick = 0;
+    g_led_dirty = true;
+}
+
+// 【修复】之前这里是个分号，现在补全真实的赋值逻辑
+void App_get_light_config(uint8_t *mode, uint8_t *r, uint8_t *g, uint8_t *b, uint8_t *br, uint8_t *speed) {
+    *mode  = (uint8_t)g_light_mode;
+    *r     = g_light_r;
+    *g     = g_light_g;
+    *b     = g_light_b;
+    *br    = g_light_brightness;
+    *speed = g_light_speed;
+}

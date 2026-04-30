@@ -3,107 +3,119 @@ import time
 
 VID = 0x36B7
 PID = 0xFFFF
-
 REPORT_ID = 0x05
 
+# =============== 设备枚举与打开 (保留你原来的代码) ===============
 def print_devices():
     print("查找 HID 设备：")
     devices = hid.enumerate(VID, PID)
-
     for index, dev in enumerate(devices):
-        print(f"\n[{index}]")
-        print("path             :", dev["path"])
-        print("vendor_id        :", hex(dev["vendor_id"]))
-        print("product_id       :", hex(dev["product_id"]))
-        print("product_string   :", dev.get("product_string"))
-        print("manufacturer     :", dev.get("manufacturer_string"))
-        print("usage_page       :", hex(dev.get("usage_page", 0)))
-        print("usage            :", hex(dev.get("usage", 0)))
-        print("interface_number :", dev.get("interface_number"))
-
+        print(f"\n[{index}] path: {dev['path']} | interface: {dev.get('interface_number')}")
     return devices
-
 
 def find_custom_hid_path():
     devices = hid.enumerate(VID, PID)
-
     for dev in devices:
-        usage_page = dev.get("usage_page", 0)
-        interface_number = dev.get("interface_number", -1)
-
-        # 优先找自定义 HID
-        # 你的自定义 HID 是 Interface 1，也就是 MI_01
-        if interface_number == 1:
+        if dev.get("interface_number", -1) == 1 or dev.get("usage_page", 0) == 0xFF00:
             return dev["path"]
-
-        # 有些系统 interface_number 可能拿不到，可以根据 usage_page 找
-        if usage_page == 0xFF00:
-            return dev["path"]
-
     return None
 
+# =============== 核心：新协议组包与 CRC 计算 ===============
 
-def build_packet(pkt_type=0x10, cmd=0x01, seq=0x01, payload=None):
-    if payload is None:
-        payload = []
+def calculate_crc(buffer_64):
+    """
+    计算前 63 字节的校验和： 0xFF - (Byte0 + Byte1 + ... + Byte62) & 0xFF
+    注意传入的 buffer 必须是准确的 64 字节数组
+    """
+    total_sum = sum(buffer_64[0:63]) & 0xFF
+    return (0xFF - total_sum) & 0xFF
 
-    if len(payload) > 56:
-        raise ValueError("payload 最大 56 字节")
-
+def build_light_packet(mode, r, g, b, brightness=100, speed=5):
+    """
+    组装 64 字节的灯光控制协议包
+    对应 C 语言中的 Packet_t 结构体
+    """
     buf = [0x00] * 64
 
-    buf[0] = REPORT_ID   # Report ID = 0x05
-    buf[1] = 0xA5        # 包头
-    buf[2] = 0x01        # 协议版本
-    buf[3] = pkt_type    # Type，例如 0x10 灯光
-    buf[4] = cmd         # Cmd
-    buf[5] = seq         # Seq
-    buf[6] = len(payload)
+    # 1. 协议头字段
+    buf[0] = REPORT_ID   # report_id = 0x05
+    buf[1] = 0x20        # cmd_id    = 0x20 (CMD_LIGHT_WRITE_CFG)
+    buf[2] = 0x00        # cmd_param = 0x00 (LPARAM_ALL_SET 综合设置)
+    buf[3] = 0x00        # reserved  = 0x00
+    buf[4] = 0x01        # total_pkts= 1
+    buf[5] = 0x00        # cur_pkt   = 0
+    buf[6] = 0x07        # data_len  = 7 (Payload_LightAll_t 的大小)
 
-    for i, value in enumerate(payload):
-        buf[7 + i] = value & 0xFF
+    # 2. 有效数据 Payload (对应 Payload_LightAll_t)
+    buf[7]  = mode       # payload[0]: mode_idx (4=静态, 1=呼吸, 2=彩虹等)
+    buf[8]  = 0x00       # payload[1]: color_idx (这里不使用预设颜色)
+    buf[9]  = r          # payload[2]: R
+    buf[10] = g          # payload[3]: G
+    buf[11] = b          # payload[4]: B
+    buf[12] = brightness # payload[5]: brightness (0-100)
+    buf[13] = speed      # payload[6]: speed (延时，值越小越快，建议1-10)
+
+    # 3. 计算 CRC 填入最后一个字节
+    buf[63] = calculate_crc(buf)
 
     return buf
 
-
-
+# =============== 主程序运行 ===============
 print_devices()
 
 path = find_custom_hid_path()
 if path is None:
-    print("\n没有找到自定义 HID 接口。")
-    print("请确认设备管理器里能看到 MI_01，或者 usage_page = 0xff00。")
+    print("\n没有找到自定义 HID 接口。请确认设备管理器里能看到 MI_01。")
+    exit()
   
 print("\n打开自定义 HID：", path)
-
 dev = hid.device()
 dev.open_path(path)
+# 设置为非阻塞模式，方便读取 ACK
+dev.set_nonblocking(1) 
 
-
-
-# 测试包：05 A5 01 10 01 01 03 11 22 33 ...
-
-
-
-
-
-
-
-while True:
-    packet = build_packet(pkt_type=0x10, cmd=0x01, seq=0x01, payload=[255,0,0])
-    dev.write(packet)
-    time.sleep(1)
-    packet = build_packet(pkt_type=0x10, cmd=0x01, seq=0x01, payload=[0,255,0])
-    dev.write(packet)
-    time.sleep(1)
-    packet = build_packet(pkt_type=0x10, cmd=0x01, seq=0x01, payload=[0,0,255])
-    dev.write(packet)
+def send_to_mcu(packet_64):
    
+    send_buf =packet_64
+    dev.write(send_buf)
 
+print("\n开始循环发送灯光测试...\n")
+packet = build_light_packet(mode=4, r=0, g=255, b=0, brightness=100, speed=10)
+send_to_mcu(packet)
+time.sleep(2)
+# try:
+#     while True:
+#         # --- 测试 1: 静态红色 (模式 4) ---
+#         print(">> 切换为：静态红色")
+#         packet = build_light_packet(mode=4, r=255, g=0, b=0, brightness=100, speed=5)
+#         send_to_mcu(packet)
+#         time.sleep(2)
 
+#         # --- 测试 2: 静态绿色 (模式 4) ---
+#         print(">> 切换为：静态绿色")
+#         packet = build_light_packet(mode=4, r=0, g=255, b=0, brightness=100, speed=5)
+#         send_to_mcu(packet)
+#         time.sleep(2)
 
+#         # --- 测试 3: 静态蓝色 (模式 4) ---
+#         print(">> 切换为：静态蓝色")
+#         packet = build_light_packet(mode=4, r=0, g=0, b=255, brightness=100, speed=5)
+#         send_to_mcu(packet)
+#         time.sleep(2)
 
+#         # --- 测试 4: 呼吸紫色 (模式 1) ---
+#         print(">> 切换为：呼吸紫色")
+#         packet = build_light_packet(mode=1, r=255, g=0, b=255, brightness=100, speed=8)
+#         send_to_mcu(packet)
+#         time.sleep(4) # 呼吸模式看久一点
 
+#         # --- 测试 5: 流水灯/彩虹 (模式 2) ---
+#         # 对于彩虹模式，RGB值会被内部覆盖，所以传什么无所谓，但速度可以控制
+#         print(">> 切换为：彩虹模式")
+#         packet = build_light_packet(mode=2, r=0, g=0, b=0, brightness=100, speed=3)
+#         send_to_mcu(packet)
+#         time.sleep(4)
 
-
-  
+# except KeyboardInterrupt:
+#     print("测试结束，关闭设备。")
+#     dev.close()

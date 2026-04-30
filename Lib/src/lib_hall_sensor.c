@@ -6,19 +6,6 @@ volatile uint8_t  g_current_row = 0;    // 当前扫描行 (0-4)
 volatile uint8_t  g_scan_round = 0;     // 当前轮次 (0-2)
 volatile uint8_t  g_scan_complete = 0;  // 一波扫描完成标志
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 uint16_t g_adc_raw_col[ROW_COUNT][COL_COUNT] = {0};    // 原始累加缓冲区
 
 Key_t keys[ROW_COUNT][COL_COUNT];
@@ -84,30 +71,6 @@ void update_baseline_tracking(Key_t* k, uint16_t cur_adc) {
         k->drift_cnt = 0; // 立刻关掉秒表，不准修改基准
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

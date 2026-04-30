@@ -380,7 +380,7 @@ static void usbd_custom_hid_out_callback(uint8_t ep, uint32_t nbytes)
 		   return;
 		}
     //pc端的数据在这个回调函数中接受
-    //App_protocol_on_rx(custom_hid_rx_buf,nbytes);
+    App_protocol_on_rx(custom_hid_rx_buf,nbytes);
 		
    
     /*
