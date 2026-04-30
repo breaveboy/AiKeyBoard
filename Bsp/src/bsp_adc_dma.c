@@ -82,7 +82,8 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef *hadc)
 
 #define ADC_DMA1_CH1_ALL_FLAGS (DMA_IFCR_CGIF1 | DMA_IFCR_CTCIF1 | DMA_IFCR_CHTIF1 | DMA_IFCR_CTEIF1)
 void bsp_adc_dma_start(void)
-{
+{ 
+	 
     DMA1_Channel1->CCR &= ~DMA_CCR_EN;
     DMA1_Channel1->CMAR = (uint32_t)gADCxConvertedData;
     DMA1_Channel1->CNDTR = 14;

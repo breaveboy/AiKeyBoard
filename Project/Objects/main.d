@@ -59,3 +59,6 @@
 .\objects\main.o: ..\CherryUSB\common\usb_dc.h
 .\objects\main.o: ..\CherryUSB\class\hid\usbd_hid.h
 .\objects\main.o: ..\CherryUSB\class\hid\usb_hid.h
+.\objects\main.o: ..\SEGGER_RTT_V754a\RTT\SEGGER_RTT.h
+.\objects\main.o: ..\SEGGER_RTT_V754a\RTT\../Config/SEGGER_RTT_Conf.h
+.\objects\main.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdarg.h

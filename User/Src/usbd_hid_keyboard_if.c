@@ -2,7 +2,7 @@
 #include "usbd_hid.h"
 #include <stdio.h>
 #include <string.h>
-#include "lib_ws2812.h"
+#include "App_protocol.h"
 /* ================= USB 基本信息 ================= */
 
 #define USBD_VID           0x36b7
@@ -48,7 +48,7 @@
 volatile uint8_t hid_state = HID_STATE_IDLE;
 
 /* 自定义 HID IN 端点状态 */
-static volatile uint8_t custom_hid_state = HID_STATE_IDLE;
+volatile uint8_t custom_hid_state = HID_STATE_IDLE;
 
 /* ================= USB 描述符 ================= */
 
@@ -360,49 +360,27 @@ static void usbd_hid_int_callback(uint8_t ep, uint32_t nbytes)
     } else if (ep == HID_CUSTOM_IN_EP) {
         custom_hid_state = HID_STATE_IDLE;
     }
-}
+}       
 
 
-#define PKT_SOF          0xA5
-#define PKT_VERSION      0x01
 
-#define PKT_TYPE_LIGHT   0x10
 
-#define LIGHT_CMD_SET_MODE   0x01
-#define LIGHT_CMD_NEXT_MODE  0x02
-#define LIGHT_CMD_SET_COLOR  0x03
-#define LIGHT_CMD_OFF        0x04
+
+
+
+
+
+
+
+
+//发送完成的回调函数
 static void usbd_custom_hid_out_callback(uint8_t ep, uint32_t nbytes)
 {
-    if (ep != HID_CUSTOM_OUT_EP) {
-        return;
-    }
-
-   if (nbytes >= 10) {
-        uint8_t report_id = custom_hid_rx_buf[0];
-        uint8_t sof       = custom_hid_rx_buf[1];
-        uint8_t version   = custom_hid_rx_buf[2];
-        uint8_t type      = custom_hid_rx_buf[3];
-        uint8_t cmd       = custom_hid_rx_buf[4];
-        uint8_t plen      = custom_hid_rx_buf[6];
-
-        if (report_id == CUSTOM_REPORT_ID ) {
-
-          
-
-        
-            uint8_t r = custom_hid_rx_buf[7];
-            uint8_t g = custom_hid_rx_buf[8];
-            uint8_t b = custom_hid_rx_buf[9];
-
-            
-             
-        
-            }
-    }
-
-
-   
+    if(ep!=HID_CUSTOM_OUT_EP){
+		   return;
+		}
+    //pc端的数据在这个回调函数中接受
+    //App_protocol_on_rx(custom_hid_rx_buf,nbytes);
 		
    
     /*
@@ -417,29 +395,7 @@ static void usbd_custom_hid_out_callback(uint8_t ep, uint32_t nbytes)
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-/*
- * PC 通过 HID Set_Report 发送数据时，CherryUSB 会调用这个函数。
- *
- * intf == 0：标准键盘 HID
- * intf == 1：自定义 HID
- */
-uint32_t usbd_hid_set_report(uint8_t req,
-                             uint8_t intf,
-                             uint8_t report_id,
-                             uint8_t report_type,
-                             uint8_t *data,
-                             uint32_t len)
+uint32_t usbd_hid_set_report(uint8_t req,uint8_t intf,uint8_t report_id,uint8_t report_type,uint8_t *data,uint32_t len)
 {
     if (data == NULL || len == 0) {
         return 0;
@@ -453,10 +409,6 @@ uint32_t usbd_hid_set_report(uint8_t req,
         return 0;
     }
 
-   
-     
-    lib_ws2812_set_pixel(0,255,255,255);
-	  lib_ws2812_update();
 
     return 0;
 }
@@ -470,12 +422,7 @@ void hid_keyboard_init(void)
     /*
      * Interface 0：标准键盘 HID
      */
-    usbd_add_interface(usbd_hid_init_intf(
-        &intf0,
-        keyboard_hid_desc,
-        hid_keyboard_report_desc,
-        HID_KEYBOARD_REPORT_DESC_SIZE
-    ));
+    usbd_add_interface(usbd_hid_init_intf(&intf0,keyboard_hid_desc, hid_keyboard_report_desc,HID_KEYBOARD_REPORT_DESC_SIZE ));
     usbd_add_endpoint(&hid_in_ep);
 
     /*
@@ -485,15 +432,11 @@ void hid_keyboard_init(void)
      * 必须注册 intf1、0x02 OUT、0x82 IN。
      * 你原来的代码只注册了 intf0 和 hid_in_ep，所以自定义 HID 不会生效。
      */
-    usbd_add_interface(usbd_hid_init_intf(
-        &intf1,
-        custom_hid_desc,
-        hid_custom_report_desc,
-        HID_CUSTOM_REPORT_DESC_SIZE
-    ));
+   
+    usbd_add_interface(usbd_hid_init_intf(&intf1,custom_hid_desc,hid_custom_report_desc,HID_CUSTOM_REPORT_DESC_SIZE));
     usbd_add_endpoint(&hid_custom_out_ep);
     usbd_add_endpoint(&hid_custom_in_ep);
-
+    
     usbd_initialize();
 }
 
@@ -517,3 +460,4 @@ uint8_t usbh_hid_get_idle(uint8_t intf, uint8_t report_id)
 {
     return idle_speed;
 }
+

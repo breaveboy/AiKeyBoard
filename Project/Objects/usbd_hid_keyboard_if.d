@@ -44,6 +44,4 @@
 .\objects\usbd_hid_keyboard_if.o: ..\CherryUSB\common\usb_dc.h
 .\objects\usbd_hid_keyboard_if.o: ..\CherryUSB\class\hid\usbd_hid.h
 .\objects\usbd_hid_keyboard_if.o: ..\CherryUSB\class\hid\usb_hid.h
-.\objects\usbd_hid_keyboard_if.o: ..\Lib\inc\lib_ws2812.h
-.\objects\usbd_hid_keyboard_if.o: ..\Bsp\inc\bsp_board.h
-.\objects\usbd_hid_keyboard_if.o: ..\Bsp\inc\bsp_spi_dma.h
+.\objects\usbd_hid_keyboard_if.o: ..\App\inc\App_protocol.h

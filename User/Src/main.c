@@ -7,24 +7,45 @@
 #include "App.h"
 #include "bsp_tim.h"
 #include <string.h>
-
+#include "SEGGER_RTT.h"
 
 
 static void APP_SystemClockConfig(void);
 static void APP_USBInit(void);
 
+
+
+//配置a10和a9的初始化
+void  debug_init(){
+     //PA10 PA9
+	 GPIO_InitTypeDef GPIO_t;
+	   //配置时钟
+	  __HAL_RCC_GPIOA_CLK_ENABLE();
+	//配置初始模式
+	  GPIO_t.Mode  = GPIO_MODE_OUTPUT_PP;
+    GPIO_t.Pull  = GPIO_NOPULL;
+    GPIO_t.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+    GPIO_t.Pin   = GPIO_PIN_9|GPIO_PIN_10;
+	 HAL_GPIO_Init(GPIOA, &GPIO_t);
+}
+
+
+
 /* --- 主循环 --- */
 int main(void) {
     HAL_Init();
     APP_SystemClockConfig();
-   
-    bsp_usart_init(115200);
+	  ///////////////////////////////板层初始化////////////
+    //bsp_usart_init(115200);
     bsp_tim_init();
-     
+    debug_init(); 
 	  bsp_spi_dma_init();
-	  lib_ws2812_init();
 	
-	   
+	
+	
+	
+	  ///////////////////////////////驱动层初始化//////////////
+	  lib_ws2812_init();
     // 初始化霍尔传感器（包含 GPIO 和 ADC DMA 初始化）
     lib_hall_sensor_init();
     // 1. 系统校准
@@ -32,35 +53,25 @@ int main(void) {
 
 	   
 	
+	 
 	
-	
-	
+	  ///////////////////////////////业务层初始化//////////////////
     // 2. 初始化 App 层
     App_init();
     APP_USBInit();
 		
-		
-		
-		
-		
-		
-		
-		
+    
     // 3. 启动运行扫描
     g_scan_complete = 0;
     select_row(0);
     Bsp_Delay_Us(SETTLING_TIME_US);
     bsp_adc_dma_start();
-//   
-//		for(uint8_t r=0;r<5;r++){
-//			for(uint8_t c=0;c<14;c++){
-//			
-//				lib_ws2812_set_key_color(r,c,255,0,0);
-//				lib_ws2812_update();
-//				Bsp_Delay_Ms(200);
-//			}
-//		} 
+   
 	
+
+
+  
+    SEGGER_RTT_printf(0, "success init ok\r\n");
     while (1) {
         Task_exec();
     }

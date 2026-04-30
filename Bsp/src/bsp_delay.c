@@ -13,7 +13,7 @@ void Bsp_Delay_Us(uint32_t us)
         i = 15;
         while ( i-- )
         {
-            __nop();
+             __nop();
         }
     }
 }

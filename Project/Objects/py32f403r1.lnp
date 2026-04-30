@@ -2,6 +2,7 @@
 ".\objects\startup_py32f403xx.o"
 ".\objects\system_py32f403.o"
 ".\objects\app.o"
+".\objects\app_protocol.o"
 ".\objects\main.o"
 ".\objects\py32f403_hal_msp.o"
 ".\objects\py32f403_it.o"
@@ -52,6 +53,8 @@
 ".\objects\py32f403_hal_uart.o"
 ".\objects\py32f403_hal_usart.o"
 ".\objects\py32f403_hal_wwdg.o"
+".\objects\segger_rtt.o"
+".\objects\segger_rtt_printf.o"
 --library_type=microlib --strict --scatter ".\Objects\py32f403r1.sct"
 --summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers

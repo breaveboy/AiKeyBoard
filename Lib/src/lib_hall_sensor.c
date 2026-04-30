@@ -6,6 +6,19 @@ volatile uint8_t  g_current_row = 0;    // 当前扫描行 (0-4)
 volatile uint8_t  g_scan_round = 0;     // 当前轮次 (0-2)
 volatile uint8_t  g_scan_complete = 0;  // 一波扫描完成标志
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 uint16_t g_adc_raw_col[ROW_COUNT][COL_COUNT] = {0};    // 原始累加缓冲区
 
 Key_t keys[ROW_COUNT][COL_COUNT];
@@ -35,6 +48,70 @@ void select_row(uint8_t index) {
         case 4: CLR_IO(GPIOC, GPIO_PIN_6); break;
     }
 }
+
+
+/**
+ * 动态基准追踪函数
+ * 作用：悄悄修正常年累月的温漂，不让键盘“断气”
+ */
+void update_baseline_tracking(Key_t* k, uint16_t cur_adc) {
+    // 1. 如果现在按键正按着呢，绝对不能更新基准，否则按键就失效了
+    if (k->is_pressed) {
+        k->drift_cnt = 0; // 重置秒表
+        return;
+    }
+
+    // 2. 算一下当前的误差（起跑线 和 现在的脚 差了多远）
+    int32_t diff = (int32_t)k->idele_adc - (int32_t)cur_adc;
+
+    // 3. 【重点】设定一个小范围（比如正负 15 之内）
+    // 如果偏差很小，说明这大概率是温漂，而不是人在按键
+    if (diff < 15 && diff > -15) {
+        k->drift_cnt++; // 开启秒表，开始读秒
+
+        // 4. 如果数值在这个范围极其稳定地待了 1000 次循环（大约 1.5 到 2 秒）
+        if (k->drift_cnt > 1000) {
+            // 如果比基准稍微低了一点，就把基准往下挪 1 个单位
+            if (diff > 0) k->idele_adc--; 
+            // 如果比基准稍微高了一点，就把基准往上挪 1 个单位
+            else if (diff < 0) k->idele_adc++; 
+
+            k->drift_cnt = 0; // 修正完一次后，秒表归零，重新开始下一轮观察
+        }
+    } 
+    // 5. 如果误差突然变得很大（比如差了 50），说明有人在按按键！
+    else {
+        k->drift_cnt = 0; // 立刻关掉秒表，不准修改基准
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /* --- 业务逻辑 --- */
 
@@ -106,7 +183,7 @@ void lib_hall_sensor_init(void) {
     // 2. 初始化 ADC DMA
     bsp_adc_dma_init();
 }
-
+////////上电时初始key的状态
 void lib_hall_sensor_calibration(void) {
     printf("Calibration Start...\r\n");
     g_scan_complete = 0;
@@ -124,7 +201,7 @@ void lib_hall_sensor_calibration(void) {
         for(uint8_t c = 0; c < COL_COUNT; c++) {
             keys[r][c].idele_adc = g_adc_raw_col[r][c] / SCAN_ROUNDS;
             g_adc_raw_col[r][c] = 0; // 必须清零累加器！
-					
+					  keys[r][c].drift_cnt = 0; // 【加这一句，保证初始化清零】
             keys[r][c].actuation_point = 350;
             keys[r][c].top_deadzone = 80;
             keys[r][c].bottom_deadzone = 1050;
@@ -157,7 +234,14 @@ void lib_hall_sensor_task(void) {
 
                 Key_t *k = &keys[r][c];
                 uint8_t old_s = k->is_pressed;
+								
+								// === 【这里是关键！】在算逻辑之前，先进行动态追踪 ===
+                update_baseline_tracking(k, avg_adc);
+								
+								//执行按键的逻辑
                 process_key_logic(k, avg_adc);
+								
+								
 
                 // 只有状态变化才处理灯光或串口
                 if (old_s != k->is_pressed) {
@@ -181,10 +265,14 @@ void lib_hall_sensor_task(void) {
         bsp_adc_dma_start();
     }
 }
-
-// 核心中断：链式触发逻辑
+//14次普通扫描： 14 × (63us高 + 22us低) = 1190 us
+//第15次扫描+数据处理发送： 约2us高 + 830us长低 = 832 us
+//当前总周期： 1190 + 832 = 2022 us（约 2 毫秒）
+// 核心中断：链式触发逻辑  5*3会产生15中断=1.17ms。单次adc的采集是66.0us
 #define ADC_DMA1_CH1_ALL_FLAGS (DMA_IFCR_CGIF1 | DMA_IFCR_CTCIF1 | DMA_IFCR_CHTIF1 | DMA_IFCR_CTEIF1)
 void DMA1_Channel1_IRQHandler(void) {
+	
+	  GPIOA->BSRR = GPIO_PIN_9;
     if(DMA1->ISR & DMA_ISR_TCIF1) {
         DMA1->IFCR = ADC_DMA1_CH1_ALL_FLAGS;
         DMA1_Channel1->CCR &= ~DMA_CCR_EN;
@@ -212,4 +300,5 @@ void DMA1_Channel1_IRQHandler(void) {
             }
         }
     }
+		GPIOA->BRR = (uint32_t)GPIO_PIN_9;
 }

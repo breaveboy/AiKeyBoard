@@ -1,0 +1,37 @@
+      Code (inc. data)   RO Data    RW Data    ZI Data      Debug   Object Name
+      1028          0        140         27        140          0   app.o
+        76          0          0          0        148          0   bsp_adc_dma.o
+        36          0          0          0          0          0   bsp_delay.o
+        52          0          0          0        160          0   bsp_spi_dma.o
+        40          0          0          0         64          0   bsp_tim.o
+       712          0         70          3       1540          0   lib_hall_sensor.o
+      1264          0         85          0       1767          0   lib_ws2812.o
+       308          0          0          0          0          0   main.o
+       174          0          0          9          0          0   py32f403_hal.o
+       316          0          0          0          0          0   py32f403_hal_cortex.o
+      1120          0          0          0          0          0   py32f403_hal_dma.o
+        64          0          0          0          0          0   py32f403_hal_msp.o
+      2068          0          0          0          0          0   py32f403_hal_rcc.o
+      1118          0          0          0          0          0   py32f403_hal_spi.o
+       414          0          0          0          0          0   py32f403_hal_tim.o
+         4          0          0          0          0          0   py32f403_hal_tim_ex.o
+        40          0          0          0          0          0   py32f403_it.o
+       564          0         17          0       1208          0   segger_rtt.o
+      1096          0         16          0          0          0   segger_rtt_printf.o
+        36          0        304          0       1024          0   startup_py32f403xx.o
+       548          0        176          4          0          0   system_py32f403.o
+        16          0          0         66          0          0   task.o
+      2816          0          0          2        384          0   usb_dc_py32.o
+      2296          0          0        368          0          0   usbd_core.o
+        84          0          0         37        136          0   usbd_hid_keyboard_if.o
+Object Totals
+
+Memory Map of the image
+
+	Load Region LR_IROM1 
+
+		Execution Region ER_IROM1 (Exec base: 0x08000000, Size: 0x00004420, Max: 0x00050000, END)
+
+		Execution Region RW_IRAM1 (Exec base: 0x20000000, Size: 0x00001BD8, Max: 0x00010000, END)
+
+Image component sizes
