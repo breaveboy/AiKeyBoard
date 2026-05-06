@@ -430,7 +430,6 @@ void hid_keyboard_init(void)
      *
      * 关键点：
      * 必须注册 intf1、0x02 OUT、0x82 IN。
-     * 你原来的代码只注册了 intf0 和 hid_in_ep，所以自定义 HID 不会生效。
      */
    
     usbd_add_interface(usbd_hid_init_intf(&intf1,custom_hid_desc,hid_custom_report_desc,HID_CUSTOM_REPORT_DESC_SIZE));

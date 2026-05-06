@@ -34,7 +34,7 @@ extern volatile uint8_t hid_state;
 #define KEY_MAC     0xF3
 #define KEY_WIN     0xF4
 
-/* --- 灯光模式 --- */
+/* --- 灯光模式 --9- */
 typedef enum {
     LIGHT_MODE_OFF = 0,
     LIGHT_MODE_BREATH,
