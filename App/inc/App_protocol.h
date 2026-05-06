@@ -76,12 +76,21 @@ typedef enum {
     CMD_LIGHT_MUSIC_MAIN  = 0x22, // 音乐律动实时推流 (主键区)
     CMD_LIGHT_READ_REAL   = 0xA2, // 读取当前物理输出的实时灯色
 } LightCmdId_t;
-/* --- 4. AI PC 交互 (号段: 0x30 - 0x3F) --- */
 
-/* --- 5. 冒泡主动上报 (特殊的统一状态) --- */
+
+/* --- 4. 冒泡主动上报 (特殊的统一状态) --- */
 typedef enum {
     CMD_BUBBLE_RPT        = 0xFE  // [中断上报] MCU 主动上报事件给PC      
 } BubbleCmdId_t;
+
+
+
+
+
+
+
+
+
 
 
 /* ========================================================================= *
@@ -126,15 +135,29 @@ typedef enum {
     LPARAM_OVERLAY_SWITCH = 0x07  // 叠加层(响应层)总开关
 } LightCmdParam_t;
 
+
+
 /* --- 4. 冒泡上报参数 BubbleCmdParam (配合 CMD_BUBBLE_RPT 使用) --- */
 typedef enum {
-    BPARAM_DONGLE_CONN    = 0x02, // 2.4G 接收器连接状态变化
-    BPARAM_BATTERY_LVL    = 0x05, // 电池电量/充放电状态变化
-    BPARAM_OS_SWITCH      = 0x07, // 用户快捷键切换 Win/Mac 时的通知
-    BPARAM_AI_KEY_TRIG    = 0x08, // 【核心】AI自定义按键被触发，通知上位机唤醒大模型
-    BPARAM_PROFILE_SW     = 0x09, // 快捷键切换 Profile 层通知
-    BPARAM_DATA_CHANGED   = 0x0A, // 键盘内部数据变化，提示驱动重新读取 (如免驱改键后)
+    BPARAM_DONGLE_CONN    = 0x01, // 2.4G 接收器连接状态变化
+    BPARAM_BATTERY_LVL    = 0x02, // 电池电量/充放电状态变化
+    BPARAM_OS_SWITCH      = 0x03, // 用户快捷键切换 Win/Mac 时的通知
+    BPARAM_AI_KEY_TRIG    = 0x04, // 【核心】AI自定义按键被触发，通知上位机唤醒大模型
+    BPARAM_PROFILE_SW     = 0x05, // 快捷键切换 Profile 层通知
+    BPARAM_DATA_CHANGED   = 0x06, // 键盘内部数据变化，提示驱动重新读取 (如免驱改键后)
 } BubbleCmdParam_t;
+
+
+/* ========================================================================= *
+ *                       [AI 专属动作 (填入 Payload)]
+ * ========================================================================= */
+typedef enum{
+    AI_ACT_TRIGGER  =0x01, //触发和唤醒AI
+    AI_ACT_CONFIRM  =0x02, //确定AI的结果
+    AI_ACT_CANCEL   =0x03, //取消或关闭AI界面
+}AiAction_t;
+
+
 
 
 

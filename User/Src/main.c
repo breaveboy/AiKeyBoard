@@ -51,11 +51,10 @@ int main(void) {
     // 1. 系统校准
     lib_hall_sensor_calibration();
 
-           
-	
+   
 	 
 	
-	  ///////////////////////////////业务层初始化//////////////////
+	///////////////////////////////业务层初始化//////////////////
     // 2. 初始化 App 层
     App_init();
     APP_USBInit();
@@ -66,9 +65,7 @@ int main(void) {
     select_row(0);
     Bsp_Delay_Us(SETTLING_TIME_US);
     bsp_adc_dma_start();
-   
-	
-
+    
     SEGGER_RTT_printf(0, "success init ok\r\n");
   
     

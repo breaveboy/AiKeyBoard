@@ -14,7 +14,6 @@ static Task_t tasks[] = {
     {0, 1,  App_usb_process_task},  
 
    
-    {0, 10, App_led_logic_task},    
     {0, 5,  App_protocol_task},
   
     {0, 25, App_led_animation_task}, 

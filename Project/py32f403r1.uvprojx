@@ -415,9 +415,24 @@
               <FilePath>..\App\src\App_protocol.c</FilePath>
             </File>
             <File>
-              <FileName>App_protocol.h</FileName>
+              <FileName>App_key.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\App\src\App_key.c</FilePath>
+            </File>
+            <File>
+              <FileName>App_lighting.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\App\src\App_lighting.c</FilePath>
+            </File>
+            <File>
+              <FileName>App_usb.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\App\src\App_usb.c</FilePath>
+            </File>
+            <File>
+              <FileName>App_key.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\App\inc\App_protocol.h</FilePath>
+              <FilePath>..\App\inc\App_key.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -510,11 +525,6 @@
               <FilePath>..\Lib\inc\lib_config.h</FilePath>
             </File>
             <File>
-              <FileName>lib_key_map.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Lib\inc\lib_key_map.h</FilePath>
-            </File>
-            <File>
               <FileName>lib_hall_sensor.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Lib\src\lib_hall_sensor.c</FilePath>
@@ -523,11 +533,6 @@
               <FileName>lib_ws2812.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Lib\src\lib_ws2812.c</FilePath>
-            </File>
-            <File>
-              <FileName>lib_key_map.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Lib\src\lib_key_map.c</FilePath>
             </File>
           </Files>
         </Group>

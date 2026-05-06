@@ -32,6 +32,8 @@ bool lib_ws2812_set_pixel(uint16_t led_index, uint8_t r, uint8_t g, uint8_t b);
 bool lib_ws2812_set_key_color(uint8_t row, uint8_t col, uint8_t r, uint8_t g, uint8_t b);
 void lib_ws2812_set_all(uint8_t r, uint8_t g, uint8_t b);
 uint8_t lib_ws2812_update(void);
+
+#define lib_ws2812_hsv_to_rgb(hue, r, g, b)  hsv_to_rgb(hue, r, g, b)
 void lib_ws2812_clear(void);
 
 
@@ -43,4 +45,21 @@ void lib_ws2812_breath_mode(uint32_t tick);
 void lib_ws2812_rainbow_mode(uint32_t tick);
 void lib_ws2812_collide_ripple_mode(uint32_t tick);
 void lib_ws2812_dazzle_marquee_mode(uint32_t tick);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #endif /* __LIB_WS2812_H__ */

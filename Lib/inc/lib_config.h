@@ -4,6 +4,5 @@
 #include "py32f4xx_hal.h"
 #include "lib_hall_sensor.h"
 #include "lib_ws2812.h"
-#include "lib_key_map.h"
 #endif
 

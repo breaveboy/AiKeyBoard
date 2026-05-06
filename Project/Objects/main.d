@@ -45,7 +45,6 @@
 .\objects\main.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
 .\objects\main.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
 .\objects\main.o: ..\Lib\inc\lib_ws2812.h
-.\objects\main.o: ..\Lib\inc\lib_key_map.h
 .\objects\main.o: ..\User\Inc\task.h
 .\objects\main.o: ..\App\inc\App.h
 .\objects\main.o: ..\CherryUSB\core\usbd_core.h
@@ -59,6 +58,10 @@
 .\objects\main.o: ..\CherryUSB\common\usb_dc.h
 .\objects\main.o: ..\CherryUSB\class\hid\usbd_hid.h
 .\objects\main.o: ..\CherryUSB\class\hid\usb_hid.h
+.\objects\main.o: ..\App\inc\App_key.h
+.\objects\main.o: ..\App\inc\App_usb.h
+.\objects\main.o: ..\App\inc\App_lighting.h
+.\objects\main.o: ..\App\inc\App_protocol.h
 .\objects\main.o: ..\SEGGER_RTT_V754a\RTT\SEGGER_RTT.h
 .\objects\main.o: ..\SEGGER_RTT_V754a\RTT\../Config/SEGGER_RTT_Conf.h
 .\objects\main.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdarg.h

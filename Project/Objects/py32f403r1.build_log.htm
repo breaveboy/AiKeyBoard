@@ -22,23 +22,49 @@ Dialog DLL:      TCM.DLL V1.56.4.0
  
 <h2>Project:</h2>
 D:\sike_local\AiKeyBoard\Project\py32f403r1.uvprojx
-Project File Date:  04/29/2026
+Project File Date:  05/06/2026
 
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 6 (build 750)', folder: 'D:\Keil_v5\ARM\ARMCC\Bin'
 Build target 'Target 1'
-compiling task.c...
-compiling usbd_hid_keyboard_if.c...
+compiling App_lighting.c...
+..\Lib\inc\lib_hall_sensor.h(52): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\App\src\App_lighting.c(110): warning:  #223-D: function "hsv_to_rgb" declared implicitly
+                          lib_ws2812_hsv_to_rgb(hue, &rb_r, &rb_g, &rb_b);
+..\App\src\App_lighting.c(179): warning:  #223-D: function "hsv_to_rgb" declared implicitly
+                          lib_ws2812_hsv_to_rgb(hue, &rb_r, &rb_g, &rb_b);
+..\App\src\App_lighting.c(250): warning:  #223-D: function "hsv_to_rgb" declared implicitly
+                      lib_ws2812_hsv_to_rgb(hue, &rb_r, &rb_g, &rb_b);
+..\App\src\App_lighting.c: 4 warnings, 0 errors
+compiling App_key.c...
+..\Lib\inc\lib_hall_sensor.h(52): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\App\inc\App_key.h(27): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\App\src\App_key.c(53): warning:  #188-D: enumerated type mixed with another type
+          g_light_mode = (g_light_mode + 1) % LIGHT_MODE_MAX;
+..\App\src\App_key.c: 3 warnings, 0 errors
 compiling App.c...
 ..\Lib\inc\lib_hall_sensor.h(52): warning:  #1-D: last line of file ends without a newline
   #endif
-..\App\src\App.c(159): warning:  #188-D: enumerated type mixed with another type
-          g_light_mode = (g_light_mode + 1) % LIGHT_MODE_MAX;
-..\App\src\App.c(261): warning:  #1-D: last line of file ends without a newline
-  }
-..\App\src\App.c: 3 warnings, 0 errors
+..\App\inc\App_key.h(27): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\App\src\App.c: 2 warnings, 0 errors
+compiling task.c...
+..\Lib\inc\lib_hall_sensor.h(52): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\App\inc\App_key.h(27): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\User\Src\task.c: 2 warnings, 0 errors
+compiling main.c...
+..\Lib\inc\lib_hall_sensor.h(52): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\App\inc\App_key.h(27): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\User\Src\main.c: 2 warnings, 0 errors
 linking...
-Program Size: Code=23540 RO-data=1164 RW-data=540 ZI-data=6780  
+Program Size: Code=24848 RO-data=1164 RW-data=532 ZI-data=6916  
 FromELF: creating hex file...
 After Build - User command #1: D:\sike_local\AiKeyBoard\Project\keil-build-viewer.exe
 =================================================== keil-build-viewer v1.6 ==================================================
@@ -48,8 +74,11 @@ After Build - User command #1: D:\sike_local\AiKeyBoard\Project\keil-build-viewe
 -------------------------------------------------------------------------------------------------------
                      FILE(s)                    |         RAM (byte)       |       FLASH (byte)       |
 -------------------------------------------------------------------------------------------------------
-..\App\src\App.c():                             |         162              |        1474              |
+..\App\src\App.c():                             |           0              |          60              |
+..\App\src\App_key.c():                         |         205              |         473              |
+..\App\src\App_lighting.c():                    |          84              |        1830  [+388]      |
 ..\App\src\App_protocol.c():                    |         129              |         291              |
+..\App\src\App_usb.c():                         |           8              |         420              |
 ..\Bsp\src\bsp_adc_dma.c():                     |         148              |         544              |
 ..\Bsp\src\bsp_delay.c():                       |           0              |          36              |
 ..\Bsp\src\bsp_gpio.c():                        |           0              |         108              |
@@ -77,7 +106,7 @@ After Build - User command #1: D:\sike_local\AiKeyBoard\Project\keil-build-viewe
 ..\SEGGER_RTT_V754a\RTT\SEGGER_RTT_printf.c():  |           0              |        1112              |
 ..\Com\startup_py32f403xx.s():                  |        1024              |         340              |
 ..\Com\system_py32f403.c():                     |           4              |         728              |
-..\User\Src\task.c():                           |          78              |         182              |
+..\User\Src\task.c():                           |          66              |         170              |
 ..\CherryUSB\port\usb_dc_py32.c():              |         386              |        2864              |
 ..\CherryUSB\core\usbd_core.c():                |         368              |        2800              |
 ..\CherryUSB\class\hid\usbd_hid.c():            |           0              |         192              |
@@ -85,15 +114,15 @@ After Build - User command #1: D:\sike_local\AiKeyBoard\Project\keil-build-viewe
 -------------------------------------------------------------------------------------------------------
 LR_IROM1
         RAM 1             [0x20000000 | 0x00010000 (65536)]
-                RW_IRAM1  [0x20000000]|¡ö¡õ¡õ¡õ¡õ_____________________________________________| (   7.1 KB /  64.0 KB )  11.2%  
+                RW_IRAM1  [0x20000000]|¡ö¡õ¡õ¡õ¡õ_____________________________________________| (   7.2 KB /  64.0 KB )  11.4%  
  
         FLASH 1           [0x08000000 | 0x00040000 (262144)]
-                ER_IROM1  [0x08000000]|¡ö¡ö¡ö_______________________________________________| (  24.1 KB / 320.0 KB )   7.5%  
+                ER_IROM1  [0x08000000]|¡ö¡ö¡ö_______________________________________________| (  25.4 KB / 320.0 KB )   7.9%  [+388]
  
 Maximum Stack Usage =        376 bytes + Unknown(Cycles, Untraceable Function Pointers)
  
 =============================================================================================================================
-".\Objects\py32f403r1.axf" - 0 Error(s), 3 Warning(s).
+".\Objects\py32f403r1.axf" - 0 Error(s), 13 Warning(s).
 
 <h2>Software Packages used:</h2>
 

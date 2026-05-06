@@ -126,7 +126,7 @@ static uint8_t hsv_to_rgb_helper(uint8_t phase, uint8_t t) {
     }
 }
 ///word keil vscode ¼ÇÊÂ±¾
-static void hsv_to_rgb(uint16_t hue, uint8_t *r, uint8_t *g, uint8_t *b) {
+void hsv_to_rgb(uint16_t hue, uint8_t *r, uint8_t *g, uint8_t *b) {
     uint8_t phase = hue / 43;
     uint8_t t = hue % 43;
     t = t * 6;

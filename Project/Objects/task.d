@@ -46,3 +46,10 @@
 .\objects\task.o: ..\CherryUSB\common\usb_dc.h
 .\objects\task.o: ..\CherryUSB\class\hid\usbd_hid.h
 .\objects\task.o: ..\CherryUSB\class\hid\usb_hid.h
+.\objects\task.o: ..\App\inc\App_key.h
+.\objects\task.o: ..\Lib\inc\lib_hall_sensor.h
+.\objects\task.o: ..\Bsp\inc\bsp_adc_dma.h
+.\objects\task.o: ..\Bsp\inc\bsp_board.h
+.\objects\task.o: ..\App\inc\App_usb.h
+.\objects\task.o: ..\App\inc\App_lighting.h
+.\objects\task.o: ..\App\inc\App_protocol.h

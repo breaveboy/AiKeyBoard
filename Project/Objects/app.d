@@ -45,11 +45,10 @@
 .\objects\app.o: ..\CherryUSB\common\usb_dc.h
 .\objects\app.o: ..\CherryUSB\class\hid\usbd_hid.h
 .\objects\app.o: ..\CherryUSB\class\hid\usb_hid.h
-.\objects\app.o: ..\Lib\inc\lib_config.h
+.\objects\app.o: ..\App\inc\App_key.h
 .\objects\app.o: ..\Lib\inc\lib_hall_sensor.h
 .\objects\app.o: ..\Bsp\inc\bsp_adc_dma.h
 .\objects\app.o: ..\Bsp\inc\bsp_board.h
-.\objects\app.o: ..\Lib\inc\lib_ws2812.h
-.\objects\app.o: ..\Bsp\inc\bsp_spi_dma.h
-.\objects\app.o: ..\Lib\inc\lib_key_map.h
-.\objects\app.o: ..\Bsp\inc\bsp_uart.h
+.\objects\app.o: ..\App\inc\App_usb.h
+.\objects\app.o: ..\App\inc\App_lighting.h
+.\objects\app.o: ..\App\inc\App_protocol.h

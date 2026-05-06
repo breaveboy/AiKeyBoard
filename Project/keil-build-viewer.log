@@ -34,10 +34,10 @@
 
 [region info]
 [load region] LR_IROM1
-	[execution region] ER_IROM1, 0x08000000, 0x00050000, 0x00006080 [memory type] 2 [memory ID] 3
+	[execution region] ER_IROM1, 0x08000000, 0x00050000, 0x0000659C [memory type] 2 [memory ID] 3
 
-	[execution region] RW_IRAM1, 0x20000000, 0x00010000, 0x00001C98 [memory type] 1 [memory ID] 2
-		[ZI block] addr: 0x2000021C, size: 0x00001A7C (6780)
+	[execution region] RW_IRAM1, 0x20000000, 0x00010000, 0x00001D18 [memory type] 1 [memory ID] 2
+		[ZI block] addr: 0x20000214, size: 0x00001B04 (6916)
 
 
 [object name max length] 24
@@ -45,7 +45,10 @@
 
 [object in map file]
 [object name] app.o                     [path] ..\App\src\App.c
+[object name] app_key.o                 [path] ..\App\src\App_key.c
+[object name] app_lighting.o            [path] ..\App\src\App_lighting.c
 [object name] app_protocol.o            [path] ..\App\src\App_protocol.c
+[object name] app_usb.o                 [path] ..\App\src\App_usb.c
 [object name] bsp_adc_dma.o             [path] ..\Bsp\src\bsp_adc_dma.c
 [object name] bsp_delay.o               [path] ..\Bsp\src\bsp_delay.c
 [object name] bsp_gpio.o                [path] ..\Bsp\src\bsp_gpio.c
@@ -84,6 +87,9 @@
 [old name] system_py32f403.c         [type] 1   [path] ..\Com\system_py32f403.c
 [old name] App.c                     [type] 1   [path] ..\App\src\App.c
 [old name] App_protocol.c            [type] 1   [path] ..\App\src\App_protocol.c
+[old name] App_key.c                 [type] 1   [path] ..\App\src\App_key.c
+[old name] App_lighting.c            [type] 1   [path] ..\App\src\App_lighting.c
+[old name] App_usb.c                 [type] 1   [path] ..\App\src\App_usb.c
 [old name] main.c                    [type] 1   [path] ..\User\Src\main.c
 [old name] py32f403_hal_msp.c        [type] 1   [path] ..\User\Src\py32f403_hal_msp.c
 [old name] py32f403_it.c             [type] 1   [path] ..\User\Src\py32f403_it.c
@@ -97,7 +103,6 @@
 [old name] bsp_delay.c               [type] 1   [path] ..\Bsp\src\bsp_delay.c
 [old name] lib_hall_sensor.c         [type] 1   [path] ..\Lib\src\lib_hall_sensor.c
 [old name] lib_ws2812.c              [type] 1   [path] ..\Lib\src\lib_ws2812.c
-[old name] lib_key_map.c             [type] 1   [path] ..\Lib\src\lib_key_map.c
 [old name] usbd_hid.c                [type] 1   [path] ..\CherryUSB\class\hid\usbd_hid.c
 [old name] usbd_core.c               [type] 1   [path] ..\CherryUSB\core\usbd_core.c
 [old name] usb_dc_py32.c             [type] 1   [path] ..\CherryUSB\port\usb_dc_py32.c
@@ -139,13 +144,16 @@
 
 [record region info]
 [load region] LR_IROM1
-	[execution region] ER_IROM1, 0x08000000, 0x00050000, 0x00006080 [type] 2 [ID] 3
-	[execution region] RW_IRAM1, 0x20000000, 0x00010000, 0x00001C98 [type] 1 [ID] 2
+	[execution region] ER_IROM1, 0x08000000, 0x00050000, 0x00006418 [type] 2 [ID] 3
+	[execution region] RW_IRAM1, 0x20000000, 0x00010000, 0x00001D18 [type] 1 [ID] 2
 -------------------------------------------------------------------------------------------------------
                      FILE(s)                    |         RAM (byte)       |       FLASH (byte)       |
 -------------------------------------------------------------------------------------------------------
-..\App\src\App.c():                             |         162              |        1474              |
+..\App\src\App.c():                             |           0              |          60              |
+..\App\src\App_key.c():                         |         205              |         473              |
+..\App\src\App_lighting.c():                    |          84              |        1830  [+388]      |
 ..\App\src\App_protocol.c():                    |         129              |         291              |
+..\App\src\App_usb.c():                         |           8              |         420              |
 ..\Bsp\src\bsp_adc_dma.c():                     |         148              |         544              |
 ..\Bsp\src\bsp_delay.c():                       |           0              |          36              |
 ..\Bsp\src\bsp_gpio.c():                        |           0              |         108              |
@@ -173,7 +181,7 @@
 ..\SEGGER_RTT_V754a\RTT\SEGGER_RTT_printf.c():  |           0              |        1112              |
 ..\Com\startup_py32f403xx.s():                  |        1024              |         340              |
 ..\Com\system_py32f403.c():                     |           4              |         728              |
-..\User\Src\task.c():                           |          78              |         182              |
+..\User\Src\task.c():                           |          66              |         170              |
 ..\CherryUSB\port\usb_dc_py32.c():              |         386              |        2864              |
 ..\CherryUSB\core\usbd_core.c():                |         368              |        2800              |
 ..\CherryUSB\class\hid\usbd_hid.c():            |           0              |         192              |
@@ -183,14 +191,14 @@
 LR_IROM1
         RAM 1             [0x20000000 | 0x00010000 (65536)]
                 [zi start] 1   [zi end] 5
-                RW_IRAM1  [0x20000000]|¡ö¡õ¡õ¡õ¡õ_____________________________________________| (   7.1 KB /  64.0 KB )  11.2%  
+                RW_IRAM1  [0x20000000]|¡ö¡õ¡õ¡õ¡õ_____________________________________________| (   7.2 KB /  64.0 KB )  11.4%  
  
         FLASH 1           [0x08000000 | 0x00040000 (262144)]
-                ER_IROM1  [0x08000000]|¡ö¡ö¡ö_______________________________________________| (  24.1 KB / 320.0 KB )   7.5%  
+                ER_IROM1  [0x08000000]|¡ö¡ö¡ö_______________________________________________| (  25.4 KB / 320.0 KB )   7.9%  [+388]
  
 [htm file path] D:\sike_local\AiKeyBoard\Project\Objects\py32f403r1.htm
 Maximum Stack Usage =        376 bytes + Unknown(Cycles, Untraceable Function Pointers)
  
 =============================================================================================================================
 
-run time: 0.087 s
+run time: 0.092 s
