@@ -1,0 +1,20 @@
+{
+	"folders": [
+		{
+			"name": "mcu固件",
+			"path": "."
+		},
+		{
+			"name": "上位机",
+			"path": "example"
+		}
+	],
+	"settings": {
+		"files.encoding": "gb2312",
+		"files.autoGuessEncoding": false,
+		"files.exclude": {
+			"example/": true,
+			"Project/": true
+		}
+	}
+}

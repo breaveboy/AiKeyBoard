@@ -325,18 +325,6 @@ void lib_ws2812_dazzle_marquee_mode(uint32_t tick) {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 #if 0
 void ws28_encode_byte(uint8_t val,uint8_t* dst){
 	for(uint8_t i=0 ;i<8;i++){

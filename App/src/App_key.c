@@ -47,7 +47,7 @@ void App_adkey_scan_task(void) {
         }
     }
 }
-
+/////////////////////////fn的内部处理///////////////////////////////////
 void App_handle_internal_key(uint8_t code) {
     if (code == KEY_LIGHT) {
         //g_light_mode = (LightMode_t)(g_light_mode + 1) % LIGHT_MODE_MAX;
@@ -64,6 +64,10 @@ void App_handle_internal_key(uint8_t code) {
     }
 }
 
+
+
+
+//////////////////////////////////////////////冒泡上传/////////////////////////////////
 void App_send_bubble_report(uint8_t bubble_param, uint8_t ai_action) {
     static Packet_t bubble_pkt;
 
