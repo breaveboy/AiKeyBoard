@@ -429,11 +429,6 @@
               <FileType>1</FileType>
               <FilePath>..\App\src\App_usb.c</FilePath>
             </File>
-            <File>
-              <FileName>App_key.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\App\inc\App_key.h</FilePath>
-            </File>
           </Files>
         </Group>
         <Group>

@@ -203,7 +203,7 @@ void lib_ws2812_collide_ripple_mode(uint32_t tick) {
     // 碰撞中心点（60% 键盘约在第 2 行，第 6-7 列）
     const int center_r = 2;
     const int center_c = 6;
-    const int max_dist_to_center = center_r + center_c; // 约 8-9 步
+    //const int max_dist_to_center = center_r + center_c; // 约 8-9 步
 
     for (uint8_t r = 0; r < 5; r++) {
         for (uint8_t c = 0; c < 14; c++) {

@@ -3,7 +3,7 @@
 <title>Static Call Graph - [.\Objects\py32f403r1.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\Objects\py32f403r1.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060750: Last Updated: Wed May 06 17:29:36 2026
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060750: Last Updated: Thu May 07 09:10:08 2026
 <BR><P>
 <H3>Maximum Stack Usage =        376 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -506,7 +506,7 @@ Global Symbols
 <P><STRONG><a name="[b]"></a>BusFault_Handler</STRONG> (Thumb, 4 bytes, Stack size 0 bytes, py32f403_it.o(i.BusFault_Handler))
 <BR>[Address Reference Count : 1]<UL><LI> startup_py32f403xx.o(RESET)
 </UL>
-<P><STRONG><a name="[1c]"></a>DMA1_Channel1_IRQHandler</STRONG> (Thumb, 180 bytes, Stack size 8 bytes, lib_hall_sensor.o(i.DMA1_Channel1_IRQHandler))
+<P><STRONG><a name="[1c]"></a>DMA1_Channel1_IRQHandler</STRONG> (Thumb, 232 bytes, Stack size 8 bytes, lib_hall_sensor.o(i.DMA1_Channel1_IRQHandler))
 <BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = DMA1_Channel1_IRQHandler &rArr; Bsp_Delay_Us
 </UL>
 <BR>[Calls]<UL><LI><a href="#[78]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;select_row
@@ -1113,7 +1113,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[4a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[65]"></a>lib_hall_sensor_task</STRONG> (Thumb, 180 bytes, Stack size 24 bytes, lib_hall_sensor.o(i.lib_hall_sensor_task))
+<P><STRONG><a name="[65]"></a>lib_hall_sensor_task</STRONG> (Thumb, 230 bytes, Stack size 24 bytes, lib_hall_sensor.o(i.lib_hall_sensor_task))
 <BR><BR>[Stack]<UL><LI>Max Depth = 40<LI>Call Chain = lib_hall_sensor_task &rArr; process_key_logic
 </UL>
 <BR>[Calls]<UL><LI><a href="#[78]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;select_row
@@ -1133,8 +1133,8 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;App_led_animation_task
 </UL>
 
-<P><STRONG><a name="[6d]"></a>lib_ws2812_collide_ripple_mode</STRONG> (Thumb, 346 bytes, Stack size 56 bytes, lib_ws2812.o(i.lib_ws2812_collide_ripple_mode))
-<BR><BR>[Stack]<UL><LI>Max Depth = 120<LI>Call Chain = lib_ws2812_collide_ripple_mode &rArr; lib_ws2812_set_key_color &rArr; lib_ws2812_set_pixel &rArr; ws2812_encode_pixel
+<P><STRONG><a name="[6d]"></a>lib_ws2812_collide_ripple_mode</STRONG> (Thumb, 342 bytes, Stack size 48 bytes, lib_ws2812.o(i.lib_ws2812_collide_ripple_mode))
+<BR><BR>[Stack]<UL><LI>Max Depth = 112<LI>Call Chain = lib_ws2812_collide_ripple_mode &rArr; lib_ws2812_set_key_color &rArr; lib_ws2812_set_pixel &rArr; ws2812_encode_pixel
 </UL>
 <BR>[Calls]<UL><LI><a href="#[6c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;lib_ws2812_set_key_color
 <LI><a href="#[67]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;lib_ws2812_set_all

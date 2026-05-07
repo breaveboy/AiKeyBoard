@@ -50,7 +50,8 @@ void App_adkey_scan_task(void) {
 
 void App_handle_internal_key(uint8_t code) {
     if (code == KEY_LIGHT) {
-        g_light_mode = (g_light_mode + 1) % LIGHT_MODE_MAX;
+        //g_light_mode = (LightMode_t)(g_light_mode + 1) % LIGHT_MODE_MAX;
+        g_light_mode = (LightMode_t)((g_light_mode + 1) % LIGHT_MODE_MAX);
         ws2812_tick = 0;
         lib_ws2812_set_all(0, 0, 0);
         g_led_dirty = true;

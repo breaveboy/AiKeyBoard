@@ -53,7 +53,7 @@ void update_baseline_tracking(Key_t* k, uint16_t cur_adc) {
 
     // 3. 【重点】设定一个小范围（比如正负 15 之内）
     // 如果偏差很小，说明这大概率是温漂，而不是人在按键
-    if (diff < 15 && diff > -15) {
+    if (diff < 30 && diff > -30) {
         k->drift_cnt++; // 开启秒表，开始读秒
 
         // 4. 如果数值在这个范围极其稳定地待了 1000 次循环（大约 1.5 到 2 秒）
@@ -77,7 +77,6 @@ void update_baseline_tracking(Key_t* k, uint16_t cur_adc) {
 
 
 /* --- 业务逻辑 --- */
-
 uint8_t process_key_logic(Key_t* k, uint16_t cur_adc) {
     // 1. 计算偏移量（防止负数溢出）
     int32_t diff = (int32_t)k->idele_adc - (int32_t)cur_adc;
@@ -182,50 +181,47 @@ void lib_hall_sensor_calibration(void) {
 }
 
 void lib_hall_sensor_task(void) {
+    static uint16_t scan_watchdog = 0;
     if (g_scan_complete == 1) {
         for(uint8_t r = 0; r < ROW_COUNT; r++) {
             for (uint8_t c = 0; c < COL_COUNT; c++) {
-							  //跳出无效的按键
+				//跳出无效的按键
                 if (key_mask[r][c] == 0) {
                     g_adc_raw_col[r][c] = 0;
                     continue;
                 }
                 
-								//进行三次滤波
+				//进行三次滤波
                 uint16_t avg_adc = g_adc_raw_col[r][c] / SCAN_ROUNDS;
                 g_adc_raw_col[r][c] = 0; // 处理完即清零
-
-                Key_t *k = &keys[r][c];
-                uint8_t old_s = k->is_pressed;
-								
-								// === 【这里是关键！】在算逻辑之前，先进行动态追踪 ===
+                Key_t *k = &keys[r][c];		
+				// === 【这里是关键！】在算逻辑之前，先进行动态追踪 ===
                 update_baseline_tracking(k, avg_adc);
 								
-								//执行按键的逻辑
+				//执行按键的逻辑
                 process_key_logic(k, avg_adc);
-								
-								
-
-                // 只有状态变化才处理灯光或串口
-                if (old_s != k->is_pressed) {
-                    /*
-                    if (k->is_pressed) {
-                        printf("P[%d,%d] ADC:%d\r\n", r, c, avg_adc);
-                    } else {
-                        printf("R[%d,%d]\r\n", r, c);
-                    }
-                    */
-                }
             }
         }
 
         // 3. 一波逻辑处理结束，重启新的一波扫描
+        scan_watchdog = 0;
         g_scan_complete = 0;
         g_scan_round = 0;
         g_current_row = 0;
         select_row(0);
         Bsp_Delay_Us(SETTLING_TIME_US);
         bsp_adc_dma_start();
+    } else {
+        // DMA看门狗：超过100ms未完成扫描则强制重启
+        if (++scan_watchdog > 20) {
+            scan_watchdog = 0;
+            g_scan_complete = 0;
+            g_scan_round = 0;
+            g_current_row = 0;
+            select_row(0);
+            Bsp_Delay_Us(SETTLING_TIME_US);
+            bsp_adc_dma_start();
+        }
     }
 }
 //14次普通扫描： 14 × (63us高 + 22us低) = 1190 us
@@ -236,9 +232,21 @@ void lib_hall_sensor_task(void) {
 void DMA1_Channel1_IRQHandler(void) {
 	
 	  GPIOA->BSRR = GPIO_PIN_9;
-    if(DMA1->ISR & DMA_ISR_TCIF1) {
+    if(DMA1->ISR & (DMA_ISR_TCIF1 | DMA_ISR_TEIF1)) {
         DMA1->IFCR = ADC_DMA1_CH1_ALL_FLAGS;
         DMA1_Channel1->CCR &= ~DMA_CCR_EN;
+
+        if(DMA1->ISR & DMA_ISR_TEIF1) {
+            // DMA传输错误，无条件重启扫描链
+            g_scan_complete = 0;
+            g_scan_round = 0;
+            g_current_row = 0;
+            select_row(0);
+            Bsp_Delay_Us(SETTLING_TIME_US);
+            bsp_adc_dma_start();
+            GPIOA->BRR = (uint32_t)GPIO_PIN_9;
+            return;
+        }
 
         // 1. 数据累加
         for(uint8_t c = 0; c < COL_COUNT; c++) {

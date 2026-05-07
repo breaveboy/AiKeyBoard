@@ -22,49 +22,17 @@ Dialog DLL:      TCM.DLL V1.56.4.0
  
 <h2>Project:</h2>
 D:\sike_local\AiKeyBoard\Project\py32f403r1.uvprojx
-Project File Date:  05/06/2026
+Project File Date:  05/07/2026
 
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 6 (build 750)', folder: 'D:\Keil_v5\ARM\ARMCC\Bin'
 Build target 'Target 1'
-compiling App_lighting.c...
-..\Lib\inc\lib_hall_sensor.h(52): warning:  #1-D: last line of file ends without a newline
-  #endif
-..\App\src\App_lighting.c(110): warning:  #223-D: function "hsv_to_rgb" declared implicitly
-                          lib_ws2812_hsv_to_rgb(hue, &rb_r, &rb_g, &rb_b);
-..\App\src\App_lighting.c(179): warning:  #223-D: function "hsv_to_rgb" declared implicitly
-                          lib_ws2812_hsv_to_rgb(hue, &rb_r, &rb_g, &rb_b);
-..\App\src\App_lighting.c(250): warning:  #223-D: function "hsv_to_rgb" declared implicitly
-                      lib_ws2812_hsv_to_rgb(hue, &rb_r, &rb_g, &rb_b);
-..\App\src\App_lighting.c: 4 warnings, 0 errors
-compiling App_key.c...
-..\Lib\inc\lib_hall_sensor.h(52): warning:  #1-D: last line of file ends without a newline
-  #endif
-..\App\inc\App_key.h(27): warning:  #1-D: last line of file ends without a newline
-  #endif
-..\App\src\App_key.c(53): warning:  #188-D: enumerated type mixed with another type
-          g_light_mode = (g_light_mode + 1) % LIGHT_MODE_MAX;
-..\App\src\App_key.c: 3 warnings, 0 errors
-compiling App.c...
-..\Lib\inc\lib_hall_sensor.h(52): warning:  #1-D: last line of file ends without a newline
-  #endif
-..\App\inc\App_key.h(27): warning:  #1-D: last line of file ends without a newline
-  #endif
-..\App\src\App.c: 2 warnings, 0 errors
-compiling task.c...
-..\Lib\inc\lib_hall_sensor.h(52): warning:  #1-D: last line of file ends without a newline
-  #endif
-..\App\inc\App_key.h(27): warning:  #1-D: last line of file ends without a newline
-  #endif
-..\User\Src\task.c: 2 warnings, 0 errors
-compiling main.c...
-..\Lib\inc\lib_hall_sensor.h(52): warning:  #1-D: last line of file ends without a newline
-  #endif
-..\App\inc\App_key.h(27): warning:  #1-D: last line of file ends without a newline
-  #endif
-..\User\Src\main.c: 2 warnings, 0 errors
+compiling App_protocol.c...
+..\App\src\App_protocol.c(72): warning:  #177-D: variable "p_color"  was declared but never referenced
+                           Payload_LightColor_t *p_color = (Payload_LightColor_t *)tx_pkt.payload;
+..\App\src\App_protocol.c: 1 warning, 0 errors
 linking...
-Program Size: Code=24848 RO-data=1164 RW-data=532 ZI-data=6916  
+Program Size: Code=24952 RO-data=1164 RW-data=532 ZI-data=6916  
 FromELF: creating hex file...
 After Build - User command #1: D:\sike_local\AiKeyBoard\Project\keil-build-viewer.exe
 =================================================== keil-build-viewer v1.6 ==================================================
@@ -76,7 +44,7 @@ After Build - User command #1: D:\sike_local\AiKeyBoard\Project\keil-build-viewe
 -------------------------------------------------------------------------------------------------------
 ..\App\src\App.c():                             |           0              |          60              |
 ..\App\src\App_key.c():                         |         205              |         473              |
-..\App\src\App_lighting.c():                    |          84              |        1830  [+388]      |
+..\App\src\App_lighting.c():                    |          84              |        1830              |
 ..\App\src\App_protocol.c():                    |         129              |         291              |
 ..\App\src\App_usb.c():                         |           8              |         420              |
 ..\Bsp\src\bsp_adc_dma.c():                     |         148              |         544              |
@@ -85,8 +53,8 @@ After Build - User command #1: D:\sike_local\AiKeyBoard\Project\keil-build-viewe
 ..\Bsp\src\bsp_spi_dma.c():                     |         160              |         328              |
 ..\Bsp\src\bsp_tim.c():                         |          64              |         156              |
 ..\Bsp\src\bsp_uart.c():                        |          76              |          28              |
-..\Lib\src\lib_hall_sensor.c():                 |        1543              |        1389              |
-..\Lib\src\lib_ws2812.c():                      |        1767              |        1409              |
+..\Lib\src\lib_hall_sensor.c():                 |        1546              |        1500              |
+..\Lib\src\lib_ws2812.c():                      |        1767              |        1405              |
 ..\User\Src\main.c():                           |           0              |         396              |
 ..\Frimware\Src\py32f403_hal.c():               |           9              |         143              |
 ..\Frimware\Src\py32f403_hal_adc.c():           |           0              |         806              |
@@ -117,12 +85,12 @@ LR_IROM1
                 RW_IRAM1  [0x20000000]|¡ö¡õ¡õ¡õ¡õ_____________________________________________| (   7.2 KB /  64.0 KB )  11.4%  
  
         FLASH 1           [0x08000000 | 0x00040000 (262144)]
-                ER_IROM1  [0x08000000]|¡ö¡ö¡ö_______________________________________________| (  25.4 KB / 320.0 KB )   7.9%  [+388]
+                ER_IROM1  [0x08000000]|¡ö¡ö¡ö_______________________________________________| (  25.5 KB / 320.0 KB )   8.0%  
  
 Maximum Stack Usage =        376 bytes + Unknown(Cycles, Untraceable Function Pointers)
  
 =============================================================================================================================
-".\Objects\py32f403r1.axf" - 0 Error(s), 13 Warning(s).
+".\Objects\py32f403r1.axf" - 0 Error(s), 1 Warning(s).
 
 <h2>Software Packages used:</h2>
 
