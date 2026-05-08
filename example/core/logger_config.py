@@ -13,7 +13,7 @@ class LogManager:
     CONSOLE_FORMAT = "%(levelname)-8s | %(message)s"
     FILE_FORMAT = "%(asctime)s [%(name)s] %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s"
     DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
-
+    
     @classmethod
     def setup(cls, log_dir: str = "logs", log_name: str = "keyboard.log", level=logging.DEBUG):
         """

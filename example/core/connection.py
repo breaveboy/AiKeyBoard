@@ -13,6 +13,7 @@ class DevStatus(IntEnum):
     CONNECTED = 2     # 已连接
     LOST = 3          # 连接丢失（异常断开）
 
+# 协议层专注于数据的打包和解析
 class HidConnection:
     """
     工业级 HID 连接管理器
@@ -119,7 +120,8 @@ class HidConnection:
                 
                 self._device = new_dev
                 self._set_status(DevStatus.CONNECTED)
-                logger.info(f"✅ 成功锁定自定义接口并连接: {target_path}")
+                logger.info("HID 接口 (MI_01) 连接成功！")
+                logger.debug(f"详细路径: {target_path}") # 这条信息只会在 logs 文件里出现
             else:
                 # 没找到匹配的自定义接口
                 self._set_status(DevStatus.DISCONNECTED)

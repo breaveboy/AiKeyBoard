@@ -15,10 +15,48 @@ switch = True
 debounce_time = 500  # 微秒
 trigger_voltage = 3.3  # 伏特
 serial_number = b"AI-KEY-99999"
-# 使用 struct 打包数据
+# # 使用 struct 打包数据
+# ftm_boby='<BB?Hf12s42x'
+# packet = struct.pack(ftm_boby, report_id, cmd_id, switch, debounce_time, trigger_voltage, serial_number)
+# # 计算校验和
+# checksum = sum(packet) & 0xFF
+# full_packet = packet + bytes([checksum])
+# print(full_packet)
+
 ftm_boby='<BB?Hf12s42x'
-packet = struct.pack(ftm_boby, report_id, cmd_id, switch, debounce_time, trigger_voltage, serial_number)
-# 计算校验和
-checksum = sum(packet) & 0xFF
-full_packet = packet + bytes([checksum])
-print(full_packet)
+packet=struct.pack(ftm_boby,report_id, cmd_id, switch, debounce_time, trigger_voltage, serial_number)
+checksum=sum(packet) & 0xFF
+full_packet=packet+bytes([checksum])
+str_packet=' '.join(f'{byte:02X}' for byte in full_packet)
+print(str_packet)
+
+
+# 进行解包
+unpacket =struct.unpack(ftm_boby, full_packet[:-1])  # 去掉校验和字节
+print(unpacket)
+
+
+from typing import Callable, Optional
+import logging
+# 1. 配置日志
+logging.basicConfig(
+    level=logging.DEBUG,
+    format="%(asctime)s [%(levelname)s] %(filename)s:%(lineno)d - %(message)s"
+)
+
+logger = logging.getLogger(__name__)
+
+def add(x: int, y: int) -> int:
+    logging.debug(f"Adding {x} and {y}")
+    return x + y
+def function_with_callback(func:Optional[Callable[[int, int], int]] = None):
+    logging.info("Executing function_with_callback")
+    if func:
+        result = func(5, 10)
+        logging.info(f"Callback result: {result}")
+        print(f"Callback result: {result}")
+    else:
+        logging.warning("No callback provided.")
+        print("No callback provided.")
+
+function_with_callback(add)  # 输出: Callback result: 15
