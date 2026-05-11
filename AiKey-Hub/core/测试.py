@@ -35,6 +35,32 @@ class KeyBoardApp:
         packet = Protocol.decode(data)
         if packet:
             logger.info(f" 收到键盘回传: 指令={hex(packet['cmd'])}, 数据={packet['payload'].hex(' ')}")
+
+
+    def send_mode_light(self, mode: int):
+        """
+        发送红色呼吸灯指令 (对应你脚本里的逻辑)
+        """
+        if not self.is_ready:
+            logger.warning(" 设备未连接，无法发送")
+            return
+
+        # --- 业务逻辑：对应你脚本里的 payload 部分 ---
+        # 模式0x04 (呼吸) 00呼吸 01闪烁 02 按下点亮  03常量 04对角 05波浪 06彩虹
+        payload = bytes([mode] + [0x00]*6)  # 模式 + 填充0
+        
+        # --- 协议打包：对应你脚本里复杂的 data[0]=... 和计算 CRC 的部分 ---
+        # 自动帮你填 ReportID(0x05), CMD(0x20), 填充 0, 计算 CRC
+        packet = Protocol.encode(
+            cmd=Cmd.LIGHT_CFG_W,       # 0x20
+            param=Param.Light.MODE_ONLY, # 0x01
+            res=0, total=1, cur=1, 
+            payload=payload
+        )
+        
+        # --- 发送数据 ---
+        if self.conn.send(packet):
+            logger.info(" 灯光包已成功发送！")
     def send_breathing_red(self):
         """
         发送红色呼吸灯指令 (对应你脚本里的逻辑)
@@ -45,7 +71,7 @@ class KeyBoardApp:
 
         # --- 业务逻辑：对应你脚本里的 payload 部分 ---
         # 模式0x04 (呼吸), 颜色0, R=255, G=0, B=0, 亮度100, 速度10
-        payload = bytes([0x04, 0x00, 0xFF, 0xff, 0xFF, 0x64, 0x0A])
+        payload = bytes([0x04, 0x00, 0xFF, 0x0, 0x0, 0x64, 0x0A])
         
         # --- 协议打包：对应你脚本里复杂的 data[0]=... 和计算 CRC 的部分 ---
         # 自动帮你填 ReportID(0x05), CMD(0x20), 填充 0, 计算 CRC
@@ -72,8 +98,16 @@ class KeyBoardApp:
                 cmd = input("\n请输入指令 [1:发灯光, 0:退出]: ")
                 if cmd == '1':
                     self.send_breathing_red()
-                elif cmd == '0':
+                elif cmd == 'exit':
                     break
+                elif cmd == '0':
+                    #  模式切换
+                    mode = input("请输入灯光模式 [0:常亮, 1:呼吸, 2:闪烁, 3:波浪, 4:彩虹]: ")
+                    if mode in ['0', '1', '2', '3', '4']:
+                        self.send_mode_light(int(mode))
+                    else:
+                        logger.warning(" 无效的模式输入")
+
         except KeyboardInterrupt:
             pass
         finally:

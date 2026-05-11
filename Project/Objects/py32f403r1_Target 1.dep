@@ -32,7 +32,7 @@ I (..\Frimware\Inc\py32f403_hal_spi_ex.h)(0x69D5C672)
 I (..\Frimware\Inc\py32f403_hal_tim.h)(0x69D5C672)
 I (..\Frimware\Inc\py32f403_hal_tim_ex.h)(0x69D5C672)
 I (..\Frimware\Inc\py32f403_hal_uart.h)(0x69D5C672)
-F (..\App\src\App.c)(0x69FAFA94)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ..\User\Inc -I ..\Frimware\Inc -I ..\CherryUSB\class\hid -I ..\CherryUSB\class\cdc -I ..\CherryUSB\common -I ..\CherryUSB\core -I ..\CherryUSB\port -I ..\..\..\Keil_v5\Packs\Puya\PY32F4xx_DFP\1.0.6\Drivers\CMSIS\Device\PUYA\PY32F4xx\Include -I ..\Bsp\inc -I ..\Lib\inc -I ..\App\inc -I ..\SEGGER_RTT_V754a\RTT -I ..\SEGGER_RTT_V754a\Config-I.\RTE\_Target_1-ID:\Keil_v5\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include-ID:\Keil_v5\Packs\Puya\PY32F4xx_DFP\1.0.6\Drivers\CMSIS\Device\PUYA\PY32F4xx\Include-D__UVISION_VERSION="539" -D_RTE_ -D_RTE_ -DUSE_HAL_DRIVER -DPY32F403xC -DHSE_VALUE="8000000"-o .\objects\app.o --omf_browse .\objects\app.crf --depend .\objects\app.d)
+F (..\App\src\App.c)(0x6A01405B)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ..\User\Inc -I ..\Frimware\Inc -I ..\CherryUSB\class\hid -I ..\CherryUSB\class\cdc -I ..\CherryUSB\common -I ..\CherryUSB\core -I ..\CherryUSB\port -I ..\..\..\Keil_v5\Packs\Puya\PY32F4xx_DFP\1.0.6\Drivers\CMSIS\Device\PUYA\PY32F4xx\Include -I ..\Bsp\inc -I ..\Lib\inc -I ..\App\inc -I ..\SEGGER_RTT_V754a\RTT -I ..\SEGGER_RTT_V754a\Config-I.\RTE\_Target_1-ID:\Keil_v5\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include-ID:\Keil_v5\Packs\Puya\PY32F4xx_DFP\1.0.6\Drivers\CMSIS\Device\PUYA\PY32F4xx\Include-D__UVISION_VERSION="539" -D_RTE_ -D_RTE_ -DUSE_HAL_DRIVER -DPY32F403xC -DHSE_VALUE="8000000"-o .\objects\app.o --omf_browse .\objects\app.crf --depend .\objects\app.d)
 I (..\App\inc\App.h)(0x69FAF55C)
 I (..\CherryUSB\core\usbd_core.h)(0x69E5CF3E)
 I (D:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599ECD2E)
@@ -83,13 +83,15 @@ I (..\Lib\inc\lib_hall_sensor.h)(0x69FBE55B)
 I (..\Bsp\inc\bsp_adc_dma.h)(0x69EC8826)
 I (..\Bsp\inc\bsp_board.h)(0x69E9E3E1)
 I (..\App\inc\App_usb.h)(0x69FAF271)
-I (..\App\inc\App_lighting.h)(0x69FB09EE)
+I (..\App\inc\App_lighting.h)(0x69FEAD76)
 I (..\App\inc\App_protocol.h)(0x69FAE544)
 F (..\App\inc\App.h)(0x69FAF55C)()
-F (..\App\src\App_protocol.c)(0x69FBE66E)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ..\User\Inc -I ..\Frimware\Inc -I ..\CherryUSB\class\hid -I ..\CherryUSB\class\cdc -I ..\CherryUSB\common -I ..\CherryUSB\core -I ..\CherryUSB\port -I ..\..\..\Keil_v5\Packs\Puya\PY32F4xx_DFP\1.0.6\Drivers\CMSIS\Device\PUYA\PY32F4xx\Include -I ..\Bsp\inc -I ..\Lib\inc -I ..\App\inc -I ..\SEGGER_RTT_V754a\RTT -I ..\SEGGER_RTT_V754a\Config-I.\RTE\_Target_1-ID:\Keil_v5\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include-ID:\Keil_v5\Packs\Puya\PY32F4xx_DFP\1.0.6\Drivers\CMSIS\Device\PUYA\PY32F4xx\Include-D__UVISION_VERSION="539" -D_RTE_ -D_RTE_ -DUSE_HAL_DRIVER -DPY32F403xC -DHSE_VALUE="8000000"-o .\objects\app_protocol.o --omf_browse .\objects\app_protocol.crf --depend .\objects\app_protocol.d)
+F (..\App\src\App_protocol.c)(0x69FEAC27)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ..\User\Inc -I ..\Frimware\Inc -I ..\CherryUSB\class\hid -I ..\CherryUSB\class\cdc -I ..\CherryUSB\common -I ..\CherryUSB\core -I ..\CherryUSB\port -I ..\..\..\Keil_v5\Packs\Puya\PY32F4xx_DFP\1.0.6\Drivers\CMSIS\Device\PUYA\PY32F4xx\Include -I ..\Bsp\inc -I ..\Lib\inc -I ..\App\inc -I ..\SEGGER_RTT_V754a\RTT -I ..\SEGGER_RTT_V754a\Config-I.\RTE\_Target_1-ID:\Keil_v5\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include-ID:\Keil_v5\Packs\Puya\PY32F4xx_DFP\1.0.6\Drivers\CMSIS\Device\PUYA\PY32F4xx\Include-D__UVISION_VERSION="539" -D_RTE_ -D_RTE_ -DUSE_HAL_DRIVER -DPY32F403xC -DHSE_VALUE="8000000"-o .\objects\app_protocol.o --omf_browse .\objects\app_protocol.crf --depend .\objects\app_protocol.d)
 I (..\App\inc\App_protocol.h)(0x69FAE544)
 I (D:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x599ECD2E)
 I (D:\Keil_v5\ARM\ARMCC\include\string.h)(0x599ECD2C)
+I (..\App\inc\App_lighting.h)(0x69FEAD76)
+I (D:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599ECD2E)
 F (..\App\src\App_key.c)(0x69FBE808)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ..\User\Inc -I ..\Frimware\Inc -I ..\CherryUSB\class\hid -I ..\CherryUSB\class\cdc -I ..\CherryUSB\common -I ..\CherryUSB\core -I ..\CherryUSB\port -I ..\..\..\Keil_v5\Packs\Puya\PY32F4xx_DFP\1.0.6\Drivers\CMSIS\Device\PUYA\PY32F4xx\Include -I ..\Bsp\inc -I ..\Lib\inc -I ..\App\inc -I ..\SEGGER_RTT_V754a\RTT -I ..\SEGGER_RTT_V754a\Config-I.\RTE\_Target_1-ID:\Keil_v5\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include-ID:\Keil_v5\Packs\Puya\PY32F4xx_DFP\1.0.6\Drivers\CMSIS\Device\PUYA\PY32F4xx\Include-D__UVISION_VERSION="539" -D_RTE_ -D_RTE_ -DUSE_HAL_DRIVER -DPY32F403xC -DHSE_VALUE="8000000"-o .\objects\app_key.o --omf_browse .\objects\app_key.crf --depend .\objects\app_key.d)
 I (..\App\inc\App_key.h)(0x69FBE569)
 I (..\Lib\inc\lib_hall_sensor.h)(0x69FBE55B)
@@ -128,7 +130,7 @@ I (..\Bsp\inc\bsp_board.h)(0x69E9E3E1)
 I (D:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599ECD2E)
 I (D:\Keil_v5\ARM\ARMCC\include\string.h)(0x599ECD2C)
 I (..\App\inc\App_protocol.h)(0x69FAE544)
-I (..\App\inc\App_lighting.h)(0x69FB09EE)
+I (..\App\inc\App_lighting.h)(0x69FEAD76)
 I (..\Lib\inc\lib_ws2812.h)(0x69FBE4F1)
 I (..\Bsp\inc\bsp_spi_dma.h)(0x69EF2C91)
 I (..\CherryUSB\core\usbd_core.h)(0x69E5CF3E)
@@ -141,8 +143,8 @@ I (..\CherryUSB\common\usb_list.h)(0x69D5C673)
 I (..\CherryUSB\common\usb_mem.h)(0x69D5C673)
 I (..\CherryUSB\common\usb_log.h)(0x69D5C673)
 I (..\CherryUSB\common\usb_dc.h)(0x69D5C673)
-F (..\App\src\App_lighting.c)(0x69FBE5F6)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ..\User\Inc -I ..\Frimware\Inc -I ..\CherryUSB\class\hid -I ..\CherryUSB\class\cdc -I ..\CherryUSB\common -I ..\CherryUSB\core -I ..\CherryUSB\port -I ..\..\..\Keil_v5\Packs\Puya\PY32F4xx_DFP\1.0.6\Drivers\CMSIS\Device\PUYA\PY32F4xx\Include -I ..\Bsp\inc -I ..\Lib\inc -I ..\App\inc -I ..\SEGGER_RTT_V754a\RTT -I ..\SEGGER_RTT_V754a\Config-I.\RTE\_Target_1-ID:\Keil_v5\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include-ID:\Keil_v5\Packs\Puya\PY32F4xx_DFP\1.0.6\Drivers\CMSIS\Device\PUYA\PY32F4xx\Include-D__UVISION_VERSION="539" -D_RTE_ -D_RTE_ -DUSE_HAL_DRIVER -DPY32F403xC -DHSE_VALUE="8000000"-o .\objects\app_lighting.o --omf_browse .\objects\app_lighting.crf --depend .\objects\app_lighting.d)
-I (..\App\inc\App_lighting.h)(0x69FB09EE)
+F (..\App\src\App_lighting.c)(0x6A014360)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ..\User\Inc -I ..\Frimware\Inc -I ..\CherryUSB\class\hid -I ..\CherryUSB\class\cdc -I ..\CherryUSB\common -I ..\CherryUSB\core -I ..\CherryUSB\port -I ..\..\..\Keil_v5\Packs\Puya\PY32F4xx_DFP\1.0.6\Drivers\CMSIS\Device\PUYA\PY32F4xx\Include -I ..\Bsp\inc -I ..\Lib\inc -I ..\App\inc -I ..\SEGGER_RTT_V754a\RTT -I ..\SEGGER_RTT_V754a\Config-I.\RTE\_Target_1-ID:\Keil_v5\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include-ID:\Keil_v5\Packs\Puya\PY32F4xx_DFP\1.0.6\Drivers\CMSIS\Device\PUYA\PY32F4xx\Include-D__UVISION_VERSION="539" -D_RTE_ -D_RTE_ -DUSE_HAL_DRIVER -DPY32F403xC -DHSE_VALUE="8000000"-o .\objects\app_lighting.o --omf_browse .\objects\app_lighting.crf --depend .\objects\app_lighting.d)
+I (..\App\inc\App_lighting.h)(0x69FEAD76)
 I (D:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x599ECD2E)
 I (D:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599ECD2E)
 I (..\Lib\inc\lib_hall_sensor.h)(0x69FBE55B)
@@ -228,7 +230,7 @@ I (..\CherryUSB\common\usb_list.h)(0x69D5C673)
 I (..\CherryUSB\common\usb_mem.h)(0x69D5C673)
 I (..\CherryUSB\common\usb_log.h)(0x69D5C673)
 I (..\CherryUSB\common\usb_dc.h)(0x69D5C673)
-F (..\User\Src\main.c)(0x69FAF923)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ..\User\Inc -I ..\Frimware\Inc -I ..\CherryUSB\class\hid -I ..\CherryUSB\class\cdc -I ..\CherryUSB\common -I ..\CherryUSB\core -I ..\CherryUSB\port -I ..\..\..\Keil_v5\Packs\Puya\PY32F4xx_DFP\1.0.6\Drivers\CMSIS\Device\PUYA\PY32F4xx\Include -I ..\Bsp\inc -I ..\Lib\inc -I ..\App\inc -I ..\SEGGER_RTT_V754a\RTT -I ..\SEGGER_RTT_V754a\Config-I.\RTE\_Target_1-ID:\Keil_v5\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include-ID:\Keil_v5\Packs\Puya\PY32F4xx_DFP\1.0.6\Drivers\CMSIS\Device\PUYA\PY32F4xx\Include-D__UVISION_VERSION="539" -D_RTE_ -D_RTE_ -DUSE_HAL_DRIVER -DPY32F403xC -DHSE_VALUE="8000000"-o .\objects\main.o --omf_browse .\objects\main.crf --depend .\objects\main.d)
+F (..\User\Src\main.c)(0x69FD5185)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ..\User\Inc -I ..\Frimware\Inc -I ..\CherryUSB\class\hid -I ..\CherryUSB\class\cdc -I ..\CherryUSB\common -I ..\CherryUSB\core -I ..\CherryUSB\port -I ..\..\..\Keil_v5\Packs\Puya\PY32F4xx_DFP\1.0.6\Drivers\CMSIS\Device\PUYA\PY32F4xx\Include -I ..\Bsp\inc -I ..\Lib\inc -I ..\App\inc -I ..\SEGGER_RTT_V754a\RTT -I ..\SEGGER_RTT_V754a\Config-I.\RTE\_Target_1-ID:\Keil_v5\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include-ID:\Keil_v5\Packs\Puya\PY32F4xx_DFP\1.0.6\Drivers\CMSIS\Device\PUYA\PY32F4xx\Include-D__UVISION_VERSION="539" -D_RTE_ -D_RTE_ -DUSE_HAL_DRIVER -DPY32F403xC -DHSE_VALUE="8000000"-o .\objects\main.o --omf_browse .\objects\main.crf --depend .\objects\main.d)
 I (..\User\Inc\main.h)(0x69D5C6A0)
 I (..\Frimware\Inc\py32f4xx_hal.h)(0x69D5C672)
 I (..\User\Inc\py32f403_hal_conf.h)(0x69E1E63D)
@@ -289,7 +291,7 @@ I (..\CherryUSB\class\hid\usbd_hid.h)(0x69D5C673)
 I (..\CherryUSB\class\hid\usb_hid.h)(0x69D5C673)
 I (..\App\inc\App_key.h)(0x69FBE569)
 I (..\App\inc\App_usb.h)(0x69FAF271)
-I (..\App\inc\App_lighting.h)(0x69FB09EE)
+I (..\App\inc\App_lighting.h)(0x69FEAD76)
 I (..\App\inc\App_protocol.h)(0x69FAE544)
 I (..\SEGGER_RTT_V754a\RTT\SEGGER_RTT.h)(0x61375B7F)
 I (..\SEGGER_RTT_V754a\RTT\../Config/SEGGER_RTT_Conf.h)(0x61375B7F)
@@ -407,7 +409,7 @@ I (..\CherryUSB\common\usb_dc.h)(0x69D5C673)
 I (..\CherryUSB\class\hid\usbd_hid.h)(0x69D5C673)
 I (..\CherryUSB\class\hid\usb_hid.h)(0x69D5C673)
 I (..\App\inc\App_protocol.h)(0x69FAE544)
-F (..\User\Src\task.c)(0x69FAF933)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ..\User\Inc -I ..\Frimware\Inc -I ..\CherryUSB\class\hid -I ..\CherryUSB\class\cdc -I ..\CherryUSB\common -I ..\CherryUSB\core -I ..\CherryUSB\port -I ..\..\..\Keil_v5\Packs\Puya\PY32F4xx_DFP\1.0.6\Drivers\CMSIS\Device\PUYA\PY32F4xx\Include -I ..\Bsp\inc -I ..\Lib\inc -I ..\App\inc -I ..\SEGGER_RTT_V754a\RTT -I ..\SEGGER_RTT_V754a\Config-I.\RTE\_Target_1-ID:\Keil_v5\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include-ID:\Keil_v5\Packs\Puya\PY32F4xx_DFP\1.0.6\Drivers\CMSIS\Device\PUYA\PY32F4xx\Include-D__UVISION_VERSION="539" -D_RTE_ -D_RTE_ -DUSE_HAL_DRIVER -DPY32F403xC -DHSE_VALUE="8000000"-o .\objects\task.o --omf_browse .\objects\task.crf --depend .\objects\task.d)
+F (..\User\Src\task.c)(0x6A0140A3)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ..\User\Inc -I ..\Frimware\Inc -I ..\CherryUSB\class\hid -I ..\CherryUSB\class\cdc -I ..\CherryUSB\common -I ..\CherryUSB\core -I ..\CherryUSB\port -I ..\..\..\Keil_v5\Packs\Puya\PY32F4xx_DFP\1.0.6\Drivers\CMSIS\Device\PUYA\PY32F4xx\Include -I ..\Bsp\inc -I ..\Lib\inc -I ..\App\inc -I ..\SEGGER_RTT_V754a\RTT -I ..\SEGGER_RTT_V754a\Config-I.\RTE\_Target_1-ID:\Keil_v5\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include-ID:\Keil_v5\Packs\Puya\PY32F4xx_DFP\1.0.6\Drivers\CMSIS\Device\PUYA\PY32F4xx\Include-D__UVISION_VERSION="539" -D_RTE_ -D_RTE_ -DUSE_HAL_DRIVER -DPY32F403xC -DHSE_VALUE="8000000"-o .\objects\task.o --omf_browse .\objects\task.crf --depend .\objects\task.d)
 I (..\User\Inc\task.h)(0x69EEC413)
 I (..\App\inc\App.h)(0x69FAF55C)
 I (..\CherryUSB\core\usbd_core.h)(0x69E5CF3E)
@@ -459,7 +461,7 @@ I (..\Lib\inc\lib_hall_sensor.h)(0x69FBE55B)
 I (..\Bsp\inc\bsp_adc_dma.h)(0x69EC8826)
 I (..\Bsp\inc\bsp_board.h)(0x69E9E3E1)
 I (..\App\inc\App_usb.h)(0x69FAF271)
-I (..\App\inc\App_lighting.h)(0x69FB09EE)
+I (..\App\inc\App_lighting.h)(0x69FEAD76)
 I (..\App\inc\App_protocol.h)(0x69FAE544)
 F (..\User\Inc\task.h)(0x69EEC413)()
 F (..\Bsp\inc\bsp_config.h)(0x69EC2BEC)()
@@ -664,7 +666,7 @@ I (..\Frimware\Inc\py32f403_hal_tim.h)(0x69D5C672)
 I (..\Frimware\Inc\py32f403_hal_tim_ex.h)(0x69D5C672)
 I (..\Frimware\Inc\py32f403_hal_uart.h)(0x69D5C672)
 F (..\Lib\inc\lib_config.h)(0x69FAF9E3)()
-F (..\Lib\src\lib_hall_sensor.c)(0x69FC035A)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ..\User\Inc -I ..\Frimware\Inc -I ..\CherryUSB\class\hid -I ..\CherryUSB\class\cdc -I ..\CherryUSB\common -I ..\CherryUSB\core -I ..\CherryUSB\port -I ..\..\..\Keil_v5\Packs\Puya\PY32F4xx_DFP\1.0.6\Drivers\CMSIS\Device\PUYA\PY32F4xx\Include -I ..\Bsp\inc -I ..\Lib\inc -I ..\App\inc -I ..\SEGGER_RTT_V754a\RTT -I ..\SEGGER_RTT_V754a\Config-I.\RTE\_Target_1-ID:\Keil_v5\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include-ID:\Keil_v5\Packs\Puya\PY32F4xx_DFP\1.0.6\Drivers\CMSIS\Device\PUYA\PY32F4xx\Include-D__UVISION_VERSION="539" -D_RTE_ -D_RTE_ -DUSE_HAL_DRIVER -DPY32F403xC -DHSE_VALUE="8000000"-o .\objects\lib_hall_sensor.o --omf_browse .\objects\lib_hall_sensor.crf --depend .\objects\lib_hall_sensor.d)
+F (..\Lib\src\lib_hall_sensor.c)(0x69FC26C3)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ..\User\Inc -I ..\Frimware\Inc -I ..\CherryUSB\class\hid -I ..\CherryUSB\class\cdc -I ..\CherryUSB\common -I ..\CherryUSB\core -I ..\CherryUSB\port -I ..\..\..\Keil_v5\Packs\Puya\PY32F4xx_DFP\1.0.6\Drivers\CMSIS\Device\PUYA\PY32F4xx\Include -I ..\Bsp\inc -I ..\Lib\inc -I ..\App\inc -I ..\SEGGER_RTT_V754a\RTT -I ..\SEGGER_RTT_V754a\Config-I.\RTE\_Target_1-ID:\Keil_v5\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include-ID:\Keil_v5\Packs\Puya\PY32F4xx_DFP\1.0.6\Drivers\CMSIS\Device\PUYA\PY32F4xx\Include-D__UVISION_VERSION="539" -D_RTE_ -D_RTE_ -DUSE_HAL_DRIVER -DPY32F403xC -DHSE_VALUE="8000000"-o .\objects\lib_hall_sensor.o --omf_browse .\objects\lib_hall_sensor.crf --depend .\objects\lib_hall_sensor.d)
 I (..\Lib\inc\lib_hall_sensor.h)(0x69FBE55B)
 I (..\Frimware\Inc\py32f4xx_hal.h)(0x69D5C672)
 I (..\User\Inc\py32f403_hal_conf.h)(0x69E1E63D)

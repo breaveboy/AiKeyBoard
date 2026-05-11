@@ -4,24 +4,48 @@
 
 bool g_led_dirty = false;
 LightMode_t g_light_mode = LIGHT_MODE_OFF;
-uint32_t ws2812_tick = 0;
+uint32_t ws2812_tick = 0; //原来的ws2812的计数器值
 uint8_t g_light_r = 30;
 uint8_t g_light_g = 180;
 uint8_t g_light_b = 255;
 uint8_t g_light_brightness = 100;
 uint8_t g_light_speed = 10;
+// 高精度的内部累加器
+static uint32_t internal_tick_acc = 0;
+const uint16_t SPEED_STEP_MAP[5] = { 
+    2,   // 档位 1：极其缓慢（每帧 +0.2 倍速）
+    5,   // 档位 2：稍慢（每帧 +0.5 倍速）
+    10,  // 档位 3：正常速度（每帧 +1 倍速）
+    20,  // 档位 4：快速（每帧 +2 倍速）
+    35   // 档位 5：极快（每帧 +3.5 倍速）
+};
+
+
 
 void App_led_animation_task(void) {
-    static uint8_t speed_prescaler = 0;
-    uint8_t target_delay = 11 - (g_light_speed > 10 ? 10 : g_light_speed);
-    if (++speed_prescaler < target_delay) {
-        return;
-    }
-    speed_prescaler = 0;
+//    static uint8_t speed_prescaler = 0;
+//    uint8_t target_delay = 11 - (g_light_speed > 10 ? 10 : g_light_speed);
+//    if (++speed_prescaler < target_delay) {
+//        return;
+//    }
+//    speed_prescaler = 0;
 
+//    uint8_t cur_r = (g_light_r * g_light_brightness) / 100;
+//    uint8_t cur_g = (g_light_g * g_light_brightness) / 100;
+//    uint8_t cur_b = (g_light_b * g_light_brightness) / 100;
+    uint8_t speed_idx=g_light_speed;
+    if(speed_idx<1) speed_idx=1;
+    if(speed_idx>5) speed_idx=5;
+    //每帧固定执行
+    internal_tick_acc+=SPEED_STEP_MAP[speed_idx-1];
+    //将内部累加器/10给业务的tick
+    // 3. 将内部高精度累加器，除以 10 转换给业务使用的 tick
+    ws2812_tick = internal_tick_acc / 10;
     uint8_t cur_r = (g_light_r * g_light_brightness) / 100;
     uint8_t cur_g = (g_light_g * g_light_brightness) / 100;
     uint8_t cur_b = (g_light_b * g_light_brightness) / 100;
+
+   
 
     switch (g_light_mode) {
         case LIGHT_MODE_BREATH:
@@ -128,7 +152,7 @@ void App_led_animation_task(void) {
         }
        
        
-        case LIGHT_MODE_BOUNCE_MARQUEE:  //点击多量
+        case LIGHT_MODE_BOUNCE_MARQUEE:  //???????
         {
             
             ws2812_tick++;
@@ -187,7 +211,7 @@ void App_led_animation_task(void) {
             break;
         }
      
-        case LIGHT_MODE_SNAKE_MARQUEE:  //跑马灯
+        case LIGHT_MODE_SNAKE_MARQUEE:  //??????
         {
             ws2812_tick++;
             

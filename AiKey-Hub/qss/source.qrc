@@ -1,0 +1,11 @@
+<RCC>
+  <qresource prefix="svg">
+    <file>svg/close.svg</file>
+    <file>svg/on_close.svg</file>
+    <file>svg/on_setting.svg</file>
+    <file>svg/on_top.svg</file>
+    <file>svg/setting.svg</file>
+    <file>svg/top.svg</file>
+  </qresource>
+  <qresource prefix="png"/>
+</RCC>

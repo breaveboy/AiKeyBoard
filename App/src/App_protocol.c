@@ -1,5 +1,5 @@
 #include "App_protocol.h"
-
+#include "App_lighting.h"
 //定义全局变量
 static Packet_t g_cur_pkt;  //暂存接受的数据包
 static volatile uint8_t g_new_recv_pkt;  //新数据包的标志位
@@ -68,11 +68,25 @@ void App_protocol_task(void){
                         
                         //传递给灯光控制层  全部设置 模式id+rgb+亮度+速度
                         App_set_light_config(p_light->mode_idx,p_light->r,p_light->g,p_light->b,p_light->brightness,p_light->speed);
-                    }else if(cmd_param==LPARAM_MODE_ONLY){
+                    }else if(cmd_param==LPARAM_COLOR_ONLY){
                          Payload_LightColor_t *p_color = (Payload_LightColor_t *)tx_pkt.payload;
                          //传递给灯光控制层
                     }else if(cmd_param==LPARAM_MODE_ONLY){
-                        
+                        if (g_cur_pkt.data_len >= 1) {
+                            uint8_t mode = g_cur_pkt.payload[0];
+
+                            if (mode < LIGHT_MODE_MAX) {
+                                App_set_light_config(
+                                    mode,
+                                    g_light_r,
+                                    g_light_g,
+                                    g_light_b,
+                                    g_light_brightness,
+                                    g_light_speed
+                                );
+                            }
+                        }
+      
                     }
                     break;
                   // -------- [读] 电脑读取灯光配置 --------

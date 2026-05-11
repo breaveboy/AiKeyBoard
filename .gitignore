@@ -1,0 +1,32 @@
+# Python virtual environments
+AiKey-Hub/.venv/
+.venv/
+venv/
+env/
+
+
+# Local secrets
+AiKey-Hub/.env
+.env
+*.env
+
+
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Logs
+AiKey-Hub/logs/
+logs/
+*.log
+
+# Local editor files
+.vscode/
+
+# Keil / MCU generated outputs
+Project/Objects/
+Project/Listings/
+Project/*.log
+Project/*.bak

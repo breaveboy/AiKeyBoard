@@ -1,8 +1,8 @@
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   Object Name
         60          0          0          0          0          0   app.o
        332          0        140          1        204          0   app_key.o
-      1816          0          0         14         70          0   app_lighting.o
-       290          0          0          1        128          0   app_protocol.o
+      1816          0         10         20         70          0   app_lighting.o
+       362          0          0          1        128          0   app_protocol.o
        412          0          0          8          0          0   app_usb.o
        488          0         56          0        148          0   bsp_adc_dma.o
         36          0          0          0          0          0   bsp_delay.o
@@ -42,7 +42,7 @@ Memory Map of the image
 
 	Load Region LR_IROM1 
 
-		Execution Region ER_IROM1 (Exec base: 0x08000000, Size: 0x00006604, Max: 0x00050000, END)
+		Execution Region ER_IROM1 (Exec base: 0x08000000, Size: 0x00006654, Max: 0x00050000, END)
 
 		Execution Region RW_IRAM1 (Exec base: 0x20000000, Size: 0x00001D18, Max: 0x00010000, END)
 

@@ -1,20 +1,32 @@
 {
-	"folders": [
-		{
-			"name": "mcu固件",
-			"path": "."
-		},
-		{
-			"name": "上位机",
-			"path": "example"
-		}
-	],
-	"settings": {
-		"files.encoding": "gb2312",
-		"files.autoGuessEncoding": false,
-		"files.exclude": {
-			"example/": true,
-			"Project/": true
-		}
-	}
+  "folders": [
+    {
+      "name": "下位机 MCU",
+      "path": "."
+    },
+    {
+      "name": "上位机端",
+      "path": "AiKey-Hub"
+    }
+  ],
+  "settings": {
+    "files.autoGuessEncoding": true,
+    "files.exclude": {
+      "AiKey-Hub": true,
+      "**/.venv": false,
+      "**/__pycache__": true,
+      "**/*.pyc": true,
+      "**/*.pyo": true,
+      "**/logs": true,
+      "Project/Objects": true,
+      "Project/Listings": true
+    },
+    "search.exclude": {
+      "AiKey-Hub/.venv": true,
+      "**/__pycache__": true,
+      "**/logs": true,
+      "Project/Objects": true,
+      "Project/Listings": true
+    }
+  }
 }
