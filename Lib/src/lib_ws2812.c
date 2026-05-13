@@ -5,8 +5,8 @@
 
 #define INVALID_INDEX  0xFFU
 //dma搬运的数组值
-  uint8_t g_ws2812_tx_buffer[WS2812_TX_BUFFER_SIZE];
-  ws2812_color_t g_ws2812_colors[WS2812_LED_NUM];
+uint8_t g_ws2812_tx_buffer[WS2812_TX_BUFFER_SIZE];  ////对应的spi数值
+ws2812_color_t g_ws2812_colors[WS2812_LED_NUM];   ///index位置的rgb值
 static const uint8_t g_key_to_led_map[MATRIX_ROWS_COUNT][ADC_CHANNELS_COUNT]={
 	   // 第一行
     {0,1,2,3,4,5,6,7,8,9,10,11,12,13},

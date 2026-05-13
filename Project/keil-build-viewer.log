@@ -34,10 +34,10 @@
 
 [region info]
 [load region] LR_IROM1
-	[execution region] ER_IROM1, 0x08000000, 0x00050000, 0x00006654 [memory type] 2 [memory ID] 3
+	[execution region] ER_IROM1, 0x08000000, 0x00050000, 0x00006658 [memory type] 2 [memory ID] 3
 
-	[execution region] RW_IRAM1, 0x20000000, 0x00010000, 0x00001D18 [memory type] 1 [memory ID] 2
-		[ZI block] addr: 0x20000218, size: 0x00001B00 (6912)
+	[execution region] RW_IRAM1, 0x20000000, 0x00010000, 0x00001D38 [memory type] 1 [memory ID] 2
+		[ZI block] addr: 0x2000021C, size: 0x00001B1C (6940)
 
 
 [object name max length] 24
@@ -144,14 +144,14 @@
 
 [record region info]
 [load region] LR_IROM1
-	[execution region] ER_IROM1, 0x08000000, 0x00050000, 0x0000664C [type] 2 [ID] 3
-	[execution region] RW_IRAM1, 0x20000000, 0x00010000, 0x00001D18 [type] 1 [ID] 2
+	[execution region] ER_IROM1, 0x08000000, 0x00050000, 0x000062DC [type] 2 [ID] 3
+	[execution region] RW_IRAM1, 0x20000000, 0x00010000, 0x00001D38 [type] 1 [ID] 2
 -------------------------------------------------------------------------------------------------------
                      FILE(s)                    |         RAM (byte)       |       FLASH (byte)       |
 -------------------------------------------------------------------------------------------------------
 ..\App\src\App.c():                             |           0              |          60              |
 ..\App\src\App_key.c():                         |         205              |         473              |
-..\App\src\App_lighting.c():                    |          90  [+6]        |        1846  [+16]       |
+..\App\src\App_lighting.c():                    |          91              |        1837              |
 ..\App\src\App_protocol.c():                    |         129              |         363              |
 ..\App\src\App_usb.c():                         |           8              |         420              |
 ..\Bsp\src\bsp_adc_dma.c():                     |         148              |         544              |
@@ -162,7 +162,7 @@
 ..\Bsp\src\bsp_uart.c():                        |          76              |          28              |
 ..\Lib\src\lib_hall_sensor.c():                 |        1546              |        1500              |
 ..\Lib\src\lib_ws2812.c():                      |        1767              |        1405              |
-..\User\Src\main.c():                           |           0              |         396              |
+..\User\Src\main.c():                           |           0              |         408  [+116]      |
 ..\Frimware\Src\py32f403_hal.c():               |           9              |         143              |
 ..\Frimware\Src\py32f403_hal_adc.c():           |           0              |         806              |
 ..\Frimware\Src\py32f403_hal_adc_ex.c():        |           0              |         292              |
@@ -182,23 +182,23 @@
 ..\Com\startup_py32f403xx.s():                  |        1024              |         340              |
 ..\Com\system_py32f403.c():                     |           4              |         728              |
 ..\User\Src\task.c():                           |          66              |         170              |
-..\CherryUSB\port\usb_dc_py32.c():              |         386              |        2864              |
-..\CherryUSB\core\usbd_core.c():                |         368              |        2800              |
-..\CherryUSB\class\hid\usbd_hid.c():            |           0              |         192              |
-..\User\Src\usbd_hid_keyboard_if.c():           |         173              |         526              |
+..\CherryUSB\port\usb_dc_py32.c():              |         386              |        2864  [+46]       |
+..\CherryUSB\core\usbd_core.c():                |         368              |        2800  [+136]      |
+..\CherryUSB\class\hid\usbd_hid.c():            |           0  [NEW]       |         192  [NEW]       |
+..\User\Src\usbd_hid_keyboard_if.c():           |         173              |         526  [+397]      |
 -------------------------------------------------------------------------------------------------------
 [memory print mode]: 0
 LR_IROM1
         RAM 1             [0x20000000 | 0x00010000 (65536)]
                 [zi start] 1   [zi end] 5
-                RW_IRAM1  [0x20000000]|¡ö¡õ¡õ¡õ¡õ_____________________________________________| (   7.2 KB /  64.0 KB )  11.4%  
+                RW_IRAM1  [0x20000000]|¡ö¡õ¡õ¡õ¡õ_____________________________________________| (   7.3 KB /  64.0 KB )  11.4%  
  
         FLASH 1           [0x08000000 | 0x00040000 (262144)]
-                ER_IROM1  [0x08000000]|¡ö¡ö¡ö_______________________________________________| (  25.5 KB / 320.0 KB )   8.0%  [+8]
+                ER_IROM1  [0x08000000]|¡ö¡ö¡ö_______________________________________________| (  25.5 KB / 320.0 KB )   8.0%  [+892]
  
 [htm file path] D:\sike_local\AiKeyBoard\Project\Objects\py32f403r1.htm
 Maximum Stack Usage =        376 bytes + Unknown(Cycles, Untraceable Function Pointers)
  
 =============================================================================================================================
 
-run time: 0.092 s
+run time: 0.094 s

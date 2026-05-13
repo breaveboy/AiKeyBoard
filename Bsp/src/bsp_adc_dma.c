@@ -34,7 +34,7 @@ void bsp_adc_dma_init(void)
     };
 
     // —≠ª∑≈‰÷√ 14 ∏ˆ Rank
-    sConfig.SamplingTime = ADC_SAMPLETIME_5CYCLES_5; 
+    sConfig.SamplingTime = ADC_SAMPLETIME_7CYCLES_5;   ///ADC_SAMPLETIME_5CYCLES_5; 
     for (uint8_t i = 0; i < 14; i++)
     {
        sConfig.Channel = channel_map[i];

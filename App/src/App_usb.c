@@ -15,7 +15,7 @@
 #endif
 
 extern volatile uint8_t hid_state;
-
+//标准键盘的发送任务
 void App_usb_process_task(void) {
     if (!report_dirty) return;
 

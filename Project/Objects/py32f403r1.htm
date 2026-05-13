@@ -3,7 +3,7 @@
 <title>Static Call Graph - [.\Objects\py32f403r1.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\Objects\py32f403r1.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060750: Last Updated: Mon May 11 10:48:11 2026
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060750: Last Updated: Wed May 13 09:11:57 2026
 <BR><P>
 <H3>Maximum Stack Usage =        376 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -331,10 +331,10 @@ Global Symbols
 <P><STRONG><a name="[5e]"></a>__aeabi_memclr4</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, memseta.o(.text))
 <BR><BR>[Called By]<UL><LI><a href="#[b6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USBD_IRQHandler
 <LI><a href="#[dc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;lib_hall_sensor_init
-<LI><a href="#[c9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;bsp_spi_dma_init
 <LI><a href="#[5f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;APP_SystemClockConfig
 <LI><a href="#[5c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;APP_LoadTrim
 <LI><a href="#[c5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;bsp_led_en_init
+<LI><a href="#[c9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;bsp_spi_dma_init
 <LI><a href="#[c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;bsp_adc_dma_init
 </UL>
 
@@ -596,9 +596,9 @@ Global Symbols
 <BR><BR>[Stack]<UL><LI>Max Depth = 20<LI>Call Chain = HAL_GPIO_Init
 </UL>
 <BR>[Called By]<UL><LI><a href="#[dc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;lib_hall_sensor_init
-<LI><a href="#[c9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;bsp_spi_dma_init
 <LI><a href="#[cd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;debug_init
 <LI><a href="#[c5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;bsp_led_en_init
+<LI><a href="#[c9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;bsp_spi_dma_init
 </UL>
 
 <P><STRONG><a name="[c8]"></a>HAL_GPIO_WritePin</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, py32f403_hal_gpio.o(i.HAL_GPIO_WritePin))
@@ -1034,7 +1034,6 @@ Global Symbols
 <LI><a href="#[5e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memclr4
 </UL>
 <BR>[Called By]<UL><LI><a href="#[df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;lib_ws2812_init
-<LI><a href="#[4a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
 <P><STRONG><a name="[ca]"></a>bsp_spi_dma_send</STRONG> (Thumb, 32 bytes, Stack size 16 bytes, bsp_spi_dma.o(i.bsp_spi_dma_send))
@@ -1155,9 +1154,9 @@ Global Symbols
 <P><STRONG><a name="[df]"></a>lib_ws2812_init</STRONG> (Thumb, 50 bytes, Stack size 8 bytes, lib_ws2812.o(i.lib_ws2812_init))
 <BR><BR>[Stack]<UL><LI>Max Depth = 92<LI>Call Chain = lib_ws2812_init &rArr; bsp_spi_dma_init &rArr; bsp_led_en_init &rArr; HAL_GPIO_Init
 </UL>
-<BR>[Calls]<UL><LI><a href="#[c9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;bsp_spi_dma_init
-<LI><a href="#[e0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ws2812_encode_pixel
+<BR>[Calls]<UL><LI><a href="#[e0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ws2812_encode_pixel
 <LI><a href="#[c7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;bsp_led_en_set
+<LI><a href="#[c9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;bsp_spi_dma_init
 <LI><a href="#[54]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memclr
 </UL>
 <BR>[Called By]<UL><LI><a href="#[4a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
@@ -1212,7 +1211,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;App_led_display_task
 </UL>
 
-<P><STRONG><a name="[4a]"></a>main</STRONG> (Thumb, 76 bytes, Stack size 0 bytes, main.o(i.main))
+<P><STRONG><a name="[4a]"></a>main</STRONG> (Thumb, 80 bytes, Stack size 0 bytes, main.o(i.main))
 <BR><BR>[Stack]<UL><LI>Max Depth = 376<LI>Call Chain = main &rArr; SEGGER_RTT_printf &rArr; SEGGER_RTT_vprintf &rArr; _PrintInt &rArr; _PrintUnsigned &rArr; _StoreChar &rArr; SEGGER_RTT_Write &rArr; SEGGER_RTT_WriteNoLock &rArr; _WriteBlocking
 </UL>
 <BR>[Calls]<UL><LI><a href="#[78]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;select_row
@@ -1220,7 +1219,6 @@ Global Symbols
 <LI><a href="#[dc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;lib_hall_sensor_init
 <LI><a href="#[da]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;lib_hall_sensor_calibration
 <LI><a href="#[cb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;bsp_tim_init
-<LI><a href="#[c9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;bsp_spi_dma_init
 <LI><a href="#[7a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;bsp_adc_dma_start
 <LI><a href="#[e2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Task_exec
 <LI><a href="#[aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SEGGER_RTT_printf

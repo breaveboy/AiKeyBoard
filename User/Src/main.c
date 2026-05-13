@@ -89,11 +89,11 @@ int main(void) {
     APP_SystemClockConfig();
     ///////////////////////////////板层初始化////////////
     //bsp_usart_init(115200);
-    bsp_tim_init();
-    debug_init(); 
-    bsp_spi_dma_init();
-
-	
+    bsp_tim_init();                 //1ms一次中断
+    debug_init();   
+    //bsp_spi_dma_init();              
+  
+	SEGGER_RTT_printf(0, "init \r\n");
 	
 	
     ///////////////////////////////驱动层初始化//////////////
@@ -151,7 +151,7 @@ static void APP_SystemClockConfig(void)
                                     RCC_OSCILLATORTYPE_LSI | RCC_OSCILLATORTYPE_HSI48M;
     OscInitstruct.HSEState        = RCC_HSE_ON;
     OscInitstruct.HSEFreq         = RCC_HSE_8_16MHz;
-    OscInitstruct.HSI48MState     = RCC_HSI48M_ON;
+    OscInitstruct.HSI48MState     = RCC_HSI48M_ON;  //usb的时钟打开
     OscInitstruct.HSIState        = RCC_HSI_ON;
     OscInitstruct.LSEState        = RCC_LSE_OFF;
     OscInitstruct.LSEDriver       = RCC_LSEDRIVE_HIGH;

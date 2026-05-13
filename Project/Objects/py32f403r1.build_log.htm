@@ -27,11 +27,9 @@ Project File Date:  05/07/2026
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 6 (build 750)', folder: 'D:\Keil_v5\ARM\ARMCC\Bin'
 Build target 'Target 1'
-compiling App_lighting.c...
-compiling task.c...
-compiling App.c...
+compiling main.c...
 linking...
-Program Size: Code=25024 RO-data=1172 RW-data=536 ZI-data=6912  
+Program Size: Code=25036 RO-data=1164 RW-data=540 ZI-data=6940  
 FromELF: creating hex file...
 After Build - User command #1: D:\sike_local\AiKeyBoard\Project\keil-build-viewer.exe
 =================================================== keil-build-viewer v1.6 ==================================================
@@ -43,7 +41,7 @@ After Build - User command #1: D:\sike_local\AiKeyBoard\Project\keil-build-viewe
 -------------------------------------------------------------------------------------------------------
 ..\App\src\App.c():                             |           0              |          60              |
 ..\App\src\App_key.c():                         |         205              |         473              |
-..\App\src\App_lighting.c():                    |          90  [+6]        |        1846  [+16]       |
+..\App\src\App_lighting.c():                    |          91              |        1837              |
 ..\App\src\App_protocol.c():                    |         129              |         363              |
 ..\App\src\App_usb.c():                         |           8              |         420              |
 ..\Bsp\src\bsp_adc_dma.c():                     |         148              |         544              |
@@ -54,7 +52,7 @@ After Build - User command #1: D:\sike_local\AiKeyBoard\Project\keil-build-viewe
 ..\Bsp\src\bsp_uart.c():                        |          76              |          28              |
 ..\Lib\src\lib_hall_sensor.c():                 |        1546              |        1500              |
 ..\Lib\src\lib_ws2812.c():                      |        1767              |        1405              |
-..\User\Src\main.c():                           |           0              |         396              |
+..\User\Src\main.c():                           |           0              |         408  [+116]      |
 ..\Frimware\Src\py32f403_hal.c():               |           9              |         143              |
 ..\Frimware\Src\py32f403_hal_adc.c():           |           0              |         806              |
 ..\Frimware\Src\py32f403_hal_adc_ex.c():        |           0              |         292              |
@@ -74,17 +72,17 @@ After Build - User command #1: D:\sike_local\AiKeyBoard\Project\keil-build-viewe
 ..\Com\startup_py32f403xx.s():                  |        1024              |         340              |
 ..\Com\system_py32f403.c():                     |           4              |         728              |
 ..\User\Src\task.c():                           |          66              |         170              |
-..\CherryUSB\port\usb_dc_py32.c():              |         386              |        2864              |
-..\CherryUSB\core\usbd_core.c():                |         368              |        2800              |
-..\CherryUSB\class\hid\usbd_hid.c():            |           0              |         192              |
-..\User\Src\usbd_hid_keyboard_if.c():           |         173              |         526              |
+..\CherryUSB\port\usb_dc_py32.c():              |         386              |        2864  [+46]       |
+..\CherryUSB\core\usbd_core.c():                |         368              |        2800  [+136]      |
+..\CherryUSB\class\hid\usbd_hid.c():            |           0  [NEW]       |         192  [NEW]       |
+..\User\Src\usbd_hid_keyboard_if.c():           |         173              |         526  [+397]      |
 -------------------------------------------------------------------------------------------------------
 LR_IROM1
         RAM 1             [0x20000000 | 0x00010000 (65536)]
-                RW_IRAM1  [0x20000000]|¡ö¡õ¡õ¡õ¡õ_____________________________________________| (   7.2 KB /  64.0 KB )  11.4%  
+                RW_IRAM1  [0x20000000]|¡ö¡õ¡õ¡õ¡õ_____________________________________________| (   7.3 KB /  64.0 KB )  11.4%  
  
         FLASH 1           [0x08000000 | 0x00040000 (262144)]
-                ER_IROM1  [0x08000000]|¡ö¡ö¡ö_______________________________________________| (  25.5 KB / 320.0 KB )   8.0%  [+8]
+                ER_IROM1  [0x08000000]|¡ö¡ö¡ö_______________________________________________| (  25.5 KB / 320.0 KB )   8.0%  [+892]
  
 Maximum Stack Usage =        376 bytes + Unknown(Cycles, Untraceable Function Pointers)
  

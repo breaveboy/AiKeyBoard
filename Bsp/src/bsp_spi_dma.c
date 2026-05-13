@@ -44,13 +44,13 @@ void bsp_spi_dma_init(void)
     HAL_NVIC_SetPriority(DMA1_Channel2_IRQn, 2, 0);
     HAL_NVIC_EnableIRQ(DMA1_Channel2_IRQn);
 }
-
+//dma的中断函数
 void DMA1_Channel2_IRQHandler(void)
 {
     HAL_DMA_IRQHandler(&hdma_spi2_tx1);
 }
 
-
+//spi的中断发送
 HAL_StatusTypeDef bsp_spi_dma_send(uint8_t *pData, uint16_t len)
 {
     if (hspi21.State != HAL_SPI_STATE_READY) {

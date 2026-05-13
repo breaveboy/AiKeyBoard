@@ -14,7 +14,7 @@
 
 #define HID_INT_EP          0x81
 #define HID_INT_EP_SIZE     8
-#define HID_INT_EP_INTERVAL 10
+#define HID_INT_EP_INTERVAL 5
 
 /* ================= ×Ô¶¨Òå HID ================= */
 

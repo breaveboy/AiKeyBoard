@@ -116,7 +116,6 @@ uint8_t process_key_logic(Key_t* k, uint16_t cur_adc) {
 
 void lib_hall_sensor_init(void) {
     // 1. 初始化 GPIO (由 main.c 中的 GPIO_Config 移过来，但也可以调用 bsp_gpio.c 中的函数)
-    // 这里保持原样逻辑，直接在 lib 中初始化需要的 GPIO
     __HAL_RCC_GPIOA_CLK_ENABLE();
     __HAL_RCC_GPIOB_CLK_ENABLE();
     __HAL_RCC_GPIOC_CLK_ENABLE();

@@ -10,7 +10,7 @@ typedef struct {
 } Task_t;
 static Task_t tasks[] = {
 	
-    {0, 5,  App_adkey_scan_task},   
+    {0, 1,  App_adkey_scan_task},   
     {0, 1,  App_usb_process_task},  
 
    
