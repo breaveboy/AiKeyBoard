@@ -4,7 +4,7 @@ UART_HandleTypeDef DebugUartHandle;
 void bsp_usart_init(uint32_t baudrate)
 {
     GPIO_InitTypeDef GPIO_InitStruct = {0};
-    //ʱ��
+  
     RCC_USART1_CLK_ENABLE();
     RCC_ADC_PORTA_CLK_ENABLE();
     

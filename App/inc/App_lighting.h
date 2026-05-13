@@ -4,20 +4,32 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+//typedef enum {
+//    LIGHT_MODE_OFF = 0, 
+//    LIGHT_MODE_BREATH, //呼吸
+//    LIGHT_MODE_RAINBOW, //炫彩
+//    LIGHT_MODE_KEY_PRESS, //按下点亮
+//    LIGHT_MODE_STATIC,  //常量
+//    LIGHT_MODE_COLLIDE, //对角碰撞
+//    LIGHT_MODE_DAZZLE_MARQUEE, //流水
+//    LIGHT_MODE_HALO,         // <--- 新增：十字交叉模式
+//    LIGHT_MODE_BOUNCE_MARQUEE, // <--- 新增：左右折返彩虹跑马灯
+//    LIGHT_MODE_SNAKE_MARQUEE,  // <--- 新增：S形贪吃蛇彩虹流水
+//    LIGHT_MODE_MAX
+//} LightMode_t;
 typedef enum {
-    LIGHT_MODE_OFF = 0, 
-    LIGHT_MODE_BREATH, //呼吸
-    LIGHT_MODE_RAINBOW, //炫彩
-    LIGHT_MODE_KEY_PRESS, //按下点亮
-    LIGHT_MODE_STATIC,  //常量
-    LIGHT_MODE_COLLIDE, //对角碰撞
-    LIGHT_MODE_DAZZLE_MARQUEE, //流水
-    LIGHT_MODE_HALO,         // <--- 新增：十字交叉模式
-    LIGHT_MODE_BOUNCE_MARQUEE, // <--- 新增：左右折返彩虹跑马灯
-    LIGHT_MODE_SNAKE_MARQUEE,  // <--- 新增：S形贪吃蛇彩虹流水
-    LIGHT_MODE_MAX
+    LIGHT_MODE_OFF = 0,        // 0: 关闭
+    LIGHT_MODE_STATIC,         // 1: 常亮 (移到了最前面)
+    LIGHT_MODE_BREATH,         // 2: 呼吸 (单色动画)
+    LIGHT_MODE_KEY_PRESS,      // 3: 按下点亮 (单色触发)
+    LIGHT_MODE_RAINBOW,        // 4: 彩虹炫彩 (多色开始)
+    LIGHT_MODE_COLLIDE,        // 5: 对角碰撞
+    LIGHT_MODE_DAZZLE_MARQUEE, // 6: 流水
+    LIGHT_MODE_HALO,           // 7: 十字交叉
+    LIGHT_MODE_BOUNCE_MARQUEE, // 8: 左右折返
+    LIGHT_MODE_SNAKE_MARQUEE,  // 9: S形贪吃蛇
+    LIGHT_MODE_MAX             // 模式总数计算位
 } LightMode_t;
-
 extern bool g_led_dirty;
 extern LightMode_t g_light_mode;
 extern uint32_t ws2812_tick;

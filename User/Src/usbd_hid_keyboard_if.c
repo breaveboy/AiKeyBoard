@@ -393,26 +393,41 @@ static void usbd_custom_hid_out_callback(uint8_t ep, uint32_t nbytes)
 }
 
 
+//大小锁的全局变量
+bool g_caps_lock_active =false;
 
-
-uint32_t usbd_hid_set_report(uint8_t req,uint8_t intf,uint8_t report_id,uint8_t report_type,uint8_t *data,uint32_t len)
+/**
+ * CherryUSB HID 类请求回调函数
+ * 当电脑发出 SET_REPORT 指令（比如切换大小写灯）时，库会自动调用这个函数  
+0x00 (二进制 0000 0000)：所有灯全灭。
+0x01 (二进制 0000 0001)：Num Lock（小键盘锁）开启。
+0x02 (二进制 0000 0010)：Caps Lock（大小写锁）开启。
+0x03 (二进制 0000 0011)：Num Lock 和 Caps Lock 同时开启（1+2=3）。
+ */
+void usbh_hid_set_report(uint8_t intf, uint8_t report_id, uint8_t report_type, uint8_t *report, uint8_t report_len)
 {
-    if (data == NULL || len == 0) {
-        return 0;
+    // 调试打印：看看收到的原始数据
+     printf("[USB] HID Set Report. Intf: %d, Data: 0x%02x\n", intf, report[0]);
+
+    // Interface 0 通常是标准键盘接口
+    if (intf == 0) {
+        /*
+         * 标准键盘 LED 报告字节位定义:
+         * bit 0: Num Lock
+         * bit 1: Caps Lock  <-- 我们要找的就是它
+         * bit 2: Scroll Lock
+         */
+        if (report[0] & 0x02) {
+            g_caps_lock_active = true;
+            
+        } else {
+            g_caps_lock_active = false;
+           
+        }
     }
 
-    /*
-     * 这里只处理 Interface 1，也就是自定义 HID。
-     * Interface 0 是标准键盘，不在这里处理灯光协议。
-     */
-    if (intf != 1) {
-        return 0;
-    }
-
-
-    return 0;
+    // 如果你有 Interface 1 的自定义协议，也可以在这里继续写 if (intf == 1) ...
 }
-
 /* ================= USB 初始化 ================= */
 
 void hid_keyboard_init(void)

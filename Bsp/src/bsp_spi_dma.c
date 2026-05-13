@@ -26,7 +26,7 @@ void bsp_spi_dma_init(void)
     hdma_spi2_tx1.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;  //子传输
     hdma_spi2_tx1.Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;     //字节传输
     hdma_spi2_tx1.Init.Mode = DMA_NORMAL;  //正常moshi
-    hdma_spi2_tx1.Init.Priority = DMA_PRIORITY_HIGH; 
+    hdma_spi2_tx1.Init.Priority = DMA_PRIORITY_LOW;  //  DMA_PRIORITY_HIGH; 
     HAL_DMA_Init(&hdma_spi2_tx1);
     __HAL_LINKDMA(&hspi21, hdmatx, hdma_spi2_tx1);  //spi和dma关联
 

@@ -12,24 +12,47 @@ uint8_t g_light_brightness = 100;
 uint8_t g_light_speed = 10;
 // 高精度的内部累加器
 static uint32_t internal_tick_acc = 0;
-const uint16_t SPEED_STEP_MAP[5] = { 
-    2,   // 档位 1：极其缓慢（每帧 +0.2 倍速）
-    5,   // 档位 2：稍慢（每帧 +0.5 倍速）
-    10,  // 档位 3：正常速度（每帧 +1 倍速）
-    20,  // 档位 4：快速（每帧 +2 倍速）
-    35   // 档位 5：极快（每帧 +3.5 倍速）
-};
+extern bool g_caps_lock_active; //大小锁
+
+
 
 
 
 void App_led_animation_task(void) {
     static uint8_t speed_prescaler = 0;
+   
+    
+ 
+   
+
+ 
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    // --- 第二部分：背景动画限速器 ---
     uint8_t target_delay = 11 - (g_light_speed > 10 ? 10 : g_light_speed);
     if (++speed_prescaler < target_delay) {
         return;
     }
     speed_prescaler = 0;
-
+    
+    
+    
+    // --- 第三部分：背景动画 ---
     uint8_t cur_r = (g_light_r * g_light_brightness) / 100;
     uint8_t cur_g = (g_light_g * g_light_brightness) / 100;
     uint8_t cur_b = (g_light_b * g_light_brightness) / 100;
@@ -281,6 +304,16 @@ void App_led_animation_task(void) {
         default:
             break;
     }
+
+
+    // ========== 【新增代码：最后一步强行覆盖 CapsLock 灯】 ==========
+    if(g_caps_lock_active){
+        lib_ws2812_set_pixel(28, 255, 200, 200);
+        //lib_ws2812_set_key_color(2, 0, 255, 255, 255);
+         g_led_dirty = true; // 强制触发硬件刷新
+    
+    }
+   
 }
 
 void App_led_display_task(void) {

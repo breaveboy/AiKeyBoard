@@ -15,7 +15,7 @@
 #endif
 
 extern volatile uint8_t hid_state;
-//标准键盘的发送任务
+//按键发送
 void App_usb_process_task(void) {
     if (!report_dirty) return;
 
@@ -38,6 +38,7 @@ void App_usb_process_task(void) {
                 last_fn_state[r][c] = 0;
                 continue;
             }
+            //判断键码是fn还是普通配置层
             uint8_t code = fn_pressed ? g_fn_key_map[r][c] : g_key_map[r][c];
             if (code == KEY_NONE) code = g_key_map[r][c];
             if (code == KEY_NONE || code == KEY_FN) continue;

@@ -42,7 +42,7 @@
 -----------------------------------------------File Info------------------------------------------------
 ** File Name:               main.c 
 ** Created date:            2026.5.1
-** author:                  ywl
+** author:                  杨万里
 ** Version:                 V0.1
 ** Descriptions:            demo 
 **--------------------------------------------------------------------------------------------------------
@@ -88,13 +88,13 @@ int main(void) {
     HAL_Init();
     APP_SystemClockConfig();
     ///////////////////////////////板层初始化////////////
-    //bsp_usart_init(115200);
+    bsp_usart_init(115200);
     bsp_tim_init();                 //1ms一次中断
-    debug_init();   
+    //debug_init();   
     //bsp_spi_dma_init();              
   
 	SEGGER_RTT_printf(0, "init \r\n");
-	
+	printf("init \r\n");
 	
     ///////////////////////////////驱动层初始化//////////////
     lib_ws2812_init();
@@ -117,9 +117,8 @@ int main(void) {
     select_row(0);
     Bsp_Delay_Us(SETTLING_TIME_US);
     bsp_adc_dma_start();
+    printf("success init ok\r\n");
     
-    SEGGER_RTT_printf(0, "success init ok\r\n");
-  
     
     while (1) {
         Task_exec();
@@ -127,8 +126,10 @@ int main(void) {
 }
 
 
+//修改前的代码
 static void APP_USBInit(void)
-{
+{  
+  SEGGER_RTT_printf(0, "usb i\r\n");
     //初始化USB时钟
   __HAL_RCC_SYSCFG_CLK_ENABLE();
 
