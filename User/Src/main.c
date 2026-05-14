@@ -80,7 +80,49 @@ void  debug_init(){
     GPIO_t.Pin   = GPIO_PIN_9|GPIO_PIN_10;
 	HAL_GPIO_Init(GPIOA, &GPIO_t);
 }
+extern volatile uint8_t g_adc_complete ;
+extern volatile uint8_t g_current_row ; 
+void lib_hall_sensor_dump_init_adc(void)
+{
+    uint16_t adc_snapshot[ROW_COUNT][COL_COUNT] = {0};
 
+    printf("\r\nADC init snapshot start\r\n");
+
+    g_adc_complete = 0;
+  
+
+    for (uint8_t r = 0; r < ROW_COUNT; r++) {
+        select_row(r);
+        Bsp_Delay_Us(SETTLING_TIME_US);
+
+        g_adc_complete = 0;
+       
+        bsp_adc_dma_start();
+
+        while (!g_adc_complete) {
+        }
+
+        g_adc_complete = 0;
+
+        
+        for (uint8_t c = 0; c < COL_COUNT; c++) {
+            adc_snapshot[r][c] = gADCxConvertedData[c];
+        }
+    }
+
+    for (uint8_t r = 0; r < ROW_COUNT; r++) {
+        printf("row %d:", r);
+        for (uint8_t c = 0; c < COL_COUNT; c++) {
+            printf(" %4d", adc_snapshot[r][c]);
+        }
+        printf("\r\n");
+    }
+
+    g_current_row = 0;
+    select_row(0);
+
+    printf("ADC init snapshot end\r\n\r\n");
+}
 
 
 /* --- 主循环 --- */
@@ -103,7 +145,7 @@ int main(void) {
     // 1. 系统校准
     lib_hall_sensor_calibration();
 
-   
+    
 	 
 	
 	///////////////////////////////业务层初始化//////////////////
@@ -121,6 +163,7 @@ int main(void) {
     
     
     while (1) {
+        lib_hall_sensor_task();  // 只做 ADC 完成后的当前行处理
         Task_exec();
     }
 }
@@ -181,6 +224,7 @@ void APP_ErrorHandler(void)
 {
     while (1)
     {
+      
     }
 }
 

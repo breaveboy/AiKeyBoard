@@ -18,6 +18,73 @@ const uint8_t key_mask[ROW_COUNT][COL_COUNT] = {
     {1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 1}
 };
 
+//////////////////////////////////////////////新添加的逻辑滤波算法
+volatile uint8_t g_adc_complete=0;  //adc的中断完成标志
+
+#define EMA_SHIFT 3    // 滤波系数：值越大越平滑，延迟也略高 (建议 2, 3, 4)
+#define HYSTERESIS_DEADZONE 4  // 死区阈值：屏蔽静止时的底噪跳动 (建议 3~6)
+
+static  uint16_t raw_history[ROW_COUNT][COL_COUNT][3]= {0}; //中值滤波
+static  uint32_t ema_accumulator[ROW_COUNT][COL_COUNT]={0}; //滑动滤波
+static uint16_t logical_output[ROW_COUNT][COL_COUNT] = {0};
+
+//取中间的值
+static inline uint16_t fast_median(uint16_t a,uint16_t b,uint16_t c){
+    uint16_t temp;
+    if (a > b) { temp = a; a = b; b = temp; }
+    if (b > c) { temp = b; b = c; c = temp; }
+    if (a > b) { temp = a; a = b; b = temp; }
+    return b;
+} 
+
+
+
+
+///三阶滤波算法
+uint16_t process_hall_filter(uint8_t row, uint8_t col, uint16_t new_raw) {
+    // 1. 三阶中值滤波
+    raw_history[row][col][0] = raw_history[row][col][1];
+    raw_history[row][col][1] = raw_history[row][col][2];
+    raw_history[row][col][2] = new_raw;
+    uint16_t median_val = fast_median(raw_history[row][col][0], raw_history[row][col][1], raw_history[row][col][2]);
+
+    // 2. 高精度 EMA 滑动平均
+    if (ema_accumulator[row][col] == 0) { ema_accumulator[row][col] = median_val << EMA_SHIFT; }
+    ema_accumulator[row][col] += median_val - (ema_accumulator[row][col] >> EMA_SHIFT);
+    uint16_t ema_val = ema_accumulator[row][col] >> EMA_SHIFT;
+
+    // 3. 迟滞死区滤波
+    int16_t delta = (int16_t)ema_val - (int16_t)logical_output[row][col];
+    if (delta > HYSTERESIS_DEADZONE) {
+        logical_output[row][col] = ema_val - HYSTERESIS_DEADZONE;
+    } else if (delta < -HYSTERESIS_DEADZONE) {
+        logical_output[row][col] = ema_val + HYSTERESIS_DEADZONE;
+    }
+    return logical_output[row][col];
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /* --- 硬件底层驱动 --- */
 
 void ROW_ALL_OFF(void) {
@@ -144,6 +211,132 @@ void lib_hall_sensor_init(void) {
     // 2. 初始化 ADC DMA
     bsp_adc_dma_init();
 }
+
+
+
+#define ADC_DMA1_CH1_ALL_FLAGS (DMA_IFCR_CGIF1 | DMA_IFCR_CTCIF1 | DMA_IFCR_CHTIF1 | DMA_IFCR_CTEIF1)
+void DMA1_Channel1_IRQHandler(void) {
+    //判断
+    //清除中断
+    //设置标志位
+
+    if(DMA1->ISR & (DMA_ISR_TCIF1 | DMA_ISR_TEIF1)) {
+        DMA1->IFCR = ADC_DMA1_CH1_ALL_FLAGS;
+        DMA1_Channel1->CCR &= ~DMA_CCR_EN;
+        g_adc_complete = 1;
+    }
+
+
+
+}
+
+
+
+void lib_hall_sensor_calibration(void)
+{
+    memset(g_adc_raw_col, 0, sizeof(g_adc_raw_col));
+
+    g_adc_complete = 0;
+    g_scan_complete = 0;
+    g_scan_round = 0;
+    g_current_row = 0;
+
+    for (uint8_t r = 0; r < ROW_COUNT; r++) {
+        select_row(r);
+        Bsp_Delay_Us(SETTLING_TIME_US);
+
+        g_adc_complete = 0;
+      
+        bsp_adc_dma_start();
+
+        while (!g_adc_complete) {
+        }
+
+        g_adc_complete = 0;
+
+        
+
+        for (uint8_t c = 0; c < COL_COUNT; c++) {
+            uint16_t idle = gADCxConvertedData[c];
+
+            keys[r][c].idele_adc = idle;
+            keys[r][c].drift_cnt = 0;
+            keys[r][c].actuation_point = 350;
+            keys[r][c].top_deadzone = 80;
+            keys[r][c].bottom_deadzone = 1050;
+            keys[r][c].rt_press_sens = 50;
+            keys[r][c].rt_release_sens = 50;
+            keys[r][c].is_pressed = 0;
+            keys[r][c].in_rt_cycle = 0;
+            keys[r][c].max_offset = 0;
+            keys[r][c].min_offset = 0;
+
+            raw_history[r][c][0] = idle;
+            raw_history[r][c][1] = idle;
+            raw_history[r][c][2] = idle;
+            ema_accumulator[r][c] = ((uint32_t)idle << EMA_SHIFT);
+            logical_output[r][c] = idle;
+        }
+    }
+
+    g_scan_complete = 0;
+    g_scan_round = 0;
+    g_current_row = 0;
+
+    printf("Calibration OK!\r\n");
+}
+
+
+
+
+
+
+//DMA 中断只置位 g_adc_complete
+//task 看到 g_adc_complete 后：
+//    处理当前行
+//    三界滤波
+//    切下一行
+//    启动下一次 DMA
+
+void lib_hall_sensor_task(void)
+{
+    if (!g_adc_complete) {
+        return;
+    }
+
+    g_adc_complete = 0;  //清除中断标志
+
+    for (uint8_t c = 0; c < COL_COUNT; c++) {
+        if (key_mask[g_current_row][c] == 0) {
+            continue;
+        }
+
+        uint16_t adc = process_hall_filter(g_current_row, c, gADCxConvertedData[c]);
+
+        Key_t *k = &keys[g_current_row][c];
+        update_baseline_tracking(k, adc);
+        process_key_logic(k, adc);
+    }
+
+    g_current_row++;
+    if (g_current_row >= ROW_COUNT) {
+        g_current_row = 0;
+        g_scan_complete = 1;
+    }
+
+    select_row(g_current_row);
+    Bsp_Delay_Us(SETTLING_TIME_US);
+    bsp_adc_dma_start();
+}
+
+
+
+
+
+
+/////////////////原来的中断写法
+
+#if 0
 ////////上电时初始key的状态
 void lib_hall_sensor_calibration(void) {
     printf("Calibration Start...\r\n");
@@ -178,6 +371,7 @@ void lib_hall_sensor_calibration(void) {
     g_current_row = 0;
     printf("Calibration OK!\r\n");
 }
+
 
 void lib_hall_sensor_task(void) {
     static uint16_t scan_watchdog = 0;
@@ -223,6 +417,7 @@ void lib_hall_sensor_task(void) {
         }
     }
 }
+
 //14次普通扫描： 14 × (63us高 + 22us低) = 1190 us
 //第15次扫描+数据处理发送： 约2us高 + 830us长低 = 832 us
 //当前总周期： 1190 + 832 = 2022 us（约 2 毫秒）
@@ -272,3 +467,4 @@ void DMA1_Channel1_IRQHandler(void) {
     }
 		GPIOA->BRR = (uint32_t)GPIO_PIN_9;
 }
+#endif
