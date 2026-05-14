@@ -394,7 +394,7 @@ static void usbd_custom_hid_out_callback(uint8_t ep, uint32_t nbytes)
 
 
 //大小锁的全局变量
-bool g_caps_lock_active =false;
+volatile bool g_caps_lock_active =false;
 
 /**
  * CherryUSB HID 类请求回调函数

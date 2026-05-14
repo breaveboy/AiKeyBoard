@@ -3,8 +3,10 @@
 
 #include "py32f4xx_hal.h"
 #include "bsp_board.h"
+#include <stdbool.h>
 
 void bsp_spi_dma_init(void);
 HAL_StatusTypeDef bsp_spi_dma_send(uint8_t *pData, uint16_t len);
+bool bsp_spi_dma_is_busy(void);
 
 #endif

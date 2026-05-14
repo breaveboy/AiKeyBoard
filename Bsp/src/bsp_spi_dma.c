@@ -1,7 +1,7 @@
 #include "bsp_spi_dma.h"
 #include "bsp_gpio.h"
 
-SPI_HandleTypeDef hspi21;
+SPI_HandleTypeDef hspi2;
 DMA_HandleTypeDef hdma_spi2_tx1;
 //8hmz外部时钟 
 void bsp_spi_dma_init(void)
@@ -28,18 +28,18 @@ void bsp_spi_dma_init(void)
     hdma_spi2_tx1.Init.Mode = DMA_NORMAL;  //正常moshi
     hdma_spi2_tx1.Init.Priority = DMA_PRIORITY_LOW;  //  DMA_PRIORITY_HIGH; 
     HAL_DMA_Init(&hdma_spi2_tx1);
-    __HAL_LINKDMA(&hspi21, hdmatx, hdma_spi2_tx1);  //spi和dma关联
+    __HAL_LINKDMA(&hspi2, hdmatx, hdma_spi2_tx1);  //spi和dma关联
 
-    hspi21.Instance = LED_SPI_INSTANCE;    //spi2
-    hspi21.Init.Mode = SPI_MODE_MASTER;   
-    hspi21.Init.Direction = SPI_DIRECTION_2LINES; //全双工
-    hspi21.Init.DataSize = SPI_DATASIZE_8BIT;   //8bit
-    hspi21.Init.CLKPolarity = SPI_POLARITY_LOW;  //低优先级
-    hspi21.Init.CLKPhase = SPI_PHASE_1EDGE;      //第一相位
-    hspi21.Init.NSS = SPI_NSS_SOFT;             
-    hspi21.Init.FirstBit = SPI_FIRSTBIT_MSB;    
-    hspi21.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_16;
-    HAL_SPI_Init(&hspi21);
+    hspi2.Instance = LED_SPI_INSTANCE;    //spi2
+    hspi2.Init.Mode = SPI_MODE_MASTER;   
+    hspi2.Init.Direction = SPI_DIRECTION_2LINES; //全双工
+    hspi2.Init.DataSize = SPI_DATASIZE_8BIT;   //8bit
+    hspi2.Init.CLKPolarity = SPI_POLARITY_LOW;  //低优先级
+    hspi2.Init.CLKPhase = SPI_PHASE_1EDGE;      //第一相位
+    hspi2.Init.NSS = SPI_NSS_SOFT;             
+    hspi2.Init.FirstBit = SPI_FIRSTBIT_MSB;    
+    hspi2.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_16;
+    HAL_SPI_Init(&hspi2);
     HAL_DMA_ChannelMap(&hdma_spi2_tx1, DMA_CHANNEL_MAP_SPI2_WR);
     HAL_NVIC_SetPriority(DMA1_Channel2_IRQn, 2, 0);
     HAL_NVIC_EnableIRQ(DMA1_Channel2_IRQn);
@@ -49,14 +49,21 @@ void DMA1_Channel2_IRQHandler(void)
 {
     HAL_DMA_IRQHandler(&hdma_spi2_tx1);
 }
+//大小锁的判断dma是否忙的函数
+bool bsp_spi_dma_is_busy(void)
+{
+    return (hspi2.State != HAL_SPI_STATE_READY) ||
+           (hdma_spi2_tx1.State != HAL_DMA_STATE_READY) ||
+           (__HAL_SPI_GET_FLAG(&hspi2, SPI_FLAG_BSY) != RESET);
+}
 
 //spi的中断发送
 HAL_StatusTypeDef bsp_spi_dma_send(uint8_t *pData, uint16_t len)
 {
-    if (hspi21.State != HAL_SPI_STATE_READY) {
+    if (hspi2.State != HAL_SPI_STATE_READY) {
         return HAL_BUSY;
     }
-    return HAL_SPI_Transmit_DMA(&hspi21, pData, len);
+    return HAL_SPI_Transmit_DMA(&hspi2, pData, len);
 }
 
 

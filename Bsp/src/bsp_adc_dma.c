@@ -34,7 +34,7 @@ void bsp_adc_dma_init(void)
     };
 
     // 循环配置 14 个 Rank
-    sConfig.SamplingTime = ADC_SAMPLETIME_7CYCLES_5;   ///ADC_SAMPLETIME_5CYCLES_5; 
+    sConfig.SamplingTime = ADC_SAMPLETIME_5CYCLES_5;   ///ADC_SAMPLETIME_5CYCLES_5; 
     for (uint8_t i = 0; i < 14; i++)
     {
        sConfig.Channel = channel_map[i];
@@ -42,7 +42,7 @@ void bsp_adc_dma_init(void)
        HAL_ADC_ConfigChannel(&AdcHandle, &sConfig);
     }
 
-    // ADC 的校准
+    // ADC 的校准6
     HAL_ADCEx_Calibration_Start(&AdcHandle);
 
     // Fast init logic

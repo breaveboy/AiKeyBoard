@@ -12,37 +12,17 @@ uint8_t g_light_brightness = 100;
 uint8_t g_light_speed = 10;
 // 高精度的内部累加器
 static uint32_t internal_tick_acc = 0;
-extern bool g_caps_lock_active; //大小锁
-
-
-
+extern volatile bool g_caps_lock_active; //大小锁
 
 
 void App_led_animation_task(void) {
     static uint8_t speed_prescaler = 0;
-   
-    
- 
+
+    if (bsp_spi_dma_is_busy()) {
+        return;
+    }
    
 
- 
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     // --- 第二部分：背景动画限速器 ---
     uint8_t target_delay = 11 - (g_light_speed > 10 ? 10 : g_light_speed);
     if (++speed_prescaler < target_delay) {
@@ -73,6 +53,10 @@ void App_led_animation_task(void) {
    
 
     switch (g_light_mode) {
+        case LIGHT_MODE_OFF:
+            lib_ws2812_set_all(0, 0, 0);
+            g_led_dirty = true;
+            break;
         case LIGHT_MODE_BREATH:
             lib_ws2812_breath_mode(++ws2812_tick);
             g_led_dirty = true;

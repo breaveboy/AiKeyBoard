@@ -120,7 +120,7 @@
         <SetRegEntry>
           <Number>0</Number>
           <Key>DLGUARM</Key>
-          <Name>?</Name>
+          <Name>!</Name>
         </SetRegEntry>
         <SetRegEntry>
           <Number>0</Number>
@@ -153,22 +153,17 @@
         <Ww>
           <count>0</count>
           <WinNumber>1</WinNumber>
-          <ItemText>avg_adc</ItemText>
+          <ItemText>gADCData</ItemText>
         </Ww>
         <Ww>
           <count>1</count>
           <WinNumber>1</WinNumber>
-          <ItemText>g_adc_raw_col,0x0A</ItemText>
+          <ItemText>gADCxConvertedData,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>2</count>
           <WinNumber>1</WinNumber>
-          <ItemText>keys,0x0A</ItemText>
-        </Ww>
-        <Ww>
-          <count>3</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>dbg_scan_task_cnt</ItemText>
+          <ItemText>filtered_data,0x0A</ItemText>
         </Ww>
       </WatchWindow1>
       <MemoryWindow1>
@@ -552,8 +547,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\Lib\src\lib_hall_sensor.c</PathWithFileName>
-      <FilenameWithoutPath>lib_hall_sensor.c</FilenameWithoutPath>
+      <PathWithFileName>..\Lib\src\lib_ws2812.c</PathWithFileName>
+      <FilenameWithoutPath>lib_ws2812.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -564,8 +559,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\Lib\src\lib_ws2812.c</PathWithFileName>
-      <FilenameWithoutPath>lib_ws2812.c</FilenameWithoutPath>
+      <PathWithFileName>..\Lib\src\lib_hall_sensor.c</PathWithFileName>
+      <FilenameWithoutPath>lib_hall_sensor.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
