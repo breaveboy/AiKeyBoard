@@ -19,6 +19,7 @@ extern volatile bool g_caps_lock_active; //大小锁
 
 
 #define SNAKE_MAX_LEN 18
+#define SNAKE_MOVE_FRAMES 7U
 
 // 寻路 BFS 算法：找到从起点到终点的第一步方向
 // 返回值：0-无路, 1-上, 2-下, 3-左, 4-右
@@ -351,115 +352,116 @@ void App_led_animation_task(void) {
         {
             static Pos_t snake[SNAKE_MAX_LEN];
             static uint8_t snake_len = 4;
-            static Pos_t food = {2, 7};
+            static Pos_t food = {3, 10};
             static bool needs_init = true;
-            static uint16_t snake_logic_gate = 0; 
-            
-            // --- 新增：用于存储“下一跳”位置的变量，实现平滑预测 ---
-            static Pos_t next_head_pos; 
+            static uint8_t move_gate = 0;
 
             uint8_t i, dir;
-            ws2812_tick++; 
+            ws2812_tick++;
 
             if (needs_init) {
                 snake_len = 4;
                 for (i = 0; i < snake_len; i++) {
-                    snake[i].r = 0; snake[i].c = snake_len - 1 - i;
+                    snake[i].r = 0;
+                    snake[i].c = snake_len - 1U - i;
                 }
-                food.r = 3; food.c = 10;
+                food.r = 3;
+                food.c = 10;
+                move_gate = 0;
                 needs_init = false;
-                snake_logic_gate = 0;
-                // 初始化预测位置
-                next_head_pos = snake[0]; 
             }
-
-            // 1. 计算当前的插值比例 (0 ~ 255)
-            // 当 gate 为 0 时，比例为 0；当 gate 接近 7 时，比例接近 255
-            uint16_t fraction = (snake_logic_gate * 255) / 7;
-
-            if (++snake_logic_gate >= 7) { 
-                snake_logic_gate = 0;
-
-                // 物理位移逻辑 (保持不变)
-                dir = snake_ai_get_direction(snake[0], food, snake, snake_len);
-                if (dir == 0) { /* 挣扎逻辑... */ }
-
-                Pos_t real_next_head = snake[0];
-                if (dir == 1) real_next_head.r--;
-                else if (dir == 2) real_next_head.r++;
-                else if (dir == 3) real_next_head.c--;
-                else if (dir == 4) real_next_head.c++;
-                else { needs_init = true; }
-
-                if (!needs_init) {
-                    if (key_mask[real_next_head.r][real_next_head.c] == 0) { needs_init = true; }
-                    else {
-                        for (i = 0; i < snake_len - 1; i++) {
-                            if (real_next_head.r == snake[i].r && real_next_head.c == snake[i].c) { needs_init = true; break; }
-                        }
-                    }
-                }
-
-                if (!needs_init) {
-                    if (real_next_head.r == food.r && real_next_head.c == food.c) {
-                        if (snake_len < SNAKE_MAX_LEN) snake_len++;
-                        // 生成新食物
-                        uint32_t seed = ws2812_tick + g_hall_adc_frame[0][0];
-                        for (i = 0; i < 70; i++) {
-                            uint8_t tr = (seed + i * 3) % 5;
-                            uint8_t tc = (seed + i * 7) % 14;
-                            if (key_mask[tr][tc] != 0) { food.r = tr; food.c = tc; break; }
-                        }
-                    }
-                    for (i = snake_len - 1; i > 0; i--) { snake[i] = snake[i - 1]; }
-                    snake[0] = real_next_head;
-                }
-                
-                // 物理位移完成后，立即计算“下一跳”用于渲染预览
-                dir = snake_ai_get_direction(snake[0], food, snake, snake_len);
-                next_head_pos = snake[0];
-                if (dir == 1) next_head_pos.r--;
-                else if (dir == 2) next_head_pos.r++;
-                else if (dir == 3) next_head_pos.c--;
-                else if (dir == 4) next_head_pos.c++;
-            }
-
-            // --- 2. 滑丝渲染逻辑 ---
+            
+            /**
+                目标：RGB(255, 96, 8)，更亮的霓虹橙红
+                蛇身：RGB(20, 140, 255)，高亮蓝青色
+                蛇头：RGB(80, 255, 120)，电光绿
+            
+            */
             lib_ws2812_set_all(0, 0, 0);
 
-            // A. 渲染食物 (呼吸灯)
-            uint8_t food_val = 160 + (abs((int)(ws2812_tick % 40) - 20) * 4);
-            lib_ws2812_set_key_color(food.r, food.c, (food_val * g_light_brightness / 100), 0, 0);
+            lib_ws2812_set_key_color(food.r, food.c,
+                (uint8_t)(255U * g_light_brightness / 100U),
+                (uint8_t)(0U * g_light_brightness / 100U),
+                (uint8_t)(0U * g_light_brightness / 100U));
 
-            // B. 渲染蛇身 (常规部分，第1节到倒数第2节)
-            for (i = 1; i < snake_len - 1; i++) {
-                uint8_t fade = 255 - (i * (180 / snake_len));
-                lib_ws2812_set_key_color(snake[i].r, snake[i].c, 
-                    (80 * fade / 255) * g_light_brightness / 100, 0, (255 * fade / 255) * g_light_brightness / 100);
+            for (i = snake_len - 1U; i > 0; i--) {
+                lib_ws2812_set_key_color(snake[i].r, snake[i].c,
+                    (uint8_t)(0U * g_light_brightness / 100U),
+                    (uint8_t)(255U * g_light_brightness / 100U),
+                    (uint8_t)(0U * g_light_brightness / 100U));
             }
 
-            // C. 蛇尾滑丝：最后一节逐渐变暗
-            {
-                uint8_t last_idx = snake_len - 1;
-                uint8_t tail_fade = (255 - (last_idx * (180 / snake_len))) * (255 - fraction) / 255;
-                lib_ws2812_set_key_color(snake[last_idx].r, snake[last_idx].c, 
-                    (80 * tail_fade / 255) * g_light_brightness / 100, 0, (255 * tail_fade / 255) * g_light_brightness / 100);
-            }
-
-            // D. 蛇头滑丝：当前头保持亮，目标头逐渐变亮
-            // 当前头
-            lib_ws2812_set_key_color(snake[0].r, snake[0].c, 0, (255 * g_light_brightness / 100), (255 * g_light_brightness / 100));
-            // 目标头 (渐入)
-            if (!(next_head_pos.r == snake[0].r && next_head_pos.c == snake[0].c)) {
-                uint8_t head_in = (fraction * 255) / 255; // 0 -> 255
-                lib_ws2812_set_key_color(next_head_pos.r, next_head_pos.c, 0, 
-                    (head_in * g_light_brightness / 100), (head_in * g_light_brightness / 100));
-            }
+            lib_ws2812_set_key_color(snake[0].r, snake[0].c,
+                (uint8_t)(0U * g_light_brightness / 100U),
+                (uint8_t)(0U * g_light_brightness / 100U),
+                (uint8_t)(255U * g_light_brightness / 100U));
 
             g_led_dirty = true;
+
+            if (++move_gate >= SNAKE_MOVE_FRAMES) {
+                move_gate = 0;
+                dir = snake_ai_get_direction(snake[0], food, snake, snake_len);
+
+                Pos_t next = snake[0];
+                if (dir == 1) next.r--;
+                else if (dir == 2) next.r++;
+                else if (dir == 3) next.c--;
+                else if (dir == 4) next.c++;
+                else { needs_init = true; break; }
+
+                if (next.r >= 5U || next.c >= 14U || key_mask[next.r][next.c] == 0) {
+                    needs_init = true;
+                    break;
+                }
+
+                for (i = 0; i < snake_len - 1U; i++) {
+                    if (next.r == snake[i].r && next.c == snake[i].c) {
+                        needs_init = true;
+                        break;
+                    }
+                }
+                if (needs_init) { break; }
+
+                bool ate_food = (next.r == food.r && next.c == food.c);
+                if (ate_food && snake_len < SNAKE_MAX_LEN) {
+                    snake_len++;
+                }
+
+                for (i = snake_len - 1U; i > 0; i--) {
+                    snake[i] = snake[i - 1U];
+                }
+                snake[0] = next;
+
+                if (ate_food) {
+                    uint32_t seed = ws2812_tick + g_hall_adc_frame[0][0];
+                    for (i = 0; i < 70U; i++) {
+                        uint8_t tr = (seed + i * 3U) % 5U;
+                        uint8_t tc = (seed + i * 7U) % 14U;
+                        bool on_snake = false;
+                        uint8_t j;
+
+                        if (key_mask[tr][tc] == 0) {
+                            continue;
+                        }
+
+                        for (j = 0; j < snake_len; j++) {
+                            if (snake[j].r == tr && snake[j].c == tc) {
+                                on_snake = true;
+                                break;
+                            }
+                        }
+
+                        if (!on_snake) {
+                            food.r = tr;
+                            food.c = tc;
+                            break;
+                        }
+                    }
+                }
+            }
+
             break;
         }
-        
         
         default:
             break;
