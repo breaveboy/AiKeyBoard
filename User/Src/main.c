@@ -176,7 +176,7 @@ static void APP_USBInit(void)
     //³õÊ¼»¯USBÊ±ÖÓ
   __HAL_RCC_SYSCFG_CLK_ENABLE();
 
-  SET_BIT(RCC->CFGR1,RCC_CFGR1_USBSELHSI48_Msk);
+   SET_BIT(RCC->CFGR1,RCC_CFGR1_USBSELHSI48_Msk);
   __HAL_RCC_USB_CLK_ENABLE();
 
   hid_keyboard_init();

@@ -36,7 +36,6 @@ void App_send_bubble_report(uint8_t bubble_param, uint8_t ai_action);
 
 //°´¼üÉ¨ÃèÈÎÎñ
 void App_adkey_scan_task(void) {
-    lib_hall_sensor_task();
     for (uint8_t r = 0; r < ROW_COUNT; r++) {
         for (uint8_t c = 0; c < COL_COUNT; c++) {
             if (key_mask[r][c] == 0) continue;
