@@ -1,13 +1,15 @@
 #include "lib_hall_sensor.h"
 #include "bsp_delay.h"
 
-/* --- 全局变量 --- */
-volatile uint8_t  g_current_row = 0;    // 当前扫描行 (0-4)
-volatile uint8_t  g_scan_round = 0;     // 当前轮次 (0-2)
-volatile uint8_t  g_scan_complete = 0;  // 一波扫描完成标志
+// 当前正在采集的矩阵行，0~4。
+volatile uint8_t g_current_row = 0;
+// 一帧 5x14 数据采集完成标志，由按键任务清理并重启下一帧。
+volatile uint8_t g_scan_complete = 0;
+// 单行 14 路 ADC DMA 完成标志，由 DMA 中断置位。
+volatile uint8_t g_adc_complete = 0;
 
-uint16_t g_adc_raw_col[ROW_COUNT][COL_COUNT] = {0};    // 原始累加缓冲区
-
+// 滤波后的整帧 ADC 数据，按键判断只读取这个数组。
+uint16_t g_hall_adc_frame[ROW_COUNT][COL_COUNT] = {0};
 Key_t keys[ROW_COUNT][COL_COUNT];
 
 const uint8_t key_mask[ROW_COUNT][COL_COUNT] = {
@@ -18,177 +20,82 @@ const uint8_t key_mask[ROW_COUNT][COL_COUNT] = {
     {1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 1}
 };
 
-//////////////////////////////////////////////新添加的逻辑滤波算法
-volatile uint8_t g_adc_complete=0;  //adc的中断完成标志
+#define EMA_SHIFT 3
+#define HYSTERESIS_DEADZONE 4
+#define ADC_DMA1_CH1_ALL_FLAGS (DMA_IFCR_CGIF1 | DMA_IFCR_CTCIF1 | DMA_IFCR_CHTIF1 | DMA_IFCR_CTEIF1)
 
-#define EMA_SHIFT 3    // 滤波系数：值越大越平滑，延迟也略高 (建议 2, 3, 4)
-#define HYSTERESIS_DEADZONE 4  // 死区阈值：屏蔽静止时的底噪跳动 (建议 3~6)
-
-static  uint16_t raw_history[ROW_COUNT][COL_COUNT][3]= {0}; //中值滤波
-static  uint32_t ema_accumulator[ROW_COUNT][COL_COUNT]={0}; //滑动滤波
+static uint16_t raw_history[ROW_COUNT][COL_COUNT][3] = {0};
+static uint32_t ema_accumulator[ROW_COUNT][COL_COUNT] = {0};
 static uint16_t logical_output[ROW_COUNT][COL_COUNT] = {0};
 
-//取中间的值
-static inline uint16_t fast_median(uint16_t a,uint16_t b,uint16_t c){
+// 三点中值滤波：先压掉单次毛刺，再进入 EMA 平滑。
+static inline uint16_t fast_median(uint16_t a, uint16_t b, uint16_t c)
+{
     uint16_t temp;
+
     if (a > b) { temp = a; a = b; b = temp; }
     if (b > c) { temp = b; b = c; c = temp; }
     if (a > b) { temp = a; a = b; b = temp; }
+
     return b;
-} 
+}
 
-
-
-
-///三阶滤波算法
-uint16_t process_hall_filter(uint8_t row, uint8_t col, uint16_t new_raw) {
-    // 1. 三阶中值滤波
+// 单键滤波链路：三点中值 -> EMA -> 迟滞死区。
+static uint16_t process_hall_filter(uint8_t row, uint8_t col, uint16_t new_raw)
+{
     raw_history[row][col][0] = raw_history[row][col][1];
     raw_history[row][col][1] = raw_history[row][col][2];
     raw_history[row][col][2] = new_raw;
+
     uint16_t median_val = fast_median(raw_history[row][col][0], raw_history[row][col][1], raw_history[row][col][2]);
 
-    // 2. 高精度 EMA 滑动平均
-    if (ema_accumulator[row][col] == 0) { ema_accumulator[row][col] = median_val << EMA_SHIFT; }
+    if (ema_accumulator[row][col] == 0) {
+        ema_accumulator[row][col] = ((uint32_t)median_val << EMA_SHIFT);
+    }
     ema_accumulator[row][col] += median_val - (ema_accumulator[row][col] >> EMA_SHIFT);
     uint16_t ema_val = ema_accumulator[row][col] >> EMA_SHIFT;
 
-    // 3. 迟滞死区滤波
     int16_t delta = (int16_t)ema_val - (int16_t)logical_output[row][col];
     if (delta > HYSTERESIS_DEADZONE) {
         logical_output[row][col] = ema_val - HYSTERESIS_DEADZONE;
     } else if (delta < -HYSTERESIS_DEADZONE) {
         logical_output[row][col] = ema_val + HYSTERESIS_DEADZONE;
     }
+
     return logical_output[row][col];
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* --- 硬件底层驱动 --- */
-
-void ROW_ALL_OFF(void) {
+// 关闭所有行，避免切行时串扰。
+void ROW_ALL_OFF(void)
+{
     SET_IO(GPIOA, GPIO_PIN_8);
     SET_IO(GPIOC, GPIO_PIN_6 | GPIO_PIN_7 | GPIO_PIN_8 | GPIO_PIN_9);
 }
 
-void select_row(uint8_t index) {
+// 选择一行进入采样状态，行信号低电平有效。
+void select_row(uint8_t index)
+{
     ROW_ALL_OFF();
-    switch(index) {
-        case 0: CLR_IO(GPIOA, GPIO_PIN_8); break;
-        case 1: CLR_IO(GPIOC, GPIO_PIN_9); break;
-        case 2: CLR_IO(GPIOC, GPIO_PIN_8); break;
-        case 3: CLR_IO(GPIOC, GPIO_PIN_7); break;
-        case 4: CLR_IO(GPIOC, GPIO_PIN_6); break;
+
+    switch (index) {
+    case 0: CLR_IO(GPIOA, GPIO_PIN_8); break;
+    case 1: CLR_IO(GPIOC, GPIO_PIN_9); break;
+    case 2: CLR_IO(GPIOC, GPIO_PIN_8); break;
+    case 3: CLR_IO(GPIOC, GPIO_PIN_7); break;
+    case 4: CLR_IO(GPIOC, GPIO_PIN_6); break;
+    default: break;
     }
 }
 
-
-/**
- * 动态基准追踪函数
- * 作用：悄悄修正常年累月的温漂，不让键盘“断气”
- */
-void update_baseline_tracking(Key_t* k, uint16_t cur_adc) {
-    // 1. 如果现在按键正按着呢，绝对不能更新基准，否则按键就失效了
-    if (k->is_pressed) {
-        k->drift_cnt = 0; // 重置秒表
-        return;
-    }
-
-    // 2. 算一下当前的误差（起跑线 和 现在的脚 差了多远）
-    int32_t diff = (int32_t)k->idele_adc - (int32_t)cur_adc;
-
-    // 3. 【重点】设定一个小范围（比如正负 15 之内）
-    // 如果偏差很小，说明这大概率是温漂，而不是人在按键
-    if (diff < 30 && diff > -30) {
-        k->drift_cnt++; // 开启秒表，开始读秒
-
-        // 4. 如果数值在这个范围极其稳定地待了 1000 次循环（大约 1.5 到 2 秒）
-        if (k->drift_cnt > 1000) {
-            // 如果比基准稍微低了一点，就把基准往下挪 1 个单位
-            if (diff > 0) k->idele_adc--; 
-            // 如果比基准稍微高了一点，就把基准往上挪 1 个单位
-            else if (diff < 0) k->idele_adc++; 
-
-            k->drift_cnt = 0; // 修正完一次后，秒表归零，重新开始下一轮观察
-        }
-    } 
-    // 5. 如果误差突然变得很大（比如差了 50），说明有人在按按键！
-    else {
-        k->drift_cnt = 0; // 立刻关掉秒表，不准修改基准
-    }
-}
-
-
-
-
-
-/* --- 业务逻辑 --- */
-uint8_t process_key_logic(Key_t* k, uint16_t cur_adc) {
-    // 1. 计算偏移量（防止负数溢出）
-    int32_t diff = (int32_t)k->idele_adc - (int32_t)cur_adc;
-    int16_t offset = (diff > 0) ? (int16_t)diff : 0;
-
-    // 2. 顶部死区判断
-    if (offset < k->top_deadzone) {
-        k->is_pressed = 0;
-        k->in_rt_cycle = 0;
-        k->max_offset = 0; //按下的最大值
-        k->min_offset = 0; //最小值
-        return 0;
-    }
-
-    // 3. 底部死区限制
-    if (offset > k->bottom_deadzone) offset = k->bottom_deadzone;
-
-    // 4. RT 与 AP 逻辑状态机
-    if (!k->is_pressed) {
-        if (offset < k->min_offset) k->min_offset = offset;
-        uint16_t trigger_line = k->in_rt_cycle ? (k->min_offset + k->rt_press_sens) : k->actuation_point;
-        if (offset >= trigger_line) {
-            k->is_pressed = 1;
-            k->in_rt_cycle = 1;
-            k->max_offset = offset;
-        }
-    } else {
-        if (offset > k->max_offset) k->max_offset = offset;
-        uint16_t release_line = k->max_offset - k->rt_release_sens;
-        if (offset <= release_line) {
-            k->is_pressed = 0;
-            k->min_offset = offset;
-        }
-    }
-    return k->is_pressed;
-}
-
-void lib_hall_sensor_init(void) {
-    // 1. 初始化 GPIO (由 main.c 中的 GPIO_Config 移过来，但也可以调用 bsp_gpio.c 中的函数)
+// 霍尔采集层初始化：只负责 GPIO、ADC、DMA，不做按键业务判断。
+void lib_hall_sensor_init(void)
+{
     __HAL_RCC_GPIOA_CLK_ENABLE();
     __HAL_RCC_GPIOB_CLK_ENABLE();
     __HAL_RCC_GPIOC_CLK_ENABLE();
+
     GPIO_InitTypeDef GPIO_InitStruct = {0};
 
-    // 配置行扫描：PC6-9, PA8
     GPIO_InitStruct.Pin = GPIO_PIN_6 | GPIO_PIN_7 | GPIO_PIN_8 | GPIO_PIN_9;
     GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
@@ -198,55 +105,43 @@ void lib_hall_sensor_init(void) {
     GPIO_InitStruct.Pin = GPIO_PIN_8;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-    // 配置列模拟输入：// PA0-PA7(8) + PB0-PB1(2) + PC0-PC3(4) = 14
-    GPIO_InitStruct.Pin =  GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3 | GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6 | GPIO_PIN_7;
+    GPIO_InitStruct.Pin = GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3 |
+                          GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6 | GPIO_PIN_7;
     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-    GPIO_InitStruct.Pin  = GPIO_PIN_0 | GPIO_PIN_1;
+
+    GPIO_InitStruct.Pin = GPIO_PIN_0 | GPIO_PIN_1;
     HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-    // 3. 配置 PC0 - PC3
-    GPIO_InitStruct.Pin  = GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3;
+
+    GPIO_InitStruct.Pin = GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3;
     HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-    // 2. 初始化 ADC DMA
     bsp_adc_dma_init();
 }
 
-
-
-#define ADC_DMA1_CH1_ALL_FLAGS (DMA_IFCR_CGIF1 | DMA_IFCR_CTCIF1 | DMA_IFCR_CHTIF1 | DMA_IFCR_CTEIF1)
-void DMA1_Channel1_IRQHandler(void) {
-    //判断
-    //清除中断
-    //设置标志位
-
-    if(DMA1->ISR & (DMA_ISR_TCIF1 | DMA_ISR_TEIF1)) {
+// DMA 中断只置完成标志，数据处理放在任务里完成。
+void DMA1_Channel1_IRQHandler(void)
+{
+    if (DMA1->ISR & (DMA_ISR_TCIF1 | DMA_ISR_TEIF1)) {
         DMA1->IFCR = ADC_DMA1_CH1_ALL_FLAGS;
         DMA1_Channel1->CCR &= ~DMA_CCR_EN;
         g_adc_complete = 1;
     }
-
-
-
 }
 
-
-
+// 上电校准：逐行采样一次，初始化每个键的 idle_adc 和滤波器状态。
 void lib_hall_sensor_calibration(void)
 {
-    memset(g_adc_raw_col, 0, sizeof(g_adc_raw_col));
-
     g_adc_complete = 0;
     g_scan_complete = 0;
-    g_scan_round = 0;
     g_current_row = 0;
+    memset(g_hall_adc_frame, 0, sizeof(g_hall_adc_frame));
 
     for (uint8_t r = 0; r < ROW_COUNT; r++) {
         select_row(r);
         Bsp_Delay_Us(SETTLING_TIME_US);
 
         g_adc_complete = 0;
-      
         bsp_adc_dma_start();
 
         while (!g_adc_complete) {
@@ -254,11 +149,10 @@ void lib_hall_sensor_calibration(void)
 
         g_adc_complete = 0;
 
-        
-
         for (uint8_t c = 0; c < COL_COUNT; c++) {
             uint16_t idle = gADCxConvertedData[c];
 
+            g_hall_adc_frame[r][c] = idle;
             keys[r][c].idele_adc = idle;
             keys[r][c].drift_cnt = 0;
             keys[r][c].actuation_point = 350;
@@ -280,48 +174,57 @@ void lib_hall_sensor_calibration(void)
     }
 
     g_scan_complete = 0;
-    g_scan_round = 0;
     g_current_row = 0;
+    ROW_ALL_OFF();
 
     printf("Calibration OK!\r\n");
 }
 
+// 从第 0 行开始启动一整帧扫描。
+void lib_hall_sensor_start_scan(void)
+{
+    g_adc_complete = 0;
+    g_scan_complete = 0;
+    g_current_row = 0;
 
+    select_row(g_current_row);
+    Bsp_Delay_Us(SETTLING_TIME_US);
+    bsp_adc_dma_start();
+}
 
+// 当前帧被 App_key 消费后，重新启动下一帧采集。
+void lib_hall_sensor_release_frame(void)
+{
+    if (g_scan_complete) {
+        lib_hall_sensor_start_scan();
+    }
+}
 
-
-
-//DMA 中断只置位 g_adc_complete
-//task 看到 g_adc_complete 后：
-//    处理当前行
-//    三界滤波
-//    切下一行
-//    启动下一次 DMA
-
+// ADC 采集任务：一次 DMA 完成只处理一行，五行完成后交给按键任务。
 void lib_hall_sensor_task(void)
 {
-    if (!g_adc_complete) {
+    if (g_scan_complete || !g_adc_complete) {
         return;
     }
 
-    g_adc_complete = 0;  //清除中断标志
+    g_adc_complete = 0;
 
     for (uint8_t c = 0; c < COL_COUNT; c++) {
         if (key_mask[g_current_row][c] == 0) {
+            g_hall_adc_frame[g_current_row][c] = 0;
             continue;
         }
 
-        uint16_t adc = process_hall_filter(g_current_row, c, gADCxConvertedData[c]);
-
-        Key_t *k = &keys[g_current_row][c];
-        update_baseline_tracking(k, adc);
-        process_key_logic(k, adc);
+        // 这里只写入滤波 ADC 帧，不在采集层判断按下/松开。
+        g_hall_adc_frame[g_current_row][c] = process_hall_filter(g_current_row, c, gADCxConvertedData[c]);
     }
 
     g_current_row++;
     if (g_current_row >= ROW_COUNT) {
         g_current_row = 0;
         g_scan_complete = 1;
+        ROW_ALL_OFF();
+        return;
     }
 
     select_row(g_current_row);
@@ -330,18 +233,12 @@ void lib_hall_sensor_task(void)
 }
 
 
-
-
-
-
-/////////////////原来的中断写法
-
 #if 0
 ////////上电时初始key的状态
+// 上电校准：逐行采样一次，初始化每个键的 idle_adc 和滤波器状态。
 void lib_hall_sensor_calibration(void) {
     printf("Calibration Start...\r\n");
     g_scan_complete = 0;
-    g_scan_round = 0;
     g_current_row = 0;
     memset(g_adc_raw_col, 0, sizeof(g_adc_raw_col));
 
@@ -367,12 +264,12 @@ void lib_hall_sensor_calibration(void) {
     
     // 关键复位：确保 main 启动正常
     g_scan_complete = 0;
-    g_scan_round = 0;
     g_current_row = 0;
     printf("Calibration OK!\r\n");
 }
 
 
+// ADC 采集任务：一次 DMA 完成只处理一行，五行完成后交给按键任务。
 void lib_hall_sensor_task(void) {
     static uint16_t scan_watchdog = 0;
     if (g_scan_complete == 1) {
@@ -423,6 +320,7 @@ void lib_hall_sensor_task(void) {
 //当前总周期： 1190 + 832 = 2022 us（约 2 毫秒）
 // 核心中断：链式触发逻辑  5*3会产生15中断=1.17ms。单次adc的采集是66.0us
 #define ADC_DMA1_CH1_ALL_FLAGS (DMA_IFCR_CGIF1 | DMA_IFCR_CTCIF1 | DMA_IFCR_CHTIF1 | DMA_IFCR_CTEIF1)
+// DMA 中断只置完成标志，数据处理放在任务里完成。
 void DMA1_Channel1_IRQHandler(void) {
 	
 	  GPIOA->BSRR = GPIO_PIN_9;

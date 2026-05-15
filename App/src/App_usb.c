@@ -14,10 +14,38 @@
 #define HID_INT_EP 0x81
 #endif
 
+// 0x81 IN 端点忙超时保护，避免 PC 未取走上一包后长期不能打字。
+#define HID_BUSY_TIMEOUT_TICKS 20
+
 extern volatile uint8_t hid_state;
-//按键发送
-void App_usb_process_task(void) {
-    if (!report_dirty) return;
+
+// 以下计数用于调试 USB 键盘发送状态，可在不能打字时观察。
+volatile int g_hid_last_write_ret = 0;
+volatile uint32_t g_hid_write_ok_cnt = 0;
+volatile uint32_t g_hid_write_fail_cnt = 0;
+volatile uint32_t g_hid_busy_recover_cnt = 0;
+
+// USB 键盘发送任务：只根据 keys[][] 生成标准 8 字节 HID report。
+void App_usb_process_task(void)
+{
+    static uint8_t last_report[8] = {0};
+    static uint8_t busy_ticks = 0;
+
+    // 如果上一次 IN 包长时间未完成，主动恢复状态并允许后续重试。
+    if (hid_state == HID_STATE_BUSY) {
+        if (++busy_ticks < HID_BUSY_TIMEOUT_TICKS) {
+            return;
+        }
+
+        hid_state = HID_STATE_IDLE;
+        busy_ticks = 0;
+        g_hid_busy_recover_cnt++;
+    }
+
+    // 没有按键状态变化时不占用 USB 总线。
+    if (!report_dirty) {
+        return;
+    }
 
     uint8_t current_report[8] = {0};
     uint8_t key_count = 0;
@@ -25,6 +53,10 @@ void App_usb_process_task(void) {
 
     for (uint8_t r = 0; r < ROW_COUNT; r++) {
         for (uint8_t c = 0; c < COL_COUNT; c++) {
+            if (key_mask[r][c] == 0) {
+                continue;
+            }
+
             if (keys[r][c].is_pressed && g_key_map[r][c] == KEY_FN) {
                 fn_pressed = true;
                 break;
@@ -38,10 +70,14 @@ void App_usb_process_task(void) {
                 last_fn_state[r][c] = 0;
                 continue;
             }
-            //判断键码是fn还是普通配置层
+
             uint8_t code = fn_pressed ? g_fn_key_map[r][c] : g_key_map[r][c];
-            if (code == KEY_NONE) code = g_key_map[r][c];
-            if (code == KEY_NONE || code == KEY_FN) continue;
+            if (code == KEY_NONE) {
+                code = g_key_map[r][c];
+            }
+            if (code == KEY_NONE || code == KEY_FN) {
+                continue;
+            }
 
             if (code >= 0xF0) {
                 if (last_fn_state[r][c] == 0) {
@@ -50,6 +86,7 @@ void App_usb_process_task(void) {
                 }
                 continue;
             }
+
             if (code >= 0xE0 && code <= 0xE7) {
                 current_report[0] |= (1U << (code - 0xE0));
             } else if (key_count < 6) {
@@ -58,14 +95,27 @@ void App_usb_process_task(void) {
         }
     }
 
-    static uint8_t last_report[8] = {0};
-    if (memcmp(current_report, last_report, 8) != 0) {
-        if (usbd_ep_start_write(HID_INT_EP, current_report, 8) == 0) {
-            hid_state = HID_STATE_BUSY;
-            memcpy(last_report, current_report, 8);
-            report_dirty = false;
-        }
-    } else {
+    if (memcmp(current_report, last_report, sizeof(current_report)) == 0) {
         report_dirty = false;
+        return;
+    }
+
+    // 发送失败时保留 report_dirty，下次任务继续尝试发送。
+    int ret = usbd_ep_start_write(HID_INT_EP, current_report, sizeof(current_report));
+    g_hid_last_write_ret = ret;
+
+    if (ret == 0) {
+        hid_state = HID_STATE_BUSY;
+        busy_ticks = 0;
+        memcpy(last_report, current_report, sizeof(last_report));
+        report_dirty = false;
+        g_hid_write_ok_cnt++;
+    } else {
+        report_dirty = true;
+        g_hid_write_fail_cnt++;
+
+        if (ret == -2 || ret == -3) {
+            hid_state = HID_STATE_IDLE;
+        }
     }
 }

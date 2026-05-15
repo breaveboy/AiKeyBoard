@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "App_protocol.h"
+#include "App_key.h"
 /* ================= USB 基本信息 ================= */
 
 #define USBD_VID           0x36b7
@@ -322,6 +323,7 @@ static volatile uint8_t custom_hid_rx_flag = 0;
 struct usbd_interface intf0;
 struct usbd_interface intf1;
 
+// IN 端点发送完成回调：0x81 对应键盘，0x82 对应自定义 HID。
 static void usbd_hid_int_callback(uint8_t ep, uint32_t nbytes);
 static void usbd_custom_hid_out_callback(uint8_t ep, uint32_t nbytes);
 static struct usbd_endpoint hid_in_ep = {
@@ -341,9 +343,14 @@ static struct usbd_endpoint hid_custom_in_ep = {
 
 /* ================= USB 回调函数 ================= */
 
+// 配置完成后启动自定义 HID OUT 接收，并让键盘 report 重新同步一次。
 void usbd_configure_done_callback(void)
 {
-   usbd_ep_start_read(HID_CUSTOM_OUT_EP,
+    hid_state = HID_STATE_IDLE;
+    custom_hid_state = HID_STATE_IDLE;
+    report_dirty = true;
+
+    usbd_ep_start_read(HID_CUSTOM_OUT_EP,
                        custom_hid_rx_buf,
                        HID_CUSTOM_EP_SIZE);
 }
@@ -353,6 +360,29 @@ void usbd_configure_done_callback(void)
  * HID_INT_EP = 0x81：标准键盘 IN 发送完成。
  * HID_CUSTOM_IN_EP = 0x82：自定义 HID IN 发送完成。
  */
+// USB 总线事件通知：恢复/重新配置时复位 HID 状态，防止键盘 IN 端点卡住。
+static void usbd_hid_event_notify(uint8_t event, void *arg)
+{
+    (void)arg;
+
+    switch (event) {
+    case USBD_EVENT_RESET:
+    case USBD_EVENT_CONFIGURED:
+    case USBD_EVENT_RESUME:
+        hid_state = HID_STATE_IDLE;
+        custom_hid_state = HID_STATE_IDLE;
+        report_dirty = true;
+        usbd_ep_start_read(HID_CUSTOM_OUT_EP, custom_hid_rx_buf, HID_CUSTOM_EP_SIZE);
+        break;
+    case USBD_EVENT_SUSPEND:
+        hid_state = HID_STATE_IDLE;
+        custom_hid_state = HID_STATE_IDLE;
+        break;
+    default:
+        break;
+    }
+}
+// IN 端点发送完成回调：0x81 对应键盘，0x82 对应自定义 HID。
 static void usbd_hid_int_callback(uint8_t ep, uint32_t nbytes)
 {
     if (ep == HID_INT_EP) {
@@ -360,7 +390,7 @@ static void usbd_hid_int_callback(uint8_t ep, uint32_t nbytes)
     } else if (ep == HID_CUSTOM_IN_EP) {
         custom_hid_state = HID_STATE_IDLE;
     }
-}       
+}
 
 
 
@@ -381,8 +411,8 @@ static void usbd_custom_hid_out_callback(uint8_t ep, uint32_t nbytes)
 		}
     //pc端的数据在这个回调函数中接受
     App_protocol_on_rx(custom_hid_rx_buf,nbytes);
-		
-   
+
+
     /*
      * 必须重新启动下一次 OUT 接收。
      * 否则只能收第一包。
@@ -398,7 +428,7 @@ volatile bool g_caps_lock_active =false;
 
 /**
  * CherryUSB HID 类请求回调函数
- * 当电脑发出 SET_REPORT 指令（比如切换大小写灯）时，库会自动调用这个函数  
+ * 当电脑发出 SET_REPORT 指令（比如切换大小写灯）时，库会自动调用这个函数
 0x00 (二进制 0000 0000)：所有灯全灭。
 0x01 (二进制 0000 0001)：Num Lock（小键盘锁）开启。
 0x02 (二进制 0000 0010)：Caps Lock（大小写锁）开启。
@@ -419,10 +449,10 @@ void usbh_hid_set_report(uint8_t intf, uint8_t report_id, uint8_t report_type, u
          */
         if (report[0] & 0x02) {
             g_caps_lock_active = true;
-            
+
         } else {
             g_caps_lock_active = false;
-           
+
         }
     }
 
@@ -438,6 +468,8 @@ void hid_keyboard_init(void)
      * Interface 0：标准键盘 HID
      */
     usbd_add_interface(usbd_hid_init_intf(&intf0,keyboard_hid_desc, hid_keyboard_report_desc,HID_KEYBOARD_REPORT_DESC_SIZE ));
+    // 标准键盘接口也接收 USB reset/resume 事件，用于恢复 0x81 状态。
+    intf0.notify_handler = usbd_hid_event_notify;
     usbd_add_endpoint(&hid_in_ep);
 
     /*
@@ -446,11 +478,13 @@ void hid_keyboard_init(void)
      * 关键点：
      * 必须注册 intf1、0x02 OUT、0x82 IN。
      */
-   
+
     usbd_add_interface(usbd_hid_init_intf(&intf1,custom_hid_desc,hid_custom_report_desc,HID_CUSTOM_REPORT_DESC_SIZE));
+    // 自定义 HID 接口恢复后重新准备 OUT 接收。
+    intf1.notify_handler = usbd_hid_event_notify;
     usbd_add_endpoint(&hid_custom_out_ep);
     usbd_add_endpoint(&hid_custom_in_ep);
-    
+
     usbd_initialize();
 }
 
@@ -474,4 +508,3 @@ uint8_t usbh_hid_get_idle(uint8_t intf, uint8_t report_id)
 {
     return idle_speed;
 }
-

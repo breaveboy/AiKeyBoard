@@ -28,8 +28,18 @@ typedef enum {
     LIGHT_MODE_HALO,           // 7: 十字交叉
     LIGHT_MODE_BOUNCE_MARQUEE, // 8: 左右折返
     LIGHT_MODE_SNAKE_MARQUEE,  // 9: S形贪吃蛇
+    LIGHT_MODE_CYBER_SNAKE,  // <--- 新增：赛博贪吃蛇
     LIGHT_MODE_MAX             // 模式总数计算位
 } LightMode_t;
+
+
+// 定义坐标结构体，贪吃蛇的左边
+typedef struct {
+    uint8_t r;
+    uint8_t c;
+} Pos_t;
+
+
 extern bool g_led_dirty;
 extern LightMode_t g_light_mode;
 extern uint32_t ws2812_tick;

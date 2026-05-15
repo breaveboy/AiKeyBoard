@@ -1,7 +1,7 @@
 #include "App_lighting.h"
 #include "lib_hall_sensor.h"
 #include "lib_ws2812.h"
-
+#include <stdlib.h>  // 包含 abs 函数
 bool g_led_dirty = false;
 LightMode_t g_light_mode = LIGHT_MODE_OFF;
 uint32_t ws2812_tick = 0; //原来的ws2812的计数器值
@@ -13,6 +13,69 @@ uint8_t g_light_speed = 10;
 // 高精度的内部累加器
 static uint32_t internal_tick_acc = 0;
 extern volatile bool g_caps_lock_active; //大小锁
+
+
+#include <string.h>
+
+
+#define SNAKE_MAX_LEN 18
+
+// 寻路 BFS 算法：找到从起点到终点的第一步方向
+// 返回值：0-无路, 1-上, 2-下, 3-左, 4-右
+static uint8_t snake_ai_get_direction(Pos_t start, Pos_t target, Pos_t *snake, uint8_t len) {
+    int8_t parent[70]; // 5*14
+    uint8_t queue[70];
+    uint8_t head = 0, tail = 0;
+    uint8_t s_idx = start.r * 14 + start.c;
+    uint8_t t_idx = target.r * 14 + target.c;
+    const int8_t dr[] = {-1, 1, 0, 0};
+    const int8_t dc[] = {0, 0, -1, 1};
+    uint8_t i;
+
+    memset(parent, -1, sizeof(parent));
+    queue[tail++] = s_idx;
+    parent[s_idx] = s_idx;
+
+    while (head < tail) {
+        uint8_t curr = queue[head++];
+        uint8_t r = curr / 14;
+        uint8_t c = curr % 14;
+
+        if (curr == t_idx) {
+            uint8_t p = t_idx;
+            while (parent[p] != s_idx) p = parent[p];
+            if (p == s_idx - 14) return 1;
+            if (p == s_idx + 14) return 2;
+            if (p == s_idx - 1)  return 3;
+            if (p == s_idx + 1)  return 4;
+        }
+
+        for (i = 0; i < 4; i++) {
+            int8_t nr = r + dr[i];
+            int8_t nc = c + dc[i];
+            uint8_t n_idx = nr * 14 + nc;
+
+            if (nr >= 0 && nr < 5 && nc >= 0 && nc < 14 && key_mask[nr][nc] != 0) {
+                if (parent[n_idx] == -1) {
+                    // 检查是否撞到自己（除掉尾巴，因为尾巴会移动）
+                    bool is_body = false;
+                    uint8_t j;
+                    for (j = 0; j < len - 1; j++) {
+                        if (snake[j].r == nr && snake[j].c == nc) { is_body = true; break; }
+                    }
+                    if (!is_body || n_idx == t_idx) {
+                        parent[n_idx] = curr;
+                        queue[tail++] = n_idx;
+                    }
+                }
+            }
+        }
+    }
+    return 0; // 没找到路
+}
+
+
+
 
 
 void App_led_animation_task(void) {
@@ -283,8 +346,121 @@ void App_led_animation_task(void) {
             g_led_dirty = true;
             break;
         }
+       
+       case LIGHT_MODE_CYBER_SNAKE:
+        {
+            static Pos_t snake[SNAKE_MAX_LEN];
+            static uint8_t snake_len = 4;
+            static Pos_t food = {2, 7};
+            static bool needs_init = true;
+            static uint16_t snake_logic_gate = 0; 
+            
+            // --- 新增：用于存储“下一跳”位置的变量，实现平滑预测 ---
+            static Pos_t next_head_pos; 
+
+            uint8_t i, dir;
+            ws2812_tick++; 
+
+            if (needs_init) {
+                snake_len = 4;
+                for (i = 0; i < snake_len; i++) {
+                    snake[i].r = 0; snake[i].c = snake_len - 1 - i;
+                }
+                food.r = 3; food.c = 10;
+                needs_init = false;
+                snake_logic_gate = 0;
+                // 初始化预测位置
+                next_head_pos = snake[0]; 
+            }
+
+            // 1. 计算当前的插值比例 (0 ~ 255)
+            // 当 gate 为 0 时，比例为 0；当 gate 接近 7 时，比例接近 255
+            uint16_t fraction = (snake_logic_gate * 255) / 7;
+
+            if (++snake_logic_gate >= 7) { 
+                snake_logic_gate = 0;
+
+                // 物理位移逻辑 (保持不变)
+                dir = snake_ai_get_direction(snake[0], food, snake, snake_len);
+                if (dir == 0) { /* 挣扎逻辑... */ }
+
+                Pos_t real_next_head = snake[0];
+                if (dir == 1) real_next_head.r--;
+                else if (dir == 2) real_next_head.r++;
+                else if (dir == 3) real_next_head.c--;
+                else if (dir == 4) real_next_head.c++;
+                else { needs_init = true; }
+
+                if (!needs_init) {
+                    if (key_mask[real_next_head.r][real_next_head.c] == 0) { needs_init = true; }
+                    else {
+                        for (i = 0; i < snake_len - 1; i++) {
+                            if (real_next_head.r == snake[i].r && real_next_head.c == snake[i].c) { needs_init = true; break; }
+                        }
+                    }
+                }
+
+                if (!needs_init) {
+                    if (real_next_head.r == food.r && real_next_head.c == food.c) {
+                        if (snake_len < SNAKE_MAX_LEN) snake_len++;
+                        // 生成新食物
+                        uint32_t seed = ws2812_tick + g_hall_adc_frame[0][0];
+                        for (i = 0; i < 70; i++) {
+                            uint8_t tr = (seed + i * 3) % 5;
+                            uint8_t tc = (seed + i * 7) % 14;
+                            if (key_mask[tr][tc] != 0) { food.r = tr; food.c = tc; break; }
+                        }
+                    }
+                    for (i = snake_len - 1; i > 0; i--) { snake[i] = snake[i - 1]; }
+                    snake[0] = real_next_head;
+                }
+                
+                // 物理位移完成后，立即计算“下一跳”用于渲染预览
+                dir = snake_ai_get_direction(snake[0], food, snake, snake_len);
+                next_head_pos = snake[0];
+                if (dir == 1) next_head_pos.r--;
+                else if (dir == 2) next_head_pos.r++;
+                else if (dir == 3) next_head_pos.c--;
+                else if (dir == 4) next_head_pos.c++;
+            }
+
+            // --- 2. 滑丝渲染逻辑 ---
+            lib_ws2812_set_all(0, 0, 0);
+
+            // A. 渲染食物 (呼吸灯)
+            uint8_t food_val = 160 + (abs((int)(ws2812_tick % 40) - 20) * 4);
+            lib_ws2812_set_key_color(food.r, food.c, (food_val * g_light_brightness / 100), 0, 0);
+
+            // B. 渲染蛇身 (常规部分，第1节到倒数第2节)
+            for (i = 1; i < snake_len - 1; i++) {
+                uint8_t fade = 255 - (i * (180 / snake_len));
+                lib_ws2812_set_key_color(snake[i].r, snake[i].c, 
+                    (80 * fade / 255) * g_light_brightness / 100, 0, (255 * fade / 255) * g_light_brightness / 100);
+            }
+
+            // C. 蛇尾滑丝：最后一节逐渐变暗
+            {
+                uint8_t last_idx = snake_len - 1;
+                uint8_t tail_fade = (255 - (last_idx * (180 / snake_len))) * (255 - fraction) / 255;
+                lib_ws2812_set_key_color(snake[last_idx].r, snake[last_idx].c, 
+                    (80 * tail_fade / 255) * g_light_brightness / 100, 0, (255 * tail_fade / 255) * g_light_brightness / 100);
+            }
+
+            // D. 蛇头滑丝：当前头保持亮，目标头逐渐变亮
+            // 当前头
+            lib_ws2812_set_key_color(snake[0].r, snake[0].c, 0, (255 * g_light_brightness / 100), (255 * g_light_brightness / 100));
+            // 目标头 (渐入)
+            if (!(next_head_pos.r == snake[0].r && next_head_pos.c == snake[0].c)) {
+                uint8_t head_in = (fraction * 255) / 255; // 0 -> 255
+                lib_ws2812_set_key_color(next_head_pos.r, next_head_pos.c, 0, 
+                    (head_in * g_light_brightness / 100), (head_in * g_light_brightness / 100));
+            }
+
+            g_led_dirty = true;
+            break;
+        }
         
-        // ================================================================
+        
         default:
             break;
     }

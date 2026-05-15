@@ -19,7 +19,8 @@ uint8_t App_protocol_sum(uint8_t *buf){
  * 流程：接收数据 -> 校验CRC -> 立即回传应答(IN数据) -> 标记解析
  */
 // 外部 USB 发送函数接口
-extern uint8_t usbd_ep_start_write(uint8_t ep, uint8_t *data, uint32_t len);
+// CherryUSB 发送接口，声明需与 usb_dc.h 中的原型保持一致。
+extern int usbd_ep_start_write(const uint8_t ep, const uint8_t *data, uint32_t len);
 void App_protocol_on_rx(uint8_t *buf, uint32_t len){
 	//判断头是否正常
 	if(buf[0]!=PROTOCOL_REPORT_ID||len!=PROTOCOL_PKT_SIZE){
