@@ -348,7 +348,7 @@ void App_led_animation_task(void) {
             break;
         }
        
-       case LIGHT_MODE_CYBER_SNAKE:
+       case LIGHT_MODE_CYBER_SNAKE: //Ì°³ÔÉßÄ£Ê½
         {
             static Pos_t snake[SNAKE_MAX_LEN];
             static uint8_t snake_len = 4;

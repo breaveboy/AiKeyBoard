@@ -43,3 +43,13 @@ void Task_update(void)
 {
     g_cnt++;
 }
+
+
+///////////////////////////////键盘的实现流程/////////////////////////////
+////adc的采集 lib_hall_sensor_task======>存放在lib_hall_sensor_task
+///进行三阶滤波 process_hall_filter======》process_hall_filter
+///环境补偿update_baseline_tracking======》当按键处于“未按下”状态时，计算当前采样值（cur_adc）与存储基准（idele_adc）的偏差 diff
+///算法逻辑层process_key_logic
+////业务转换层
+
+

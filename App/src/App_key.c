@@ -17,7 +17,8 @@ const uint8_t g_key_map[ROW_COUNT][COL_COUNT] = {
     {0x2B, 0x14, 0x1A, 0x08, 0x15, 0x17, 0x1C, 0x18, 0x0C, 0x12, 0x13, 0x2F, 0x30, 0x31},
     {0x39, 0x04, 0x16, 0x07, 0x09, 0x0A, 0x0B, 0x0D, 0x0E, 0x0F, 0x33, 0x34, KEY_NONE, 0x28},
     {0xE1, 0x00, 0x1D, 0x1B, 0x06, 0x19, 0x05, 0x11, 0x10, 0x36, 0x37, 0x38, KEY_NONE, 0xE5},
-    {0xE0, 0xE3, 0xE2, KEY_NONE, KEY_NONE, KEY_NONE, 0x2C, KEY_NONE, KEY_NONE, KEY_NONE, 0xE6, 0x65, 0xE4, KEY_FN}
+    //{0xE0, 0xE3, 0xE2, KEY_NONE, KEY_NONE, KEY_NONE, 0x2C, KEY_NONE, KEY_NONE, KEY_NONE, 0xE6, 0x65, 0xE4, KEY_FN}
+    {0xE0, 0xE3, 0xE2, KEY_NONE, KEY_NONE, KEY_NONE, 0x2C, KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE, KEY_FN}
 };
 
 // Fn 层键位表：KEY_LIGHT / KEY_AI_* 这类 0xF0 以上键值只在固件内部处理。
@@ -26,7 +27,7 @@ const uint8_t g_fn_key_map[ROW_COUNT][COL_COUNT] = {
     {KEY_NONE, KEY_NONE, 0x52, KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE},
     {KEY_NONE, 0x50, 0x51, 0x4F, KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE},
     {KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE},
-    {KEY_NONE, KEY_NONE, KEY_LIGHT, KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE, KEY_AI_TRIGGER, KEY_AI_CONFIRM, KEY_FN}
+    {KEY_NONE, KEY_NONE, KEY_LIGHT, KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE, KEY_AI_TRIGGER, KEY_AI_CONFIRM,KEY_AI_CANCEL , KEY_FN}
 };
 
 extern bool g_led_dirty;
@@ -38,65 +39,71 @@ static void App_process_internal_keys(void);
 // 自定义 HID 冒泡上报，用于主动通知上位机 AI 按键事件。
 void App_send_bubble_report(uint8_t bubble_param, uint8_t ai_action);
 
-// 动态基准追踪：仅在按键未按下且偏差很小时缓慢修正 idle_adc。
+//按键没有按下时候进行idele_adc的校准，防止无法打字
 static void update_baseline_tracking(Key_t *k, uint16_t cur_adc)
 {
     if (k->is_pressed) {
-        k->drift_cnt = 0;
+        k->drift_cnt = 0; //校准计数器清零
         return;
     }   
-
+    
+    //记录插值
     int32_t diff = (int32_t)k->idele_adc - (int32_t)cur_adc;
 
-    if (diff < 30 && diff > -30) {
-        k->drift_cnt++;
+    if (diff < 100 && diff > -100) {   //温漂原来是30
+        k->drift_cnt++;  // 发现偏差了，观察一段时间
+        //////偏差示例10000次进行调整
         if (k->drift_cnt > 1000) {
             if (diff > 0) {
-                k->idele_adc--;
+                k->idele_adc--;// 基准值往当前读数挪 1 个单位
             } else if (diff < 0) {
                 k->idele_adc++;
             }
-            k->drift_cnt = 0;
+            k->drift_cnt = 0;// 改完后，重新开始观察
         }
     } else {
-        k->drift_cnt = 0;
+        k->drift_cnt = 0;// 如果偏差突然很大，说明用户可能要按键了，停止校准
     }
 }
 
 // AP/RT 判断：根据整帧 ADC 中的当前值更新单键按下状态。
 static uint8_t process_key_logic(Key_t *k, uint16_t cur_adc)
-{
-    int32_t diff = (int32_t)k->idele_adc - (int32_t)cur_adc;
+{   
+    // 计算按下去的深度（Offset）。数值越大，按得越深。
+    int32_t diff = (int32_t)k->idele_adc - (int32_t)cur_adc;  
     int16_t offset = (diff > 0) ? (int16_t)diff : 0;
-
+    // 顶部死区：按下的深度还没超过 80（很浅），直接判定为没按。
     if (offset < k->top_deadzone) {
         k->is_pressed = 0;
-        k->in_rt_cycle = 0;
+        k->in_rt_cycle = 0;// 退出动态触发循环
         k->max_offset = 0;
         k->min_offset = 0;
         return 0;
     }
-
+     // 底部保护：防止按得太深超过了硬件限制。
     if (offset > k->bottom_deadzone) {
         offset = k->bottom_deadzone;
     }
 
-    if (!k->is_pressed) {
+    if (!k->is_pressed) { //没有按下
+         //记录按下过程中的最小值
         if (offset < k->min_offset) {
             k->min_offset = offset;
         }
-
+       // 计算触发线。如果是第一次按，用固定触发点；如果是连点，用RT动态点。
         uint16_t trigger_line = k->in_rt_cycle ? (k->min_offset + k->rt_press_sens) : k->actuation_point;
+        
         if (offset >= trigger_line) {
-            k->is_pressed = 1;
+            k->is_pressed = 1;//触发成功，判断为按下
             k->in_rt_cycle = 1;
+            k->max_offset = offset; // 开始记录按下后的最深点
+        }
+    } else {  //已经按下
+          // 记录按下后的最深点
+        if (offset > k->max_offset) {  
             k->max_offset = offset;
         }
-    } else {
-        if (offset > k->max_offset) {
-            k->max_offset = offset;
-        }
-
+         //抬起判定。只要从最深点回弹了 rt_release_sens 的距离，立即松开。
         uint16_t release_line = k->max_offset - k->rt_release_sens;
         if (offset <= release_line) {
             k->is_pressed = 0;

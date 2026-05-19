@@ -7,18 +7,17 @@
 #include <string.h>
 #include <stdio.h>
 
-#define ROW_COUNT          5
+#define ROW_COUNT          5    //5行
 #define COL_COUNT          14
-#define SCAN_ROUNDS        3
-#define SETTLING_TIME_US   35
+#define SETTLING_TIME_US   35  //切换行的时间是35us
 
 // 单键运行参数：校准基准、触发点、RT 灵敏度和当前按压状态。
 typedef struct {
-    uint16_t idele_adc;
-    uint16_t drift_cnt;
+    uint16_t idele_adc;   //基准值
+    uint16_t drift_cnt;   //温漂的技术值
 
-    uint16_t actuation_point;
-    uint16_t rt_press_sens;
+    uint16_t actuation_point;  //固定触发点
+    uint16_t rt_press_sens;    //RT 灵敏度
     uint16_t rt_release_sens;
     uint16_t top_deadzone;
     uint16_t bottom_deadzone;

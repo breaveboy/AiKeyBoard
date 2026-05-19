@@ -130,7 +130,8 @@ void DMA1_Channel1_IRQHandler(void)
 }
 
 // 上电校准：逐行采样一次，初始化每个键的 idle_adc 和滤波器状态。
-void lib_hall_sensor_calibration(void)
+//  fn和普通按键的初始化数值是不一样的
+void lib_hall_sensor_calibration_oled(void)
 {
     g_adc_complete = 0;
     g_scan_complete = 0;
@@ -150,12 +151,12 @@ void lib_hall_sensor_calibration(void)
         g_adc_complete = 0;
 
         for (uint8_t c = 0; c < COL_COUNT; c++) {
-            uint16_t idle = gADCxConvertedData[c];
+            uint16_t idle = gADCxConvertedData[c]; //原始的adc的数值，没有滤波
 
             g_hall_adc_frame[r][c] = idle;
             keys[r][c].idele_adc = idle;
             keys[r][c].drift_cnt = 0;
-            keys[r][c].actuation_point = 350;
+            keys[r][c].actuation_point = 350; 
             keys[r][c].top_deadzone = 80;
             keys[r][c].bottom_deadzone = 1050;
             keys[r][c].rt_press_sens = 50;
@@ -171,15 +172,69 @@ void lib_hall_sensor_calibration(void)
             ema_accumulator[r][c] = ((uint32_t)idle << EMA_SHIFT);
             logical_output[r][c] = idle;
         }
-    }
+    }   
 
     g_scan_complete = 0;
     g_current_row = 0;
     ROW_ALL_OFF();
-
-    printf("Calibration OK!\r\n");
+    //printf("Calibration OK!\r\n");
 }
+void lib_hall_sensor_calibration(void){
+    printf("adc——init");
+    g_adc_complete=0;
+    g_scan_complete=0;
+    g_current_row=0;
+    memset(g_hall_adc_frame, 0, sizeof(g_hall_adc_frame));
+    for(uint8_t r=0;r<ROW_COUNT;r++){
+        select_row(r);
+        Bsp_Delay_Us(SETTLING_TIME_US);
+        /////////////三次采集数据//////////
+        uint32_t col_sums[COL_COUNT]={0};
+        for(int i=0;i<3;i++){
+            g_adc_complete=0;
+            bsp_adc_dma_start();
+            while (!g_adc_complete); //没有采集完成卡死
+            for (uint8_t c = 0; c < COL_COUNT; c++){
+               col_sums[c] += gADCxConvertedData[c]; // 累加第 i 次的读数
+            }
+            Bsp_Delay_Us(10); // 采样
+        }
+        ////////////计算平均值并进行初始化赋值/////////////
+        for(uint8_t c=0;c<COL_COUNT;c++){
+            //计算三次的平均值
+            uint16_t average_idle = (uint16_t)(col_sums[c] / 3);
+            //////给按键复制
+            keys[r][c].idele_adc=average_idle;
+            g_hall_adc_frame[r][c]=average_idle;
+            // 3. 设定其他参数
+            keys[r][c].drift_cnt = 0;
+            keys[r][c].actuation_point = 350; 
+            keys[r][c].top_deadzone = 80;     // 建议死区从 80 稍微调高到 100
+            keys[r][c].bottom_deadzone = 1050;
+            keys[r][c].rt_press_sens = 50;
+            keys[r][c].rt_release_sens = 50;
+            keys[r][c].is_pressed = 0;
+            keys[r][c].in_rt_cycle = 0;
+            keys[r][c].max_offset = 0;
+            keys[r][c].min_offset = 0;
+            
+            // 4. 同步更新滤波器状态，防止运行第一秒时数值跳变
+            raw_history[r][c][0] = average_idle;
+            raw_history[r][c][1] = average_idle;
+            raw_history[r][c][2] = average_idle;
+            ema_accumulator[r][c] = ((uint32_t)average_idle << EMA_SHIFT);
+            logical_output[r][c] = average_idle;
+            
+            
+        }
 
+    
+    }
+    g_scan_complete = 0;
+    g_current_row = 0;
+    ROW_ALL_OFF();
+
+}
 // 从第 0 行开始启动一整帧扫描。
 void lib_hall_sensor_start_scan(void)
 {
