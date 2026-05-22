@@ -16,9 +16,9 @@ static Task_t tasks[] = {
     {0, 0,  lib_hall_sensor_task},     // ADC 行采集任务
     {0, 1,  App_adkey_scan_task},      // 整帧按键判断任务
     {0, 1,  App_usb_process_task},     // 标准键盘 HID 发送任务
-    {0, 3,  App_protocol_task},
+    {0, 1,  App_protocol_task},
     {0, 25, App_led_animation_task},
-    {0, 25, App_led_display_task},
+    {0, 5,  App_led_display_task},
 };
 
 static uint16_t task_cnt = sizeof(tasks) / sizeof(Task_t);
