@@ -2,6 +2,7 @@
 #include "lib_hall_sensor.h"
 #include "lib_ws2812.h"
 #include <stdlib.h>  // 包含 abs 函数
+#include <string.h>
 bool g_led_dirty = false;
 LightMode_t g_light_mode = LIGHT_MODE_OFF;
 uint32_t ws2812_tick = 0; //原来的ws2812的计数器值
@@ -11,12 +12,12 @@ uint8_t g_light_b = 255;
 uint8_t g_light_brightness = 100;
 uint8_t g_light_speed = 10;
 // 高精度的内部累加器
-static uint32_t internal_tick_acc = 0;
+//static uint32_t internal_tick_acc = 0;
 extern volatile bool g_caps_lock_active; //大小锁
 
-
-#include <string.h>
-
+///////////音乐律动看门狗///////////
+uint32_t g_last_music_rx_time=0; 
+LightMode_t g_backup_light_mode=LIGHT_MODE_OFF; 
 
 #define SNAKE_MAX_LEN 18
 #define SNAKE_MOVE_FRAMES 7U
@@ -81,6 +82,19 @@ static uint8_t snake_ai_get_direction(Pos_t start, Pos_t target, Pos_t *snake, u
 
 void App_led_animation_task(void) {
     static uint8_t speed_prescaler = 0;
+    
+    
+    if(g_light_mode==LIGHT_MODE_MUSIC){
+        ///////如果2000ms内没有喂狗，自动切回到备份的灯光模式
+        if(HAL_GetTick()-g_last_music_rx_time>2000){
+            g_light_mode=(g_backup_light_mode==LIGHT_MODE_MUSIC)?LIGHT_MODE_MUSIC:g_backup_light_mode;
+            g_led_dirty=true;
+        
+        }
+    }
+    
+    
+   
 
     if (bsp_spi_dma_is_busy()) {
         return;
@@ -88,11 +102,14 @@ void App_led_animation_task(void) {
    
 
     // --- 第二部分：背景动画限速器 ---
-    uint8_t target_delay = 11 - (g_light_speed > 10 ? 10 : g_light_speed);
-    if (++speed_prescaler < target_delay) {
-        return;
+    if(g_light_mode!=LIGHT_MODE_MUSIC){
+         uint8_t target_delay = 11 - (g_light_speed > 10 ? 10 : g_light_speed);
+        if (++speed_prescaler < target_delay) {
+            return;
+        }
+        speed_prescaler = 0;
     }
-    speed_prescaler = 0;
+   
     
     
     
@@ -120,6 +137,8 @@ void App_led_animation_task(void) {
         case LIGHT_MODE_OFF:
             lib_ws2812_set_all(0, 0, 0);
             g_led_dirty = true;
+            break;
+        case LIGHT_MODE_MUSIC: //防止状态混乱由协议接收层更新显存
             break;
         case LIGHT_MODE_BREATH:
             lib_ws2812_breath_mode(++ws2812_tick);

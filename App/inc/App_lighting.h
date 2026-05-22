@@ -28,7 +28,8 @@ typedef enum {
     LIGHT_MODE_HALO,           // 7: 十字交叉
     LIGHT_MODE_BOUNCE_MARQUEE, // 8: 左右折返
     LIGHT_MODE_SNAKE_MARQUEE,  // 9: S形贪吃蛇
-    LIGHT_MODE_CYBER_SNAKE,  // <--- 新增：赛博贪吃蛇
+    LIGHT_MODE_CYBER_SNAKE,    // 10：赛博贪吃蛇
+    LIGHT_MODE_MUSIC,          // 11: PC音乐律动推流模式
     LIGHT_MODE_MAX             // 模式总数计算位
 } LightMode_t;
 
@@ -39,7 +40,7 @@ typedef struct {
     uint8_t c;
 } Pos_t;
 
-
+//////灯光的全局变量///////////
 extern bool g_led_dirty;
 extern LightMode_t g_light_mode;
 extern uint32_t ws2812_tick;
@@ -48,7 +49,12 @@ extern uint8_t g_light_g;
 extern uint8_t g_light_b;
 extern uint8_t g_light_brightness;
 extern uint8_t g_light_speed;
+////////音乐律动外部时间戳与模式备份变量//////////
+extern uint32_t g_last_music_rx_time;
+extern LightMode_t g_backup_light_mode;
 
+
+///////////灯光引擎函数接口///////////////////////
 void App_led_animation_task(void);
 void App_led_display_task(void);
 void App_set_light_config(uint8_t mode, uint8_t r, uint8_t g, uint8_t b, uint8_t br, uint8_t speed);
