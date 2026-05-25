@@ -80,10 +80,6 @@ void App_usb_process_task(void)
             }
 
             if (code >= 0xF0) {
-                if (last_fn_state[r][c] == 0) {
-                    App_handle_internal_key(code);
-                    last_fn_state[r][c] = 1;
-                }
                 continue;
             }
 

@@ -5,10 +5,10 @@
 #define PROTOCOL_RX_QUEUE_SIZE 8U
 
 static Packet_t g_rx_queue[PROTOCOL_RX_QUEUE_SIZE];
-static volatile uint8_t g_rx_head = 0;
-static volatile uint8_t g_rx_tail = 0;
-static volatile uint8_t g_rx_count = 0;
-volatile uint32_t g_protocol_rx_drop_count = 0;
+static volatile uint8_t g_rx_head = 0;// 写指针：指向下一个存入数据的位置
+static volatile uint8_t g_rx_tail = 0; // 读指针：指向下一个取出数据的位置
+static volatile uint8_t g_rx_count = 0;// 计数器：记录当前仓库里有多少个包
+volatile uint32_t g_protocol_rx_drop_count = 0;// 统计量：如果仓库满了还没处理，丢包次数
 ///环形队列接受数据
 static bool App_protocol_pop_rx(Packet_t *pkt)
 {
@@ -47,13 +47,13 @@ void App_protocol_on_rx(uint8_t *buf, uint32_t len){
 	if(buf[0]!=PROTOCOL_REPORT_ID||len!=PROTOCOL_PKT_SIZE){
 		return;
 	}
-  //2.进行crc校验
+   //2.进行crc校验
 	if(App_protocol_sum(buf)!=buf[63]){
 	  return;
 	}
-
+    // 3. 计算下一个写位置
     uint8_t next_head = (uint8_t)((g_rx_head + 1U) % PROTOCOL_RX_QUEUE_SIZE);
-
+    // 4. 检查仓库是否满了
     if (g_rx_count >= PROTOCOL_RX_QUEUE_SIZE) {
         g_protocol_rx_drop_count++;
         return;

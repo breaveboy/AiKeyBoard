@@ -4,19 +4,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-//typedef enum {
-//    LIGHT_MODE_OFF = 0, 
-//    LIGHT_MODE_BREATH, //呼吸
-//    LIGHT_MODE_RAINBOW, //炫彩
-//    LIGHT_MODE_KEY_PRESS, //按下点亮
-//    LIGHT_MODE_STATIC,  //常量
-//    LIGHT_MODE_COLLIDE, //对角碰撞
-//    LIGHT_MODE_DAZZLE_MARQUEE, //流水
-//    LIGHT_MODE_HALO,         // <--- 新增：十字交叉模式
-//    LIGHT_MODE_BOUNCE_MARQUEE, // <--- 新增：左右折返彩虹跑马灯
-//    LIGHT_MODE_SNAKE_MARQUEE,  // <--- 新增：S形贪吃蛇彩虹流水
-//    LIGHT_MODE_MAX
-//} LightMode_t;
+
 typedef enum {
     LIGHT_MODE_OFF = 0,        // 0: 关闭
     LIGHT_MODE_STATIC,         // 1: 常亮 (移到了最前面)

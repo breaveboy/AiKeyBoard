@@ -66,6 +66,8 @@ static void update_baseline_tracking(Key_t *k, uint16_t cur_adc)
     }
 }
 
+// AP/RT 判断旧版：保留用于对比，当前使用下面的优化版。
+#if 0
 // AP/RT 判断：根据整帧 ADC 中的当前值更新单键按下状态。
 static uint8_t process_key_logic(Key_t *k, uint16_t cur_adc)
 {   
@@ -113,7 +115,72 @@ static uint8_t process_key_logic(Key_t *k, uint16_t cur_adc)
 
     return k->is_pressed;
 }
+#endif
 
+// AP/RT 判断优化版：首次按压用 AP，松开后进入 RT 动态触发循环。
+static uint8_t process_key_logic(Key_t *k, uint16_t cur_adc)
+{
+    // 计算按下深度。数值越大，按得越深。
+    int32_t diff = (int32_t)k->idele_adc - (int32_t)cur_adc;
+    uint16_t offset = (diff > 0) ? (uint16_t)diff : 0U;
+
+    // 完全回到顶部死区：退出 RT 循环，下次重新使用固定触发点。
+    if (offset < k->top_deadzone) {
+        k->is_pressed = 0;
+        k->in_rt_cycle = 0;
+        k->max_offset = 0;
+        k->min_offset = offset;
+        return 0;
+    }
+
+    // 底部保护：限制最大行程，避免异常 ADC 值影响判断。
+    if (offset > k->bottom_deadzone) {
+        offset = k->bottom_deadzone;
+    }
+
+    if (!k->is_pressed) {
+        uint16_t trigger_line;
+
+        if (k->in_rt_cycle) {
+            // RT 循环中：持续记录松开后的最浅位置。
+            if (offset < k->min_offset) {
+                k->min_offset = offset;
+            }
+
+            trigger_line = k->min_offset + k->rt_press_sens;
+            if (trigger_line > k->bottom_deadzone) {
+                trigger_line = k->bottom_deadzone;
+            }
+        } else {
+            // 首次触发：使用固定 AP。
+            trigger_line = k->actuation_point;
+        }
+
+        if (offset >= trigger_line) {
+            k->is_pressed = 1;
+            k->max_offset = offset;
+        }
+    } else {
+        // 已经按下：持续记录本次按压的最深位置。
+        if (offset > k->max_offset) {
+            k->max_offset = offset;
+        }
+
+        // 防止 uint16_t 下溢。
+        uint16_t release_line = 0;
+        if (k->max_offset > k->rt_release_sens) {
+            release_line = k->max_offset - k->rt_release_sens;
+        }
+
+        if (offset <= release_line) {
+            k->is_pressed = 0;
+            k->in_rt_cycle = 1;
+            k->min_offset = offset;
+        }
+    }
+
+    return k->is_pressed;
+}
 // 按键判断任务：只在一整帧 5x14 ADC 数据采满后执行。
 void App_adkey_scan_task(void)
 {
