@@ -19,11 +19,6 @@
 
 extern volatile uint8_t hid_state;
 
-// 以下计数用于调试 USB 键盘发送状态，可在不能打字时观察。
-volatile int g_hid_last_write_ret = 0;
-volatile uint32_t g_hid_write_ok_cnt = 0;
-volatile uint32_t g_hid_write_fail_cnt = 0;
-volatile uint32_t g_hid_busy_recover_cnt = 0;
 
 // USB 键盘发送任务：只根据 keys[][] 生成标准 8 字节 HID report。
 void App_usb_process_task(void)
@@ -37,9 +32,11 @@ void App_usb_process_task(void)
             return;
         }
 
+        (void)usbd_ep_flush(HID_INT_EP);
         hid_state = HID_STATE_IDLE;
         busy_ticks = 0;
-        g_hid_busy_recover_cnt++;
+        memset(last_report, 0xFF, sizeof(last_report));
+        report_dirty = true;
     }
 
     // 没有按键状态变化时不占用 USB 总线。
@@ -98,19 +95,20 @@ void App_usb_process_task(void)
 
     // 发送失败时保留 report_dirty，下次任务继续尝试发送。
     int ret = usbd_ep_start_write(HID_INT_EP, current_report, sizeof(current_report));
-    g_hid_last_write_ret = ret;
 
     if (ret == 0) {
         hid_state = HID_STATE_BUSY;
         busy_ticks = 0;
         memcpy(last_report, current_report, sizeof(last_report));
         report_dirty = false;
-        g_hid_write_ok_cnt++;
     } else {
         report_dirty = true;
-        g_hid_write_fail_cnt++;
 
         if (ret == -2 || ret == -3) {
+            if (ret == -3) {
+                (void)usbd_ep_flush(HID_INT_EP);
+                memset(last_report, 0xFF, sizeof(last_report));
+            }
             hid_state = HID_STATE_IDLE;
         }
     }

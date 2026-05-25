@@ -13,7 +13,7 @@ RCC_SYSCLK_DIV1;         // AHB = 8MHz ÷ 1 = 8MHz
 ClkInitstruct.APB1CLKDivider  = 
 RCC_HCLK_DIV1;           // APB1 = 8MHz ÷ 1 = 8MHz
 ClkInitstruct.APB2CLKDivider  = 
-RCC_HCLK_DIV2;           // APB2 = 8MHz ÷ 2 = 4MHz
+RCC_HCLK_DIV2;           // APB2 = 8MHz ÷ 1 = 8MHz
 ```
 
 ### 三、SPI 时钟计算

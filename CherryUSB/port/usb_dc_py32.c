@@ -68,6 +68,23 @@ struct pyusb_udc {
 static volatile uint8_t usb_ep0_state = USB_EP0_STATE_SETUP;
 volatile bool zlp_flag = 0;
 
+/// @brief 写保护
+/// @param  
+/// @return 
+static uint32_t usb_dc_enter_critical(void)
+{
+  uint32_t primask = __get_PRIMASK();
+
+  __disable_irq();
+  return primask;
+}
+/// @brief 退出保护
+/// @param primask 
+static void usb_dc_exit_critical(uint32_t primask)
+{
+  __set_PRIMASK(primask);
+}
+
 void usbd_ep0_set_zlp_flag()
 {
   zlp_flag = TRUE;
@@ -412,6 +429,7 @@ int usbd_ep_start_write(const uint8_t ep, const uint8_t *data, uint32_t data_len
 {
   uint8_t ep_idx = USB_EP_GET_IDX(ep);
   uint8_t old_ep_idx;
+  uint32_t primask;
 
   if (!data && data_len) {
     return -1;
@@ -420,12 +438,14 @@ int usbd_ep_start_write(const uint8_t ep, const uint8_t *data, uint32_t data_len
     return -2;
   }
 
+  primask = usb_dc_enter_critical();
   old_ep_idx = pyusb_get_active_ep();
   pyusb_set_active_ep(ep_idx);
 
   if (USB->IN_CSR1 & USB_INCSR_IPR)
   {
     pyusb_set_active_ep(old_ep_idx);
+    usb_dc_exit_critical(primask);
     return -3;
   }
 
@@ -518,6 +538,7 @@ int usbd_ep_start_write(const uint8_t ep, const uint8_t *data, uint32_t data_len
   }
 
   pyusb_set_active_ep(old_ep_idx);
+  usb_dc_exit_critical(primask);
   return 0;
 }
 
@@ -525,6 +546,7 @@ int usbd_ep_start_read(const uint8_t ep, uint8_t *data, uint32_t data_len)
 {
   uint8_t ep_idx = USB_EP_GET_IDX(ep);
   uint8_t old_ep_idx;
+  uint32_t primask;
 
   if (!data && data_len)
   {
@@ -535,6 +557,7 @@ int usbd_ep_start_read(const uint8_t ep, uint8_t *data, uint32_t data_len)
     return -2;
   }
 
+  primask = usb_dc_enter_critical();
   old_ep_idx = pyusb_get_active_ep();
   pyusb_set_active_ep(ep_idx);
 
@@ -569,6 +592,39 @@ int usbd_ep_start_read(const uint8_t ep, uint8_t *data, uint32_t data_len)
   }
 
   pyusb_set_active_ep(old_ep_idx);
+  usb_dc_exit_critical(primask);
+  return 0;
+}
+
+int usbd_ep_flush(const uint8_t ep)
+{
+  uint8_t ep_idx = USB_EP_GET_IDX(ep);
+  uint8_t old_ep_idx;
+  uint32_t primask;
+
+  if (ep_idx == 0) {
+    return -1;
+  }
+
+  if (USB_EP_DIR_IS_OUT(ep)) {
+    return -1;
+  }
+
+  if (!g_pyusb_udc.in_ep[ep_idx].ep_enable) {
+    return -2;
+  }
+
+  primask = usb_dc_enter_critical();
+  old_ep_idx = pyusb_get_active_ep();
+  pyusb_set_active_ep(ep_idx);
+
+  USB->IN_CSR1 = (USB_INCSR_FF | USB_INCSR_CDT);
+  g_pyusb_udc.in_ep[ep_idx].xfer_buf = NULL;
+  g_pyusb_udc.in_ep[ep_idx].xfer_len = 0;
+  g_pyusb_udc.in_ep[ep_idx].actual_xfer_len = 0;
+
+  pyusb_set_active_ep(old_ep_idx);
+  usb_dc_exit_critical(primask);
   return 0;
 }
 

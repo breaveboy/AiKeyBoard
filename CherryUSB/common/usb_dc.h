@@ -112,6 +112,8 @@ int usbd_ep_is_stalled(const uint8_t ep, uint8_t *stalled);
  */
 int usbd_ep_start_write(const uint8_t ep, const uint8_t *data, uint32_t data_len);
 
+int usbd_ep_flush(const uint8_t ep);
+
 /**
  * @brief Setup out ep transfer setting and start transfer.
  *
