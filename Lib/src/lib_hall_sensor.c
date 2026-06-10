@@ -68,23 +68,26 @@ static uint16_t process_hall_filter(uint8_t row, uint8_t col, uint16_t new_raw)
 // 关闭所有行，避免切行时串扰。
 void ROW_ALL_OFF(void)
 {
-    SET_IO(GPIOA, GPIO_PIN_8);
-    SET_IO(GPIOC, GPIO_PIN_6 | GPIO_PIN_7 | GPIO_PIN_8 | GPIO_PIN_9);
+    CLR_IO(GPIOA, GPIO_PIN_8);
+    CLR_IO(GPIOC, GPIO_PIN_6 | GPIO_PIN_7 | GPIO_PIN_8 | GPIO_PIN_9);
 }
 
 // 选择一行进入采样状态，行信号低电平有效。
 void select_row(uint8_t index)
 {
     ROW_ALL_OFF();
-
+    //Bsp_Delay_Us(ROW_OFF_DEADTIME_US);
     switch (index) {
-    case 0: CLR_IO(GPIOA, GPIO_PIN_8); break;
-    case 1: CLR_IO(GPIOC, GPIO_PIN_9); break;
-    case 2: CLR_IO(GPIOC, GPIO_PIN_8); break;
-    case 3: CLR_IO(GPIOC, GPIO_PIN_7); break;
-    case 4: CLR_IO(GPIOC, GPIO_PIN_6); break;
+    case 0: SET_IO(GPIOA, GPIO_PIN_8); break;
+    case 1: SET_IO(GPIOC, GPIO_PIN_9); break;
+    case 2: SET_IO(GPIOC, GPIO_PIN_8); break;
+    case 3: SET_IO(GPIOC, GPIO_PIN_7); break;
+    case 4: SET_IO(GPIOC, GPIO_PIN_6); break;
     default: break;
+    
+
     }
+    Bsp_Delay_Us(ROW_ON_SETTLING_US);
 }
 
 // 霍尔采集层初始化：只负责 GPIO、ADC、DMA，不做按键业务判断。
@@ -93,7 +96,7 @@ void lib_hall_sensor_init(void)
     __HAL_RCC_GPIOA_CLK_ENABLE();
     __HAL_RCC_GPIOB_CLK_ENABLE();
     __HAL_RCC_GPIOC_CLK_ENABLE();
-
+    ROW_ALL_OFF();
     GPIO_InitTypeDef GPIO_InitStruct = {0};
 
     GPIO_InitStruct.Pin = GPIO_PIN_6 | GPIO_PIN_7 | GPIO_PIN_8 | GPIO_PIN_9;
@@ -104,6 +107,7 @@ void lib_hall_sensor_init(void)
 
     GPIO_InitStruct.Pin = GPIO_PIN_8;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+    ROW_ALL_OFF();  
 
     GPIO_InitStruct.Pin = GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3 |
                           GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6 | GPIO_PIN_7;
@@ -121,64 +125,19 @@ void lib_hall_sensor_init(void)
 
 // DMA 中断只置完成标志，数据处理放在任务里完成。
 void DMA1_Channel1_IRQHandler(void)
-{
-    if (DMA1->ISR & (DMA_ISR_TCIF1 | DMA_ISR_TEIF1)) {
-        DMA1->IFCR = ADC_DMA1_CH1_ALL_FLAGS;
-        DMA1_Channel1->CCR &= ~DMA_CCR_EN;
+{   
+    uint32_t isr=DMA1->ISR;
+    DMA1->IFCR = ADC_DMA1_CH1_ALL_FLAGS; //完成寄存器清空
+    DMA1_Channel1->CCR &= ~DMA_CCR_EN;   //dma1_chanel1通用配置寄存器开关
+    if (isr & DMA_ISR_TEIF1) {
+        // 标记错误并重新启动扫描
+        return;
+    }
+    if(isr&DMA_ISR_TCIF1){
         g_adc_complete = 1;
     }
 }
 
-// 上电校准：逐行采样一次，初始化每个键的 idle_adc 和滤波器状态。
-//  fn和普通按键的初始化数值是不一样的
-void lib_hall_sensor_calibration_oled(void)
-{
-    g_adc_complete = 0;
-    g_scan_complete = 0;
-    g_current_row = 0;
-    memset(g_hall_adc_frame, 0, sizeof(g_hall_adc_frame));
-
-    for (uint8_t r = 0; r < ROW_COUNT; r++) {
-        select_row(r);
-        Bsp_Delay_Us(SETTLING_TIME_US);
-
-        g_adc_complete = 0;
-        bsp_adc_dma_start();
-
-        while (!g_adc_complete) {
-        }
-
-        g_adc_complete = 0;
-
-        for (uint8_t c = 0; c < COL_COUNT; c++) {
-            uint16_t idle = gADCxConvertedData[c]; //原始的adc的数值，没有滤波
-
-            g_hall_adc_frame[r][c] = idle;
-            keys[r][c].idele_adc = idle;
-            keys[r][c].drift_cnt = 0;
-            keys[r][c].actuation_point = 350; 
-            keys[r][c].top_deadzone = 80;
-            keys[r][c].bottom_deadzone = 1050;
-            keys[r][c].rt_press_sens = 50;
-            keys[r][c].rt_release_sens = 50;
-            keys[r][c].is_pressed = 0;
-            keys[r][c].in_rt_cycle = 0;
-            keys[r][c].max_offset = 0;
-            keys[r][c].min_offset = 0;
-
-            raw_history[r][c][0] = idle;
-            raw_history[r][c][1] = idle;
-            raw_history[r][c][2] = idle;
-            ema_accumulator[r][c] = ((uint32_t)idle << EMA_SHIFT);
-            logical_output[r][c] = idle;
-        }
-    }   
-
-    g_scan_complete = 0;
-    g_current_row = 0;
-    ROW_ALL_OFF();
-    //printf("Calibration OK!\r\n");
-}
 void lib_hall_sensor_calibration(void){
     printf("adc——init");
     g_adc_complete=0;
@@ -187,7 +146,7 @@ void lib_hall_sensor_calibration(void){
     memset(g_hall_adc_frame, 0, sizeof(g_hall_adc_frame));
     for(uint8_t r=0;r<ROW_COUNT;r++){
         select_row(r);
-        Bsp_Delay_Us(SETTLING_TIME_US);
+        //Bsp_Delay_Us(SETTLING_TIME_US);
         /////////////三次采集数据//////////
         uint32_t col_sums[COL_COUNT]={0};
         for(int i=0;i<3;i++){
@@ -243,11 +202,11 @@ void lib_hall_sensor_start_scan(void)
     g_current_row = 0;
 
     select_row(g_current_row);
-    Bsp_Delay_Us(SETTLING_TIME_US);
+    //Bsp_Delay_Us(SETTLING_TIME_US);
     bsp_adc_dma_start();
 }
 
-// 当前帧被 App_key 消费后，重新启动下一帧采集。
+// 当前帧被 App_key 消费后，重新启动下一帧采集。任务中循环调用的函数
 void lib_hall_sensor_release_frame(void)
 {
     if (g_scan_complete) {
@@ -283,7 +242,7 @@ void lib_hall_sensor_task(void)
     }
 
     select_row(g_current_row);
-    Bsp_Delay_Us(SETTLING_TIME_US);
+    //Bsp_Delay_Us(SETTLING_TIME_US);
     bsp_adc_dma_start();
 }
 
@@ -291,6 +250,57 @@ void lib_hall_sensor_task(void)
 #if 0
 ////////上电时初始key的状态
 // 上电校准：逐行采样一次，初始化每个键的 idle_adc 和滤波器状态。
+// 上电校准：逐行采样一次，初始化每个键的 idle_adc 和滤波器状态。
+//  fn和普通按键的初始化数值是不一样的
+void lib_hall_sensor_calibration_oled(void)
+{
+    g_adc_complete = 0;
+    g_scan_complete = 0;
+    g_current_row = 0;
+    memset(g_hall_adc_frame, 0, sizeof(g_hall_adc_frame));
+
+    for (uint8_t r = 0; r < ROW_COUNT; r++) {
+        select_row(r);
+        Bsp_Delay_Us(SETTLING_TIME_US);
+
+        g_adc_complete = 0;
+        bsp_adc_dma_start();
+
+        while (!g_adc_complete) {
+        }
+
+        g_adc_complete = 0;
+
+        for (uint8_t c = 0; c < COL_COUNT; c++) {
+            uint16_t idle = gADCxConvertedData[c]; //原始的adc的数值，没有滤波
+
+            g_hall_adc_frame[r][c] = idle;
+            keys[r][c].idele_adc = idle;
+            keys[r][c].drift_cnt = 0;
+            keys[r][c].actuation_point = 350; 
+            keys[r][c].top_deadzone = 80;
+            keys[r][c].bottom_deadzone = 1050;
+            keys[r][c].rt_press_sens = 50;
+            keys[r][c].rt_release_sens = 50;
+            keys[r][c].is_pressed = 0;
+            keys[r][c].in_rt_cycle = 0;
+            keys[r][c].max_offset = 0;
+            keys[r][c].min_offset = 0;
+
+            raw_history[r][c][0] = idle;
+            raw_history[r][c][1] = idle;
+            raw_history[r][c][2] = idle;
+            ema_accumulator[r][c] = ((uint32_t)idle << EMA_SHIFT);
+            logical_output[r][c] = idle;
+        }
+    }   
+
+    g_scan_complete = 0;
+    g_current_row = 0;
+    ROW_ALL_OFF();
+    //printf("Calibration OK!\r\n");
+}
+
 void lib_hall_sensor_calibration(void) {
     printf("Calibration Start...\r\n");
     g_scan_complete = 0;

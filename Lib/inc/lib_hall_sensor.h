@@ -10,7 +10,8 @@
 #define ROW_COUNT          5    //5行
 #define COL_COUNT          14
 #define SETTLING_TIME_US   35  //切换行的时间是35us
-
+#define ROW_OFF_DEADTIME_US  10    //行关闭时间
+#define ROW_ON_SETTLING_US   10  //行关闭时间
 // 单键运行参数：校准基准、触发点、RT 灵敏度和当前按压状态。
 typedef struct {
     uint16_t idele_adc;   //基准值

@@ -13,8 +13,7 @@ static void APP_USBInit(void);
 
 // 固件入口：初始化外设、校准磁轴、启动 USB 和第一帧 ADC 扫描。
 int main(void)
-{
-        HAL_Init();
+{    HAL_Init();
     APP_SystemClockConfig();
 
     bsp_usart_init(115200);
@@ -25,7 +24,7 @@ int main(void)
 
     lib_ws2812_init();
     lib_hall_sensor_init();
-    lib_hall_sensor_calibration();
+    lib_hall_sensor_calibration(); //启动dma
 
     App_init();
     APP_USBInit();
