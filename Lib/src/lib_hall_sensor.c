@@ -167,8 +167,8 @@ void lib_hall_sensor_calibration(void){
             g_hall_adc_frame[r][c]=average_idle;
             // 3. 设定其他参数
             keys[r][c].drift_cnt = 0;
-            keys[r][c].actuation_point = 350; 
-            keys[r][c].top_deadzone = 80;     // 建议死区从 80 稍微调高到 100
+            keys[r][c].actuation_point = 350;    //350 200
+            keys[r][c].top_deadzone = 150;     // 建议死区从 80 稍微调高到 100
             keys[r][c].bottom_deadzone = 1050;
             keys[r][c].rt_press_sens = 50;
             keys[r][c].rt_release_sens = 50;

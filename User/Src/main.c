@@ -13,7 +13,11 @@ static void APP_USBInit(void);
 
 // 固件入口：初始化外设、校准磁轴、启动 USB 和第一帧 ADC 扫描。
 int main(void)
-{    HAL_Init();
+{   
+    
+    SCB->VTOR = FLASH_BASE | 0x8000; /* Vector Table Relocation in Internal FLASH */
+    __enable_irq(); 
+    HAL_Init();
     APP_SystemClockConfig();
 
     bsp_usart_init(115200);
@@ -27,6 +31,7 @@ int main(void)
     lib_hall_sensor_calibration(); //启动dma
 
     App_init();
+    App_ota_init();
     APP_USBInit();
 
     // 初始化完成后只启动第一帧，后续帧由按键任务释放后重启。

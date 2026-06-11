@@ -117,6 +117,62 @@ static uint8_t process_key_logic(Key_t *k, uint16_t cur_adc)
 }
 #endif
 
+物理行程        ADC 偏差 (Offset)      状态变量与参数工作机制
+【松开状态】 ───? Offset = 0
+   │                                ┌──────────────────────────────────────────────┐
+   │            [0 ~ 150]           │ 1. 顶部死区 (top_deadzone = 150)             │
+   │                                │ ── 运行变量状态:                              │
+   │                                │    is_pressed = 0, in_rt_cycle = 0           │
+   │                                │    max_offset = 0, min_offset = 0            │
+   ▼                                │ ── 特殊变量:                                  │
+                                    │    drift_cnt (漂移计数器) 在此区间工作。       │
+                                    │    若值在此长期微幅偏离0，则重校准 idle_adc。 │
+                ....................└──────────────────────────────────────────────┘
+   │            Offset = 150 (退出顶部死区边界)
+   │
+   │            [150 ~ 350]         ┌──────────────────────────────────────────────┐
+   │                                │ 2. 预备触发区                                 │
+   │                                │ ── 运行变量状态:                              │
+   │                                │    is_pressed = 0, in_rt_cycle = 0           │
+   ▼                                │    (即使在此区间起伏，也不会触发 RT 判定)     │
+                ....................└──────────────────────────────────────────────┘
+   │            Offset = 350 (静态触发点 actuation_point)
+   │                                ┌──────────────────────────────────────────────┐
+   │                                │ 【临界事件】：首次下按越过 350                  │
+   │                                │  ── 状态跃迁:                                 │
+   │                                │     is_pressed 0 -> 1                        │
+   │                                │     in_rt_cycle 0 -> 1                       │
+   ▼                                └──────────────────────────────────────────────┘
+   │            [350 ~ 1050]        ┌──────────────────────────────────────────────┐
+   │                                │ 3. RT 有效工作区间 (灵敏度 50)                │
+   │                                │ ── 运行变量状态:                              │
+   │                                │    in_rt_cycle = 1 (RT 保持激活)              │
+   │                                │ ── 动态跟踪变量:                              │
+   │                                │    max_offset: 实时记录下压过程中的最高峰。     │
+   │                                │    min_offset: 实时记录抬起过程中的最低谷。     │
+   │                                │ ── 触发规则:                                  │
+   │                                │    抬起：Offset < (max_offset - 50) -> 松开    │
+   ▼                                │    再按：Offset > (min_offset + 50) -> 按下    │
+                ....................└──────────────────────────────────────────────┘
+   │            Offset = 1050 (底端死区 bottom_deadzone)
+   │                                ┌──────────────────────────────────────────────┐
+   │            [1050 ~ 最大值]     │ 4. 底部死区                                  │
+   │                                │ ── 运行变量状态:                              │
+   │                                │    in_rt_cycle = 1                           │
+   │                                │ ── 限制机制:                                  │
+   │                                │    max_offset 停止向上更新（锁定在 1050 附近），│
+   ▼                                │    防止触底形变导致的压力抖动。               │
+【触底状态】 ───? Offset = Max (约1150)└──────────────────────────────────────────────┘
+
+
+
+
+
+
+
+
+
+
 // AP/RT 判断优化版：首次按压用 AP，松开后进入 RT 动态触发循环。
 static uint8_t process_key_logic(Key_t *k, uint16_t cur_adc)
 {
@@ -288,7 +344,6 @@ void App_send_bubble_report(uint8_t bubble_param, uint8_t ai_action)
     bubble_pkt.payload[0] = ai_action;
     bubble_pkt.payload[1] = 0x00;
 
-    bubble_pkt.crc = App_protocol_sum((uint8_t *)&bubble_pkt);
-
-    usbd_ep_start_write(PROTOCOL_PKT_ACK_EP, (uint8_t *)&bubble_pkt, PROTOCOL_PKT_SIZE);
+    /* Share endpoint 0x82 with command ACKs through the protocol TX queue. */
+    (void)App_protocol_send_packet(&bubble_pkt);
 }

@@ -1,174 +1,455 @@
 #include "App_protocol.h"
+
 #include "App_lighting.h"
+#include "App_ota.h"
 #include "py32f4xx_hal.h"
 
-#define PROTOCOL_RX_QUEUE_SIZE 8U
+#include <stdbool.h>
+#include <string.h>
 
+#define PROTOCOL_RX_QUEUE_SIZE  8U
+#define PROTOCOL_TX_QUEUE_SIZE  8U
+#define PROTOCOL_HID_IDLE       0U
+#define PROTOCOL_HID_BUSY       1U
+#define PROTOCOL_CRC_INDEX      (PROTOCOL_PKT_SIZE - 1U)
+
+#define WS2812_LED_NUM          61U
+#define MUSIC_LEDS_PER_PACKET   18U
+#define MUSIC_BYTES_PER_LED     3U
+
+/* USBå›è°ƒåªè´Ÿè´£æ ¡éªŒå’Œå…¥é˜Ÿï¼Œä¸šåŠ¡å¤„ç†å…¨éƒ¨æ”¾åœ¨ä¸»å¾ªç¯ä»»åŠ¡ä¸­ã€‚ */
 static Packet_t g_rx_queue[PROTOCOL_RX_QUEUE_SIZE];
-static volatile uint8_t g_rx_head = 0;// Ğ´Ö¸Õë£ºÖ¸ÏòÏÂÒ»¸ö´æÈëÊı¾İµÄÎ»ÖÃ
-static volatile uint8_t g_rx_tail = 0; // ¶ÁÖ¸Õë£ºÖ¸ÏòÏÂÒ»¸öÈ¡³öÊı¾İµÄÎ»ÖÃ
-static volatile uint8_t g_rx_count = 0;// ¼ÆÊıÆ÷£º¼ÇÂ¼µ±Ç°²Ö¿âÀïÓĞ¶àÉÙ¸ö°ü
-volatile uint32_t g_protocol_rx_drop_count = 0;// Í³¼ÆÁ¿£ºÈç¹û²Ö¿âÂúÁË»¹Ã»´¦Àí£¬¶ª°ü´ÎÊı
-///»·ĞÎ¶ÓÁĞ½ÓÊÜÊı¾İ
-static bool App_protocol_pop_rx(Packet_t *pkt)
+static volatile uint8_t g_rx_head;
+static volatile uint8_t g_rx_tail;
+static volatile uint8_t g_rx_count;
+
+/*
+ * USBé©±åŠ¨åœ¨INä¼ è¾“å®Œæˆå‰ä¼šç»§ç»­ä½¿ç”¨å‘é€ç¼“å†²åŒºã€‚
+ * å› æ­¤åº”ç­”åŒ…å¿…é¡»ä½¿ç”¨é™æ€å­˜å‚¨ï¼Œä¸èƒ½ç›´æ¥å‘é€æ ˆå˜é‡ã€‚
+ */
+static Packet_t g_tx_queue[PROTOCOL_TX_QUEUE_SIZE];
+static volatile uint8_t g_tx_head;
+static volatile uint8_t g_tx_tail;
+static volatile uint8_t g_tx_count;
+static bool g_tx_inflight;
+
+/* è¿è¡Œç»Ÿè®¡ï¼Œå¯åœ¨è°ƒè¯•å™¨ä¸­è§‚å¯Ÿé€šä¿¡è´¨é‡ã€‚ */
+volatile uint32_t g_protocol_rx_drop_count;
+volatile uint32_t g_protocol_rx_invalid_count;
+volatile uint32_t g_protocol_tx_error_count;
+volatile uint32_t g_protocol_tx_drop_count;
+
+extern volatile uint8_t custom_hid_state;
+extern int usbd_ep_start_write(const uint8_t ep,
+                               const uint8_t *data,
+                               uint32_t len);
+
+extern uint32_t g_last_music_rx_time;
+extern LightMode_t g_backup_light_mode;
+extern void App_set_light_config(uint8_t mode,
+                                 uint8_t r,
+                                 uint8_t g,
+                                 uint8_t b,
+                                 uint8_t brightness,
+                                 uint8_t speed);
+extern void App_get_light_config(uint8_t *mode,
+                                 uint8_t *r,
+                                 uint8_t *g,
+                                 uint8_t *b,
+                                 uint8_t *brightness,
+                                 uint8_t *speed);
+extern bool lib_ws2812_set_pixel(uint16_t led_index,
+                                 uint8_t r,
+                                 uint8_t g,
+                                 uint8_t b);
+
+/* ä¿å­˜å¹¶æ¢å¤è¿›å…¥ä¸´ç•ŒåŒºä¹‹å‰çš„ä¸­æ–­çŠ¶æ€ã€‚ */
+static uint32_t App_protocol_enter_critical(void)
 {
-    bool has_pkt = false;
+    uint32_t primask = __get_PRIMASK();
 
     __disable_irq();
-    if (g_rx_count > 0U) {
-        memcpy(pkt, &g_rx_queue[g_rx_tail], PROTOCOL_PKT_SIZE);
-        g_rx_tail = (uint8_t)((g_rx_tail + 1U) % PROTOCOL_RX_QUEUE_SIZE);
-        g_rx_count--;
-        has_pkt = true;
-    }
-    __enable_irq();
+    return primask;
+}
 
-    return has_pkt;
+static void App_protocol_exit_critical(uint32_t primask)
+{
+    if (primask == 0U) {
+        __enable_irq();
+    }
 }
-//¼ÆËãcrcµÄĞ£ÑéºÍ
-uint8_t App_protocol_sum(uint8_t *buf){
-	uint8_t sum=0;
-	for(uint8_t i=0;i<63;i++){
-		//¼ÆËãºÍ
-		sum+=buf[i];
-	}
-  sum=(uint8_t)(0xFF - (uint8_t)(sum & 0xFF));
-	return sum;
+
+static bool App_protocol_pop_rx(Packet_t *packet)
+{
+    uint32_t primask;
+    bool available = false;
+
+    if (packet == NULL) {
+        return false;
+    }
+
+    primask = App_protocol_enter_critical();
+
+    if (g_rx_count > 0U) {
+        memcpy(packet, &g_rx_queue[g_rx_tail], sizeof(*packet));
+        g_rx_tail = (uint8_t)((g_rx_tail + 1U) % PROTOCOL_RX_QUEUE_SIZE);
+        --g_rx_count;
+        available = true;
+    }
+
+    App_protocol_exit_critical(primask);
+    return available;
 }
-/**
- * [½ÓÊÕ»Øµ÷º¯Êı]
- * Á÷³Ì£º½ÓÊÕÊı¾İ -> Ğ£ÑéCRC -> Á¢¼´»Ø´«Ó¦´ğ(INÊı¾İ) -> ±ê¼Ç½âÎö
+
+/*
+ * æ‰€æœ‰0x82ç«¯ç‚¹æ•°æ®ç»Ÿä¸€è¿›å…¥æ­¤é˜Ÿåˆ—ï¼ŒåŒ…æ‹¬å‘½ä»¤åº”ç­”å’Œä¸»åŠ¨å†’æ³¡ä¸ŠæŠ¥ã€‚
+ * è¿”å›falseè¡¨ç¤ºé˜Ÿåˆ—å·²æ»¡ï¼Œè°ƒç”¨æ–¹å¯é€‰æ‹©ç¨åé‡è¯•ã€‚
  */
-// Íâ²¿ USB ·¢ËÍº¯Êı½Ó¿Ú
-// CherryUSB ·¢ËÍ½Ó¿Ú£¬ÉùÃ÷ĞèÓë usb_dc.h ÖĞµÄÔ­ĞÍ±£³ÖÒ»ÖÂ¡£
-extern int usbd_ep_start_write(const uint8_t ep, const uint8_t *data, uint32_t len);
-void App_protocol_on_rx(uint8_t *buf, uint32_t len){
-	//ÅĞ¶ÏÍ·ÊÇ·ñÕı³£
-	if(buf[0]!=PROTOCOL_REPORT_ID||len!=PROTOCOL_PKT_SIZE){
-		return;
-	}
-   //2.½øĞĞcrcĞ£Ñé
-	if(App_protocol_sum(buf)!=buf[63]){
-	  return;
-	}
-    // 3. ¼ÆËãÏÂÒ»¸öĞ´Î»ÖÃ
-    uint8_t next_head = (uint8_t)((g_rx_head + 1U) % PROTOCOL_RX_QUEUE_SIZE);
-    // 4. ¼ì²é²Ö¿âÊÇ·ñÂúÁË
-    if (g_rx_count >= PROTOCOL_RX_QUEUE_SIZE) {
-        g_protocol_rx_drop_count++;
+bool App_protocol_send_packet(const Packet_t *packet)
+{
+    Packet_t queued_packet;
+    uint32_t primask;
+
+    if ((packet == NULL) ||
+        (packet->data_len > PROTOCOL_PAYLOAD_SIZE)) {
+        return false;
+    }
+
+    memcpy(&queued_packet, packet, sizeof(queued_packet));
+    queued_packet.report_id = PROTOCOL_REPORT_ID;
+    queued_packet.crc = App_protocol_sum((uint8_t *)&queued_packet);
+
+    primask = App_protocol_enter_critical();
+
+    if (g_tx_count >= PROTOCOL_TX_QUEUE_SIZE) {
+        ++g_protocol_tx_drop_count;
+        App_protocol_exit_critical(primask);
+        return false;
+    }
+
+    memcpy(&g_tx_queue[g_tx_head], &queued_packet, sizeof(queued_packet));
+    g_tx_head = (uint8_t)((g_tx_head + 1U) % PROTOCOL_TX_QUEUE_SIZE);
+    ++g_tx_count;
+
+    App_protocol_exit_critical(primask);
+    return true;
+}
+
+/*
+ * æ ¡éªŒèŒƒå›´ä¸ºByte0åˆ°Byte62ï¼ŒByte63ä¿å­˜æ ¡éªŒå€¼ã€‚
+ * ä¿æŒç°æœ‰åè®®çš„8ä½ç´¯åŠ åç ç®—æ³•ã€‚
+ */
+uint8_t App_protocol_sum(uint8_t *buffer)
+{
+    uint8_t sum = 0U;
+    uint32_t index;
+
+    if (buffer == NULL) {
+        return 0U;
+    }
+
+    for (index = 0U; index < PROTOCOL_CRC_INDEX; ++index) {
+        sum = (uint8_t)(sum + buffer[index]);
+    }
+
+    return (uint8_t)(0xFFU - sum);
+}
+
+/*
+ * è‡ªå®šä¹‰HID OUTæ¥æ”¶å›è°ƒè°ƒç”¨æ­¤å‡½æ•°ã€‚
+ * ä¸­æ–­ä¸Šä¸‹æ–‡ä¸­ç¦æ­¢æ‰§è¡ŒFlashã€ç¯å…‰ä¸šåŠ¡å’ŒUSB INå‘é€ã€‚
+ */
+void App_protocol_on_rx(uint8_t *buffer, uint32_t length)
+{
+    uint32_t primask;
+
+    if ((buffer == NULL) || (length != PROTOCOL_PKT_SIZE)) {
+        ++g_protocol_rx_invalid_count;
         return;
     }
 
-    memcpy(&g_rx_queue[g_rx_head], buf, PROTOCOL_PKT_SIZE);
-    g_rx_head = next_head;
-    g_rx_count++;
-}  
-///////////////ÒôÀÖÂÉ¶¯Ïà¹Ø/////////
-extern uint32_t g_last_music_rx_time;
-extern LightMode_t g_backup_light_mode;
-#define WS2812_LED_NUM 61
-extern void App_set_light_config(uint8_t mode, uint8_t r, uint8_t g, uint8_t b, uint8_t br, uint8_t speed);
-extern void App_get_light_config(uint8_t *mode, uint8_t *r, uint8_t *g, uint8_t *b, uint8_t *br, uint8_t *speed);
-extern bool lib_ws2812_set_pixel(uint16_t led_index, uint8_t r, uint8_t g, uint8_t b);
+    if ((buffer[0] != PROTOCOL_REPORT_ID) ||
+        (buffer[6] > PROTOCOL_PAYLOAD_SIZE) ||
+        (App_protocol_sum(buffer) != buffer[PROTOCOL_CRC_INDEX])) {
+        ++g_protocol_rx_invalid_count;
+        return;
+    }
 
-// 3. ÒµÎñ´¦Àí·Ö·¢ÈÎÎñ
-void App_protocol_task(void){
-    Packet_t rx_pkt;
+    primask = App_protocol_enter_critical();
 
-    while (App_protocol_pop_rx(&rx_pkt)) {
-        Packet_t tx_pkt;
-        uint8_t need_ack = 1;
+    if (g_rx_count >= PROTOCOL_RX_QUEUE_SIZE) {
+        ++g_protocol_rx_drop_count;
+        App_protocol_exit_critical(primask);
+        return;
+    }
 
-        memcpy(&tx_pkt, &rx_pkt, PROTOCOL_PKT_SIZE);
+    memcpy(&g_rx_queue[g_rx_head], buffer, sizeof(Packet_t));
+    g_rx_head = (uint8_t)((g_rx_head + 1U) % PROTOCOL_RX_QUEUE_SIZE);
+    ++g_rx_count;
 
-        uint8_t cmd_id = rx_pkt.cmd_id;
-        uint8_t cmd_param = rx_pkt.cmd_param;
+    App_protocol_exit_critical(primask);
+}
 
-        if ((cmd_id & 0x7F) >= 0x20 && (cmd_id & 0x7F) <= 0x2F) {
-            switch (cmd_id) {
-                case CMD_LIGHT_WRITE_CFG:
-                    if (cmd_param == LPARAM_ALL_SET) {
-                        Payload_LightAll_t *p_light = (Payload_LightAll_t *)tx_pkt.payload;
-                        App_set_light_config(p_light->mode_idx, p_light->r, p_light->g, p_light->b, p_light->brightness, p_light->speed);
-                    } else if (cmd_param == LPARAM_COLOR_ONLY) {
-                    } else if (cmd_param == LPARAM_MODE_ONLY) {
-                        if (rx_pkt.data_len >= 1U) {
-                            uint8_t mode = rx_pkt.payload[0];
+/* æ£€æŸ¥ä¸åŒOTAå‘½ä»¤è¦æ±‚çš„payloadé•¿åº¦ã€‚ */
+static OtaStatus_t App_protocol_validate_ota(const Packet_t *packet)
+{
+    switch ((OtaCmdParam_t)packet->cmd_param) {
+        case OTA_PARAM_QUERY:
+        case OTA_PARAM_ABORT:
+        case OTA_PARAM_REBOOT:
+            return (packet->data_len == 0U)
+                       ? OTA_STATUS_OK
+                       : OTA_STATUS_INVALID_LENGTH;
 
-                            if (mode < LIGHT_MODE_MAX) {
-                                App_set_light_config(
-                                    mode,
-                                    g_light_r,
-                                    g_light_g,
-                                    g_light_b,
-                                    g_light_brightness,
-                                    g_light_speed
-                                );
-                            }
-                        }
-                    }
-                    break;
+        case OTA_PARAM_BEGIN:
+            return (packet->data_len == sizeof(Payload_OtaBegin_t))
+                       ? OTA_STATUS_OK
+                       : OTA_STATUS_INVALID_LENGTH;
 
-                case CMD_LIGHT_READ_CFG:
-                    if (cmd_param == LPARAM_ALL_SET) {
-                        Payload_LightAll_t *p_light = (Payload_LightAll_t *)tx_pkt.payload;
-                        App_get_light_config(&p_light->mode_idx,
-                                             &p_light->r, &p_light->g, &p_light->b,
-                                             &p_light->brightness, &p_light->speed);
-                        tx_pkt.data_len = sizeof(Payload_LightAll_t);
-                    }
-                    break;
+        case OTA_PARAM_DATA:
+            /* 4å­—èŠ‚offsetåé¢å¿…é¡»æºå¸¦1åˆ°52å­—èŠ‚å›ºä»¶æ•°æ®ã€‚ */
+            return ((packet->data_len > sizeof(uint32_t)) &&
+                    (packet->data_len <= sizeof(Payload_OtaData_t)))
+                       ? OTA_STATUS_OK
+                       : OTA_STATUS_INVALID_LENGTH;
 
-                case CMD_LIGHT_MUSIC_MAIN:
-                {
-                    need_ack = 0;
+        case OTA_PARAM_END:
+            return (packet->data_len == sizeof(Payload_OtaEnd_t))
+                       ? OTA_STATUS_OK
+                       : OTA_STATUS_INVALID_LENGTH;
 
-                    if (g_light_mode != LIGHT_MODE_MUSIC) {
-                        g_backup_light_mode = g_light_mode;
-                        g_light_mode = LIGHT_MODE_MUSIC;
-                    }
+        default:
+            return OTA_STATUS_INVALID_COMMAND;
+    }
+}
 
-                    g_last_music_rx_time = HAL_GetTick();
+/* æ ¡éªŒOTAåŒ…å¹¶è°ƒç”¨ç‹¬ç«‹çš„App_otaä¸šåŠ¡å±‚ã€‚ */
+static void App_protocol_handle_ota(const Packet_t *request,
+                                    Packet_t *response_packet)
+{
+    Payload_OtaResponse_t response;
+    OtaStatus_t status;
 
-                    uint8_t cur_pkt = rx_pkt.cur_pkt;
-                    uint8_t total_pkts = rx_pkt.total_pkts;
-                    uint8_t data_len = rx_pkt.data_len;
-                    uint16_t start_led_idx = cur_pkt * 18U;
+    memset(&response, 0, sizeof(response));
+    response.protocol_version = OTA_PROTOCOL_VERSION;
+    response.state = OTA_STATE_IDLE;
 
-                    if (start_led_idx < WS2812_LED_NUM) {
-                        uint8_t led_count_in_pkt = data_len / 3U;
-                        for (uint8_t i = 0; i < led_count_in_pkt; i++) {
-                            uint16_t led_idx = start_led_idx + i;
-                            if (led_idx >= WS2812_LED_NUM) {
-                                break;
-                            }
+    status = App_protocol_validate_ota(request);
+    if (status == OTA_STATUS_OK) {
+        status = App_ota_handle((OtaCmdParam_t)request->cmd_param,
+                                request->payload,
+                                request->data_len,
+                                &response);
+    }
 
-                            uint8_t r = rx_pkt.payload[i * 3U + 0U];
-                            uint8_t g = rx_pkt.payload[i * 3U + 1U];
-                            uint8_t b = rx_pkt.payload[i * 3U + 2U];
+    response.protocol_version = OTA_PROTOCOL_VERSION;
+    response.status = (uint8_t)status;
 
-                            r = (uint16_t)(r * g_light_brightness) / 100U;
-                            g = (uint16_t)(g * g_light_brightness) / 100U;
-                            b = (uint16_t)(b * g_light_brightness) / 100U;
+    memset(response_packet->payload, 0, sizeof(response_packet->payload));
+    memcpy(response_packet->payload, &response, sizeof(response));
+    response_packet->data_len = (uint8_t)sizeof(response);
+}
 
-                            lib_ws2812_set_pixel(led_idx, r, g, b);
-                        }
-                    }
+static void App_protocol_handle_light(const Packet_t *request,
+                                      Packet_t *response,
+                                      bool *need_ack)
+{
+    uint8_t command = request->cmd_id;
+    uint8_t parameter = request->cmd_param;
 
-                    if ((total_pkts > 0U) && (cur_pkt == (total_pkts - 1U))) {
-                        g_led_dirty = true;
-                    }
+    switch (command) {
+        case CMD_LIGHT_WRITE_CFG:
+            if ((parameter == LPARAM_ALL_SET) &&
+                (request->data_len == sizeof(Payload_LightAll_t))) {
+                Payload_LightAll_t light;
+
+                memcpy(&light, request->payload, sizeof(light));
+                if ((light.mode_idx < LIGHT_MODE_MAX) &&
+                    (light.brightness <= 100U)) {
+                    App_set_light_config(light.mode_idx,
+                                         light.r,
+                                         light.g,
+                                         light.b,
+                                         light.brightness,
+                                         light.speed);
+                }
+            } else if ((parameter == LPARAM_MODE_ONLY) &&
+                       (request->data_len == 1U)) {
+                uint8_t mode = request->payload[0];
+
+                if (mode < LIGHT_MODE_MAX) {
+                    App_set_light_config(mode,
+                                         g_light_r,
+                                         g_light_g,
+                                         g_light_b,
+                                         g_light_brightness,
+                                         g_light_speed);
+                }
+            }
+            break;
+
+        case CMD_LIGHT_READ_CFG:
+            if (parameter == LPARAM_ALL_SET) {
+                Payload_LightAll_t light = {0};
+
+                App_get_light_config(&light.mode_idx,
+                                     &light.r,
+                                     &light.g,
+                                     &light.b,
+                                     &light.brightness,
+                                     &light.speed);
+                memset(response->payload, 0, sizeof(response->payload));
+                memcpy(response->payload, &light, sizeof(light));
+                response->data_len = (uint8_t)sizeof(light);
+            }
+            break;
+
+        case CMD_LIGHT_MUSIC_MAIN:
+        {
+            uint16_t start_led;
+            uint8_t led_count;
+            uint8_t index;
+
+            *need_ack = false;
+
+            if (g_light_mode != LIGHT_MODE_MUSIC) {
+                g_backup_light_mode = g_light_mode;
+                g_light_mode = LIGHT_MODE_MUSIC;
+            }
+
+            g_last_music_rx_time = HAL_GetTick();
+            start_led = (uint16_t)request->cur_pkt * MUSIC_LEDS_PER_PACKET;
+            led_count = request->data_len / MUSIC_BYTES_PER_LED;
+
+            for (index = 0U; index < led_count; ++index) {
+                uint16_t led_index = start_led + index;
+                uint8_t r;
+                uint8_t g;
+                uint8_t b;
+
+                if (led_index >= WS2812_LED_NUM) {
                     break;
                 }
 
-                default:
-                    break;
+                r = request->payload[index * MUSIC_BYTES_PER_LED];
+                g = request->payload[index * MUSIC_BYTES_PER_LED + 1U];
+                b = request->payload[index * MUSIC_BYTES_PER_LED + 2U];
+
+                r = (uint8_t)(((uint16_t)r * g_light_brightness) / 100U);
+                g = (uint8_t)(((uint16_t)g * g_light_brightness) / 100U);
+                b = (uint8_t)(((uint16_t)b * g_light_brightness) / 100U);
+
+                (void)lib_ws2812_set_pixel(led_index, r, g, b);
             }
+
+            if ((request->total_pkts > 0U) &&
+                (request->cur_pkt == (request->total_pkts - 1U))) {
+                g_led_dirty = true;
+            }
+            break;
         }
 
-        if (need_ack) {
-            tx_pkt.crc = App_protocol_sum((uint8_t *)&tx_pkt);
-            usbd_ep_start_write(PROTOCOL_PKT_ACK_EP, (uint8_t *)&tx_pkt, PROTOCOL_PKT_SIZE);
+        default:
+            break;
+    }
+}
+
+static void App_protocol_dispatch(const Packet_t *request,
+                                  Packet_t *response,
+                                  bool *need_ack)
+{
+    memcpy(response, request, sizeof(*response));
+
+    if (request->cmd_id == CMD_SYS_OTA) {
+        App_protocol_handle_ota(request, response);
+        return;
+    }
+
+    if (((request->cmd_id & 0x7FU) >= 0x20U) &&
+        ((request->cmd_id & 0x7FU) <= 0x2FU)) {
+        App_protocol_handle_light(request, response, need_ack);
+    }
+}
+
+/*
+ * å°è¯•å‘é€ä¸€ä¸ªå¾…å‘é€åº”ç­”ã€‚
+ * å‘é€å¤±è´¥æ—¶ä¿ç•™g_tx_pendingï¼Œä¸‹ä¸€æ¬¡ä»»åŠ¡è°ƒåº¦ç»§ç»­é‡è¯•ã€‚
+ */
+static void App_protocol_try_send(void)
+{
+    int result;
+    uint32_t primask;
+
+    /*
+     * INå®Œæˆå›è°ƒä¼šæŠŠcustom_hid_stateæ¢å¤ä¸ºIDLEã€‚
+     * æ­¤æ—¶æ‰ä»é˜Ÿåˆ—ç§»é™¤å·²å®ŒæˆåŒ…ï¼Œç¡®ä¿é©±åŠ¨ä½¿ç”¨æœŸé—´ç¼“å†²åŒºæœ‰æ•ˆã€‚
+     */
+    if (g_tx_inflight && (custom_hid_state == PROTOCOL_HID_IDLE)) {
+        primask = App_protocol_enter_critical();
+        if (g_tx_count > 0U) {
+            g_tx_tail = (uint8_t)((g_tx_tail + 1U) % PROTOCOL_TX_QUEUE_SIZE);
+            --g_tx_count;
+        }
+        g_tx_inflight = false;
+        App_protocol_exit_critical(primask);
+    }
+
+    if (g_tx_inflight ||
+        (g_tx_count == 0U) ||
+        (custom_hid_state != PROTOCOL_HID_IDLE)) {
+        return;
+    }
+
+    /*
+     * å…ˆç½®å¿™å†è°ƒç”¨é©±åŠ¨ï¼Œé¿å…åŒä¸€è°ƒåº¦çª—å£å†…å…¶ä»–ä»»åŠ¡é‡å¤æäº¤0x82ã€‚
+     * INå®Œæˆå›è°ƒè´Ÿè´£å°†custom_hid_stateæ¢å¤ä¸ºIDLEã€‚
+     */
+    custom_hid_state = PROTOCOL_HID_BUSY;
+    result = usbd_ep_start_write(PROTOCOL_PKT_ACK_EP,
+                                 (const uint8_t *)&g_tx_queue[g_tx_tail],
+                                 sizeof(Packet_t));
+
+    if (result == 0) {
+        g_tx_inflight = true;
+    } else {
+        custom_hid_state = PROTOCOL_HID_IDLE;
+        ++g_protocol_tx_error_count;
+    }
+}
+
+/*
+ * ä¸»å¾ªç¯æŒç»­è°ƒç”¨ã€‚
+ * åŒä¸€æ—¶åˆ»æœ€å¤šå…è®¸ä¸€ä¸ªåº”ç­”åœ¨0x82ç«¯ç‚¹ä¼ è¾“ï¼Œä¸ºOTAæä¾›ACKæµæ§ã€‚
+ */
+void App_protocol_task(void)
+{
+    Packet_t request;
+    Packet_t response;
+    bool need_ack;
+
+    App_protocol_try_send();
+
+    if (g_tx_count >= PROTOCOL_TX_QUEUE_SIZE) {
+        return;
+    }
+
+    while (App_protocol_pop_rx(&request)) {
+        need_ack = true;
+        App_protocol_dispatch(&request, &response, &need_ack);
+
+        if (!need_ack) {
+            continue;
+        }
+
+        if (!App_protocol_send_packet(&response)) {
+            ++g_protocol_tx_error_count;
+            return;
+        }
+
+        App_protocol_try_send();
+
+        if (g_tx_count >= PROTOCOL_TX_QUEUE_SIZE) {
+            return;
         }
     }
 }

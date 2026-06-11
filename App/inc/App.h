@@ -8,5 +8,6 @@
 #include "App_usb.h"
 #include "App_lighting.h"
 #include "App_protocol.h"
+#include "App_ota.h"
 void App_init(void);
 #endif
