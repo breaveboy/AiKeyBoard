@@ -3,7 +3,7 @@
 #include "lib_hall_sensor.h"
 #include "usbd_core.h"
 #include <string.h>
-
+#include "App_debug.h"
 #ifndef HID_STATE_IDLE
 #define HID_STATE_IDLE 0
 #endif
@@ -31,7 +31,8 @@ void App_usb_process_task(void)
         if (++busy_ticks < HID_BUSY_TIMEOUT_TICKS) {
             return;
         }
-
+        /* HID端点超过规定时间仍处于忙状态 */
+        App_debug_set_error(DEBUG_ERROR_USB_BUSY);
         (void)usbd_ep_flush(HID_INT_EP);
         hid_state = HID_STATE_IDLE;
         busy_ticks = 0;
@@ -97,11 +98,16 @@ void App_usb_process_task(void)
     int ret = usbd_ep_start_write(HID_INT_EP, current_report, sizeof(current_report));
 
     if (ret == 0) {
+         /* USB键盘报告成功提交 */
+        App_debug_usb_tick();
+
         hid_state = HID_STATE_BUSY;
         busy_ticks = 0;
         memcpy(last_report, current_report, sizeof(last_report));
         report_dirty = false;
     } else {
+          /* USB键盘报告提交失败 */
+        App_debug_set_error(DEBUG_ERROR_USB_SEND);
         report_dirty = true;
 
         if (ret == -2 || ret == -3) {

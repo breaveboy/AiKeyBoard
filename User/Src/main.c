@@ -5,8 +5,8 @@
 #include "task.h"
 #include "App.h"
 #include "bsp_tim.h"
-#include "SEGGER_RTT.h"
 
+#include "App_debug.h"
 static void APP_SystemClockConfig(void);
 // USB 初始化：注册标准键盘 HID 和自定义 HID 两个接口。
 static void APP_USBInit(void);
@@ -14,16 +14,16 @@ static void APP_USBInit(void);
 // 固件入口：初始化外设、校准磁轴、启动 USB 和第一帧 ADC 扫描。
 int main(void)
 {   
-    
-    SCB->VTOR = FLASH_BASE | 0x8000; /* Vector Table Relocation in Internal FLASH */
-    __enable_irq(); 
+//    
+//    SCB->VTOR = FLASH_BASE | 0x8000; /* Vector Table Relocation in Internal FLASH */
+//    __enable_irq(); 
     HAL_Init();
     APP_SystemClockConfig();
 
     bsp_usart_init(115200);
     bsp_tim_init();
 
-    SEGGER_RTT_printf(0, "init \r\n");
+  
     printf("init \r\n");
 
     lib_ws2812_init();
@@ -31,8 +31,9 @@ int main(void)
     lib_hall_sensor_calibration(); //启动dma
 
     App_init();
-    App_ota_init();
+    //App_ota_init();
     APP_USBInit();
+    App_debug_init();
 
     // 初始化完成后只启动第一帧，后续帧由按键任务释放后重启。
     lib_hall_sensor_start_scan();
@@ -40,6 +41,7 @@ int main(void)
 
     // 主循环只跑任务调度，各模块职责在任务表中拆分。
     while (1) {
+        App_debug_main_tick();
         Task_exec();
     }
 }
@@ -47,7 +49,7 @@ int main(void)
 // USB 初始化：注册标准键盘 HID 和自定义 HID 两个接口。
 static void APP_USBInit(void)
 {
-    SEGGER_RTT_printf(0, "usb i\r\n");
+   
 
     __HAL_RCC_SYSCFG_CLK_ENABLE();
     SET_BIT(RCC->CFGR1, RCC_CFGR1_USBSELHSI48_Msk);

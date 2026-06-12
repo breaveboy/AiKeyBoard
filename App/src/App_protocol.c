@@ -3,7 +3,7 @@
 #include "App_lighting.h"
 #include "App_ota.h"
 #include "py32f4xx_hal.h"
-
+#include "App_debug.h"
 #include <stdbool.h>
 #include <string.h>
 
@@ -359,7 +359,24 @@ static void App_protocol_dispatch(const Packet_t *request,
                                   bool *need_ack)
 {
     memcpy(response, request, sizeof(*response));
+    
+    if (request->cmd_id == CMD_SYS_DEBUG) {
+        memset(response->payload, 0, sizeof(response->payload));
 
+        response->data_len = App_debug_handle(
+            request->cmd_param,
+            response->payload,
+            sizeof(response->payload));
+
+        return;
+    }
+
+    
+    
+    
+    
+    
+    
     if (request->cmd_id == CMD_SYS_OTA) {
         App_protocol_handle_ota(request, response);
         return;

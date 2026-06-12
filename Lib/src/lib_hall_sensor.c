@@ -1,16 +1,17 @@
 #include "lib_hall_sensor.h"
 #include "bsp_delay.h"
-
+#include "App_debug.h"
 // 当前正在采集的矩阵行，0~4。
 volatile uint8_t g_current_row = 0;
 // 一帧 5x14 数据采集完成标志，由按键任务清理并重启下一帧。
 volatile uint8_t g_scan_complete = 0;
 // 单行 14 路 ADC DMA 完成标志，由 DMA 中断置位。
 volatile uint8_t g_adc_complete = 0;
-
+#define ADC_DMA1_CH1_ALL_FLAGS (DMA_IFCR_CGIF1 | DMA_IFCR_CTCIF1 | DMA_IFCR_CHTIF1 | DMA_IFCR_CTEIF1)
 // 滤波后的整帧 ADC 数据，按键判断只读取这个数组。
 uint16_t g_hall_adc_frame[ROW_COUNT][COL_COUNT] = {0};
 Key_t keys[ROW_COUNT][COL_COUNT];
+
 
 const uint8_t key_mask[ROW_COUNT][COL_COUNT] = {
     {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
@@ -20,50 +21,102 @@ const uint8_t key_mask[ROW_COUNT][COL_COUNT] = {
     {1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 1}
 };
 
-#define EMA_SHIFT 3
-#define HYSTERESIS_DEADZONE 4
-#define ADC_DMA1_CH1_ALL_FLAGS (DMA_IFCR_CGIF1 | DMA_IFCR_CTCIF1 | DMA_IFCR_CHTIF1 | DMA_IFCR_CTEIF1)
 
-static uint16_t raw_history[ROW_COUNT][COL_COUNT][3] = {0};
-static uint32_t ema_accumulator[ROW_COUNT][COL_COUNT] = {0};
-static uint16_t logical_output[ROW_COUNT][COL_COUNT] = {0};
+#define USE_NEW_FILTER
 
-// 三点中值滤波：先压掉单次毛刺，再进入 EMA 平滑。
-static inline uint16_t fast_median(uint16_t a, uint16_t b, uint16_t c)
-{
-    uint16_t temp;
+#if defined(USE_NEW_FILTER)
+/* ================================================================
+ * 新方案：噪声门 + 一阶 IIR
+ * ================================================================ */
+#define NOISE_GATE  3
+#define SPIKE_GATE 80
+#define IIR_SHIFT   2
+static uint32_t ema_acc[ROW_COUNT][COL_COUNT];
+static uint16_t last_out[ROW_COUNT][COL_COUNT];
+//新的滤波
+static uint16_t process_hall_filter(uint8_t row, uint8_t col, uint16_t new_raw){
+    uint16_t cur = (uint16_t)(ema_acc[row][col] >> 4);
 
-    if (a > b) { temp = a; a = b; b = temp; }
-    if (b > c) { temp = b; b = c; c = temp; }
-    if (a > b) { temp = a; a = b; b = temp; }
+    int32_t delta = (int32_t)new_raw - (int32_t)cur;
+    if (delta < 0) delta = -delta;
 
-    return b;
-}
-
-// 单键滤波链路：三点中值 -> EMA -> 迟滞死区。
-static uint16_t process_hall_filter(uint8_t row, uint8_t col, uint16_t new_raw)
-{
-    raw_history[row][col][0] = raw_history[row][col][1];
-    raw_history[row][col][1] = raw_history[row][col][2];
-    raw_history[row][col][2] = new_raw;
-
-    uint16_t median_val = fast_median(raw_history[row][col][0], raw_history[row][col][1], raw_history[row][col][2]);
-
-    if (ema_accumulator[row][col] == 0) {
-        ema_accumulator[row][col] = ((uint32_t)median_val << EMA_SHIFT);
-    }
-    ema_accumulator[row][col] += median_val - (ema_accumulator[row][col] >> EMA_SHIFT);
-    uint16_t ema_val = ema_accumulator[row][col] >> EMA_SHIFT;
-
-    int16_t delta = (int16_t)ema_val - (int16_t)logical_output[row][col];
-    if (delta > HYSTERESIS_DEADZONE) {
-        logical_output[row][col] = ema_val - HYSTERESIS_DEADZONE;
-    } else if (delta < -HYSTERESIS_DEADZONE) {
-        logical_output[row][col] = ema_val + HYSTERESIS_DEADZONE;
+    if (delta <= NOISE_GATE) {
+        return last_out[row][col];
     }
 
-    return logical_output[row][col];
+//    if (delta >= SPIKE_GATE) {
+//        return last_out[row][col];
+//    }
+
+    int32_t diff = (int32_t)new_raw - (int32_t)cur;
+    int64_t acc  = (int64_t)ema_acc[row][col] + ((int64_t)diff << 4 >> IIR_SHIFT);
+    if (acc < 0) acc = 0;
+    ema_acc[row][col] = (uint32_t)acc;
+
+    uint16_t out = (uint16_t)(ema_acc[row][col] >> 4);
+    last_out[row][col] = out;
+    return out; 
+
 }
+
+static inline void hall_filter_calibration_init(uint8_t r, uint8_t c, uint16_t idle)
+{
+    ema_acc[r][c]  = (uint32_t)idle << 4;
+    last_out[r][c] = idle;
+}
+#elif defined(USE_FILTER)
+    /* ================================================================
+     * 旧方案：中值滤波 + EMA + 迟滞死区
+     * ================================================================ */
+    #define EMA_SHIFT 3
+    #define HYSTERESIS_DEADZONE 4
+   
+
+    static uint16_t raw_history[ROW_COUNT][COL_COUNT][3] = {0};
+    static uint32_t ema_accumulator[ROW_COUNT][COL_COUNT] = {0};
+    static uint16_t logical_output[ROW_COUNT][COL_COUNT] = {0};
+     // 三点中值滤波
+    static inline uint16_t fast_median(uint16_t a, uint16_t b, uint16_t c)
+    {
+        uint16_t temp;
+
+        if (a > b) { temp = a; a = b; b = temp; }
+        if (b > c) { temp = b; b = c; c = temp; }
+        if (a > b) { temp = a; a = b; b = temp; }
+
+        return b;
+    }
+   
+
+    // 单键滤波链路：三点中值 -> EMA -> 迟滞死区。
+    static uint16_t process_hall_filter(uint8_t row, uint8_t col, uint16_t new_raw)
+    {
+        raw_history[row][col][0] = raw_history[row][col][1];
+        raw_history[row][col][1] = raw_history[row][col][2];
+        raw_history[row][col][2] = new_raw;
+
+        uint16_t median_val = fast_median(raw_history[row][col][0], raw_history[row][col][1], raw_history[row][col][2]);
+
+        if (ema_accumulator[row][col] == 0) {
+            ema_accumulator[row][col] = ((uint32_t)median_val << EMA_SHIFT);
+        }
+        ema_accumulator[row][col] += median_val - (ema_accumulator[row][col] >> EMA_SHIFT);
+        uint16_t ema_val = ema_accumulator[row][col] >> EMA_SHIFT;
+
+        int16_t delta = (int16_t)ema_val - (int16_t)logical_output[row][col];
+        if (delta > HYSTERESIS_DEADZONE) {
+            logical_output[row][col] = ema_val - HYSTERESIS_DEADZONE;
+        } else if (delta < -HYSTERESIS_DEADZONE) {
+            logical_output[row][col] = ema_val + HYSTERESIS_DEADZONE;
+        }
+
+        return logical_output[row][col];
+    }
+
+#endif
+
+
+
 
 // 关闭所有行，避免切行时串扰。
 void ROW_ALL_OFF(void)
@@ -127,10 +180,14 @@ void lib_hall_sensor_init(void)
 void DMA1_Channel1_IRQHandler(void)
 {   
     uint32_t isr=DMA1->ISR;
+    App_debug_dma_tick(
+        (isr & DMA_ISR_TEIF1) != 0U
+    );
     DMA1->IFCR = ADC_DMA1_CH1_ALL_FLAGS; //完成寄存器清空
     DMA1_Channel1->CCR &= ~DMA_CCR_EN;   //dma1_chanel1通用配置寄存器开关
     if (isr & DMA_ISR_TEIF1) {
         // 标记错误并重新启动扫描
+        g_adc_complete = 1;
         return;
     }
     if(isr&DMA_ISR_TCIF1){
@@ -138,7 +195,7 @@ void DMA1_Channel1_IRQHandler(void)
     }
 }
 
-void lib_hall_sensor_calibration(void){
+void lib_hall_sensor_calibration_oled(void){
     printf("adc——init");
     g_adc_complete=0;
     g_scan_complete=0;
@@ -167,9 +224,9 @@ void lib_hall_sensor_calibration(void){
             g_hall_adc_frame[r][c]=average_idle;
             // 3. 设定其他参数
             keys[r][c].drift_cnt = 0;
-            keys[r][c].actuation_point = 350;    //350 200
+            keys[r][c].actuation_point = 250;    //350 200
             keys[r][c].top_deadzone = 150;     // 建议死区从 80 稍微调高到 100
-            keys[r][c].bottom_deadzone = 1050;
+            keys[r][c].bottom_deadzone = 1000;
             keys[r][c].rt_press_sens = 50;
             keys[r][c].rt_release_sens = 50;
             keys[r][c].is_pressed = 0;
@@ -177,13 +234,16 @@ void lib_hall_sensor_calibration(void){
             keys[r][c].max_offset = 0;
             keys[r][c].min_offset = 0;
             
+            #if defined(USE_NEW_FILTER)
+            hall_filter_calibration_init(r, c, average_idle);
+            #elif defined(USE_FILTER)
             // 4. 同步更新滤波器状态，防止运行第一秒时数值跳变
             raw_history[r][c][0] = average_idle;
             raw_history[r][c][1] = average_idle;
             raw_history[r][c][2] = average_idle;
             ema_accumulator[r][c] = ((uint32_t)average_idle << EMA_SHIFT);
             logical_output[r][c] = average_idle;
-            
+            #endif
             
         }
 
@@ -194,6 +254,99 @@ void lib_hall_sensor_calibration(void){
     ROW_ALL_OFF();
 
 }
+/////////////五次中值/////////////////////
+static uint16_t median5(uint16_t values[5])
+{
+    for (uint8_t i = 0; i < 4; i++) {
+        for (uint8_t j = i + 1; j < 5; j++) {
+            if (values[i] > values[j]) {
+                uint16_t temp = values[i];
+                values[i] = values[j];
+                values[j] = temp;
+            }
+        }
+    }
+
+    // 排序后第3个数就是中值
+    return values[2];
+}
+void lib_hall_sensor_calibration(void){
+    g_adc_complete=0;
+    g_scan_complete=0;
+    g_current_row=0;
+    //进行5次中值滤波
+    static uint16_t adc_samples[ROW_COUNT][COL_COUNT][5] ={0};
+    for(uint8_t sample=0;sample<5;sample++){
+        for(uint8_t r=0;r<ROW_COUNT;r++){
+            select_row(r);
+           
+            g_adc_complete=0;
+            //开始采集
+            bsp_adc_dma_start();
+            while(!g_adc_complete);
+            for(uint8_t c = 0; c < COL_COUNT; c++){
+                adc_samples[r][c][sample]=gADCxConvertedData[c];
+            }
+        
+        }
+     
+    }
+   // 对每个按键的5次数据取中值
+    for (uint8_t r = 0; r < ROW_COUNT; r++) {
+        for (uint8_t c = 0; c < COL_COUNT; c++) {
+          if (key_mask[r][c] == 0) {
+                g_hall_adc_frame[r][c] = 0;
+                continue;
+            }
+          uint16_t values[5];
+           for (uint8_t i = 0; i < 5; i++) {
+                values[i] = adc_samples[r][c][i];
+            }
+            uint16_t median_idle = median5(values);
+            keys[r][c].idele_adc = median_idle;
+            g_hall_adc_frame[r][c] = median_idle;
+
+            keys[r][c].drift_cnt = 0;
+            keys[r][c].actuation_point = 250;
+            keys[r][c].top_deadzone = 150;
+            keys[r][c].bottom_deadzone = 1000;
+            keys[r][c].rt_press_sens = 50;
+            keys[r][c].rt_release_sens = 50;
+            keys[r][c].is_pressed = 0;
+            keys[r][c].in_rt_cycle = 0;
+            keys[r][c].max_offset = 0;
+            keys[r][c].min_offset = 0;
+            #if defined(USE_NEW_FILTER)
+            hall_filter_calibration_init(r, c, median_idle);
+            #elif defined(USE_FILTER)
+                raw_history[r][c][0] = median_idle;
+                raw_history[r][c][1] = median_idle;
+                raw_history[r][c][2] = median_idle;
+                ema_accumulator[r][c] =
+                    (uint32_t)median_idle << EMA_SHIFT;
+                logical_output[r][c] = median_idle;
+            #endif
+        }
+    
+    }
+    
+    
+    g_adc_complete = 0;
+    g_scan_complete = 0;
+    g_current_row = 0;
+   ROW_ALL_OFF();
+
+
+}
+
+
+
+
+
+
+
+
+
 // 从第 0 行开始启动一整帧扫描。
 void lib_hall_sensor_start_scan(void)
 {
@@ -237,6 +390,8 @@ void lib_hall_sensor_task(void)
     if (g_current_row >= ROW_COUNT) {
         g_current_row = 0;
         g_scan_complete = 1;
+        /* 已经完成5行ADC扫描 */
+        App_debug_frame_tick();
         ROW_ALL_OFF();
         return;
     }
