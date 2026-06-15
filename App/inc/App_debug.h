@@ -21,7 +21,7 @@
 
 
 /* 
- * 返回给上位机的诊断数据结构体（共28字节）
+ * 返回给上位机的诊断数据结构体（共56字节）
  * 采用 1 字节对齐，确保数据在 USB 传输中无空洞、无平台差异 
  */
 #pragma pack(push, 1)
@@ -37,7 +37,18 @@ typedef struct{
     uint8_t state_flags;      /* 实时监控：系统当前状态标志位集合（ADC状态、扫描状态、USB忙闲等） */
     uint8_t error_code;       /* 故障追溯：记录最近一次发生的系统错误码（如 DMA 错误、USB 超时等） */
     uint8_t reserved;         /* 字节对齐预留 */
+
+    uint32_t adc_timeout_count;
+    uint32_t adc_timeout_tick;
+    uint32_t adc_sr;
+    uint32_t adc_cr2;
+    uint32_t dma_isr;
+    uint32_t dma_ccr;
+    uint16_t dma_cndtr;
+    uint8_t adc_timeout_row;
+    uint8_t dma_irq_flags;
 }AppDebugInfo_t;
+typedef char AppDebugInfoSizeCheck[(sizeof(AppDebugInfo_t) <= 56U) ? 1 : -1];
 typedef struct{
     uint8_t row;
     uint8_t value_type;      /* 0=原始ADC，1=滤波ADC */
@@ -55,6 +66,7 @@ typedef struct{
 #define DEBUG_ERROR_DMA        1U  /* DMA 传输或硬件总线发生错误 */
 #define DEBUG_ERROR_USB_SEND   2U  /* USB 底层驱动发送接口调用失败 */
 #define DEBUG_ERROR_USB_BUSY   3U  /* USB 物理线路可能断线，导致端点长时间忙碌超时 */
+#define DEBUG_ERROR_ADC_TIMEOUT 4U /* ADC/DMA scan completion timeout */
  
  
  /* 供其他模块调用的 API 接口 */
@@ -65,6 +77,7 @@ void App_debug_frame_tick(void);            /* 完整扫描帧计数自增 */
 void App_debug_key_change_tick(void);       /* 按键状态变化计数自增 */
 void App_debug_usb_tick(void);              /* USB 成功发送计数自增 */
 void App_debug_set_error(uint8_t error);    /* 发生异常时，手动记录错误码 */
+void App_debug_capture_adc_timeout(uint8_t row);
 
  
 /* 将当前的诊断信息打包写入发送载荷，返回实际打包的数据长度 */

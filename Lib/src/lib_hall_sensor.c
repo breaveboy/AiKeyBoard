@@ -8,6 +8,8 @@ volatile uint8_t g_scan_complete = 0;
 // 单行 14 路 ADC DMA 完成标志，由 DMA 中断置位。
 volatile uint8_t g_adc_complete = 0;
 #define ADC_DMA1_CH1_ALL_FLAGS (DMA_IFCR_CGIF1 | DMA_IFCR_CTCIF1 | DMA_IFCR_CHTIF1 | DMA_IFCR_CTEIF1)
+#define ADC_SCAN_TIMEOUT_MS 20U
+static uint32_t g_adc_start_tick;
 // 滤波后的整帧 ADC 数据，按键判断只读取这个数组。
 uint16_t g_hall_adc_frame[ROW_COUNT][COL_COUNT] = {0};
 uint16_t g_hall_adc_raw_frame[ROW_COUNT][COL_COUNT] = {0};
@@ -357,6 +359,7 @@ void lib_hall_sensor_start_scan(void)
 
     select_row(g_current_row);
     //Bsp_Delay_Us(SETTLING_TIME_US);
+    g_adc_start_tick = HAL_GetTick();
     bsp_adc_dma_start();
 }
 
@@ -371,7 +374,22 @@ void lib_hall_sensor_release_frame(void)
 // ADC 采集任务：一次 DMA 完成只处理一行，五行完成后交给按键任务。
 void lib_hall_sensor_task(void)
 {
-    if (g_scan_complete || !g_adc_complete) {
+    if (g_scan_complete) {
+        return;
+    }
+
+    if (!g_adc_complete) {
+        if ((HAL_GetTick() - g_adc_start_tick) < ADC_SCAN_TIMEOUT_MS) {
+            return;
+        }
+
+        App_debug_capture_adc_timeout(g_current_row);
+        DMA1_Channel1->CCR &= ~DMA_CCR_EN;
+        DMA1->IFCR = ADC_DMA1_CH1_ALL_FLAGS;
+        g_adc_complete = 0;
+        select_row(g_current_row);
+        g_adc_start_tick = HAL_GetTick();
+        bsp_adc_dma_start();
         return;
     }
 
@@ -401,6 +419,7 @@ void lib_hall_sensor_task(void)
 
     select_row(g_current_row);
     //Bsp_Delay_Us(SETTLING_TIME_US);
+    g_adc_start_tick = HAL_GetTick();
     bsp_adc_dma_start();
 }
 

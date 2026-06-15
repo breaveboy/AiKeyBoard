@@ -25,10 +25,7 @@ typedef struct {
 
 static AppOtaContext_t g_ota;
 
-static uint32_t App_ota_crc32_update(uint32_t crc,
-                                     const uint8_t *data,
-                                     size_t length)
-{
+static uint32_t App_ota_crc32_update(uint32_t crc,const uint8_t *data,size_t length){
     size_t index;
     uint8_t bit;
 
@@ -47,16 +44,14 @@ static uint32_t App_ota_crc32_update(uint32_t crc,
     return crc;
 }
 
-static uint32_t App_ota_crc32_memory(const void *data, size_t length)
-{
+static uint32_t App_ota_crc32_memory(const void *data, size_t length){
     uint32_t crc = 0xFFFFFFFFUL;
 
     crc = App_ota_crc32_update(crc, (const uint8_t *)data, length);
     return crc ^ 0xFFFFFFFFUL;
 }
 
-static bool App_ota_crc32_download(uint32_t length, uint32_t *result)
-{
+static bool App_ota_crc32_download(uint32_t length, uint32_t *result){
     uint8_t buffer[APP_OTA_CRC_BUFFER_SIZE];
     uint32_t offset = 0U;
     uint32_t crc = 0xFFFFFFFFUL;

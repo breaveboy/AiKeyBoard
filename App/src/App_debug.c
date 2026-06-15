@@ -85,6 +85,26 @@ void App_debug_set_error(uint8_t error)
     g_debug.error_code = error;
 }
 
+void App_debug_capture_adc_timeout(uint8_t row)
+{
+    g_debug.error_code = DEBUG_ERROR_ADC_TIMEOUT;
+    g_debug.adc_timeout_count++;
+    g_debug.adc_timeout_tick = HAL_GetTick();
+    g_debug.adc_sr = ADC1->SR;
+    g_debug.adc_cr2 = ADC1->CR2;
+    g_debug.dma_isr = DMA1->ISR;
+    g_debug.dma_ccr = DMA1_Channel1->CCR;
+    g_debug.dma_cndtr = (uint16_t)DMA1_Channel1->CNDTR;
+    g_debug.adc_timeout_row = row;
+    g_debug.dma_irq_flags = 0U;
+    if (NVIC_GetEnableIRQ(DMA1_Channel1_IRQn) != 0U) {
+        g_debug.dma_irq_flags |= 0x01U;
+    }
+    if (NVIC_GetPendingIRQ(DMA1_Channel1_IRQn) != 0U) {
+        g_debug.dma_irq_flags |= 0x02U;
+    }
+}
+
 /**
  * @brief 在回传上位机前，获取并刷新系统实时的引脚和硬件状态
  */
@@ -204,6 +224,7 @@ void App_debug_frame_tick(void) {}
 void App_debug_key_change_tick(void) {}
 void App_debug_usb_tick(void) {}
 void App_debug_set_error(uint8_t error) { (void)error; }
+void App_debug_capture_adc_timeout(uint8_t row) { (void)row; }
 
 uint8_t App_debug_handle(uint8_t parameter,
                          uint8_t *payload,

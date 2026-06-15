@@ -19,7 +19,8 @@ DEBUG_PARAM_READ = 0x00
 DEBUG_PARAM_CLEAR = 0x01
 DEBUG_PARAM_ADC_FILTERED0 = 0x10
 DEBUG_PARAM_ADC_RAW0 = 0x20
-DEBUG_PAYLOAD_FORMAT = "<IIIIII4B"
+LEGACY_DEBUG_PAYLOAD_FORMAT = "<IIIIII4B"
+DEBUG_PAYLOAD_FORMAT = "<IIIIII4BIIIIIIHBB"
 DEBUG_PAYLOAD_SIZE = struct.calcsize(DEBUG_PAYLOAD_FORMAT)
 ADC_PAYLOAD_FORMAT = "<BB14H"
 ADC_PAYLOAD_SIZE = struct.calcsize(ADC_PAYLOAD_FORMAT)
@@ -74,6 +75,7 @@ class DebugBackend(QObject):
         self._device = None
         self._device_lock = threading.Lock()
         self._last_sample: dict[str, int] | None = None
+        self._last_adc_timeout_count = 0
         self._adc_filtered = [0] * 70
         self._adc_raw = [0] * 70
         self._adc_latest_filtered = [0] * 70
@@ -362,12 +364,39 @@ class DebugBackend(QObject):
             return None
 
         payload = packet["payload"]
+        if len(payload) == struct.calcsize(LEGACY_DEBUG_PAYLOAD_FORMAT):
+            legacy_names = (
+                "uptime", "main", "dma", "frame", "key", "usb",
+                "row", "flags", "error", "reserved",
+            )
+            sample = dict(zip(
+                legacy_names,
+                struct.unpack(LEGACY_DEBUG_PAYLOAD_FORMAT, payload),
+            ))
+            sample.update({
+                "adc_timeout_count": 0,
+                "adc_timeout_tick": 0,
+                "adc_sr": 0,
+                "adc_cr2": 0,
+                "dma_isr": 0,
+                "dma_ccr": 0,
+                "dma_cndtr": 0,
+                "adc_timeout_row": 0,
+                "dma_irq_flags": 0,
+            })
+            return sample
+
         if len(payload) != DEBUG_PAYLOAD_SIZE:
             self._logReady.emit(f"诊断数据长度异常：{len(payload)}，期望 {DEBUG_PAYLOAD_SIZE}")
             return None
 
-        names = ("uptime", "main", "dma", "frame", "key", "usb",
-                 "row", "flags", "error", "reserved")
+        names = (
+            "uptime", "main", "dma", "frame", "key", "usb",
+            "row", "flags", "error", "reserved",
+            "adc_timeout_count", "adc_timeout_tick",
+            "adc_sr", "adc_cr2", "dma_isr", "dma_ccr",
+            "dma_cndtr", "adc_timeout_row", "dma_irq_flags",
+        )
         return dict(zip(names, struct.unpack(DEBUG_PAYLOAD_FORMAT, payload)))
 
     def _decode_adc_response(self, data: bytes, parameter: int):
@@ -407,10 +436,11 @@ class DebugBackend(QObject):
 
         conclusion = self._diagnose(self._last_sample, sample)
         self._last_sample = sample
+        fault = self._format_adc_fault(sample)
         self._append_log(
             f"row={sample['row']} main={sample['main']} dma={sample['dma']} "
             f"frame={sample['frame']} key={sample['key']} usb={sample['usb']} "
-            f"flags={flags} error={error}{conclusion}"
+            f"flags={flags} error={error}{conclusion}{fault}"
         )
 
     @Slot(object)
@@ -544,4 +574,49 @@ class DebugBackend(QObject):
             1: "DMA错误",
             2: "USB发送失败",
             3: "USB忙超时",
+            4: "ADC采样超时",
         }.get(error, f"未知错误({error})")
+
+    def _format_adc_fault(self, sample: dict[str, int]) -> str:
+        timeout_count = sample["adc_timeout_count"]
+        if timeout_count == 0 or timeout_count == self._last_adc_timeout_count:
+            return ""
+        self._last_adc_timeout_count = timeout_count
+
+        adc_sr = sample["adc_sr"]
+        adc_cr2 = sample["adc_cr2"]
+        dma_isr = sample["dma_isr"]
+        dma_ccr = sample["dma_ccr"]
+        cndtr = sample["dma_cndtr"]
+        irq_flags = sample["dma_irq_flags"]
+
+        if dma_isr & 0x08:
+            cause = "DMA传输错误标志TEIF"
+        elif (irq_flags & 0x01) == 0:
+            cause = "DMA1 Channel1中断被关闭"
+        elif (dma_isr & 0x02) and (irq_flags & 0x02):
+            cause = "DMA完成中断已挂起但CPU未执行处理函数"
+        elif dma_isr & 0x02:
+            cause = "DMA已完成但完成中断未被正常处理"
+        elif (dma_ccr & 0x01) == 0:
+            cause = "DMA通道在超时前已被关闭"
+        elif (adc_cr2 & 0x100) == 0:
+            cause = "ADC到DMA请求未启用"
+        elif cndtr == 14 and (adc_sr & 0x10) == 0:
+            cause = "ADC转换未启动"
+        elif cndtr == 14:
+            cause = "ADC已启动但DMA未收到任何样本"
+        elif 0 < cndtr < 14:
+            cause = "DMA传输中途停止"
+        elif cndtr == 0:
+            cause = "DMA计数完成但完成标志或中断缺失"
+        else:
+            cause = "需要结合寄存器继续确认"
+
+        return (
+            f" | ADC故障快照 count={timeout_count} "
+            f"tick={sample['adc_timeout_tick']} row={sample['adc_timeout_row']} "
+            f"ADC_SR=0x{adc_sr:08X} ADC_CR2=0x{adc_cr2:08X} "
+            f"DMA_ISR=0x{dma_isr:08X} DMA_CCR=0x{dma_ccr:08X} "
+            f"DMA_CNDTR={cndtr} DMA_IRQ=0x{irq_flags:02X} 初判={cause}"
+        )
