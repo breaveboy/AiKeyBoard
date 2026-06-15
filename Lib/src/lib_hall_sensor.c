@@ -10,6 +10,7 @@ volatile uint8_t g_adc_complete = 0;
 #define ADC_DMA1_CH1_ALL_FLAGS (DMA_IFCR_CGIF1 | DMA_IFCR_CTCIF1 | DMA_IFCR_CHTIF1 | DMA_IFCR_CTEIF1)
 // 滤波后的整帧 ADC 数据，按键判断只读取这个数组。
 uint16_t g_hall_adc_frame[ROW_COUNT][COL_COUNT] = {0};
+uint16_t g_hall_adc_raw_frame[ROW_COUNT][COL_COUNT] = {0};
 Key_t keys[ROW_COUNT][COL_COUNT];
 
 
@@ -378,10 +379,12 @@ void lib_hall_sensor_task(void)
 
     for (uint8_t c = 0; c < COL_COUNT; c++) {
         if (key_mask[g_current_row][c] == 0) {
+            g_hall_adc_raw_frame[g_current_row][c] = 0;
             g_hall_adc_frame[g_current_row][c] = 0;
             continue;
         }
 
+        g_hall_adc_raw_frame[g_current_row][c] = gADCxConvertedData[c];
         // 这里只写入滤波 ADC 帧，不在采集层判断按下/松开。
         g_hall_adc_frame[g_current_row][c] = process_hall_filter(g_current_row, c, gADCxConvertedData[c]);
     }

@@ -5,6 +5,7 @@ from pathlib import Path
 from PySide6.QtGui import QGuiApplication
 from PySide6.QtQml import QQmlApplicationEngine
 
+from debug_backend import DebugBackend
 from ota_backend import OtaBackend
 
 # ========================================================================
@@ -40,6 +41,9 @@ engine.rootContext().setContextProperty("Theme", mock_theme)
 # ========================================================================
 ota_backend = OtaBackend()
 engine.rootContext().setContextProperty("OtaBackend", ota_backend)
+debug_backend = DebugBackend()
+engine.rootContext().setContextProperty("DebugBackend", debug_backend)
+app.aboutToQuit.connect(debug_backend.stop)
 logging.getLogger(__name__).info("OtaBackend 已注册到 QML 上下文")
 
 qml_file = Path(__file__).resolve().with_name("main.qml")

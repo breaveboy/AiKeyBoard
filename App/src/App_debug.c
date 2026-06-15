@@ -126,17 +126,58 @@ static void App_debug_update_state(void)
  * @param capacity 传入协议响应缓存区的最大容量
  * @return 写入缓存区的数据长度（字节）
  */
+static uint8_t App_debug_read_adc_row(uint8_t parameter,
+                                      uint8_t *payload,
+                                      uint8_t capacity)
+{
+    AppDebugAdcRow_t response;
+    const uint16_t *source;
+    uint8_t row;
+
+    if (capacity < sizeof(response)) {
+        return 0U;
+    }
+
+    if ((parameter >= DEBUG_PARAM_ADC_FILTERED0) &&
+        (parameter <= DEBUG_PARAM_ADC_FILTERED4)) {
+        row = (uint8_t)(parameter - DEBUG_PARAM_ADC_FILTERED0);
+        response.value_type = 1U;
+        source = g_hall_adc_frame[row];
+    } else if ((parameter >= DEBUG_PARAM_ADC_RAW0) &&
+               (parameter <= DEBUG_PARAM_ADC_RAW4)) {
+        row = (uint8_t)(parameter - DEBUG_PARAM_ADC_RAW0);
+        response.value_type = 0U;
+        source = g_hall_adc_raw_frame[row];
+    } else {
+        return 0U;
+    }
+
+    response.row = row;
+    memcpy(response.adc, source, sizeof(response.adc));
+    memcpy(payload, &response, sizeof(response));
+    return (uint8_t)sizeof(response);
+}
+
 uint8_t App_debug_handle(uint8_t parameter,
                          uint8_t *payload,
                          uint8_t capacity)
 {
-    // 安全检查：防止空指针和缓冲区溢出
-    if ((payload == NULL) || (capacity < sizeof(g_debug))) {
+    if (payload == NULL) {
         return 0U;
+    }
+
+    if (((parameter >= DEBUG_PARAM_ADC_FILTERED0) &&
+         (parameter <= DEBUG_PARAM_ADC_FILTERED4)) ||
+        ((parameter >= DEBUG_PARAM_ADC_RAW0) &&
+         (parameter <= DEBUG_PARAM_ADC_RAW4))) {
+        return App_debug_read_adc_row(parameter, payload, capacity);
     }
 
     // 处理读取命令
     if (parameter == DEBUG_PARAM_READ) {
+        if (capacity < sizeof(g_debug)) {
+            return 0U;
+        }
         App_debug_update_state();                      // 先刷新一次实时状态
         memcpy(payload, &g_debug, sizeof(g_debug));    // 深拷贝到发送缓存
         return (uint8_t)sizeof(g_debug);              // 返回诊断数据的长度

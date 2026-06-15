@@ -33,6 +33,8 @@ typedef struct {
 extern Key_t keys[ROW_COUNT][COL_COUNT];
 // 一整帧滤波后的 ADC 数据，行列布局为 5 x 14。
 extern uint16_t g_hall_adc_frame[ROW_COUNT][COL_COUNT];
+/* 最近一整帧未经滤波的原始 ADC 数据。 */
+extern uint16_t g_hall_adc_raw_frame[ROW_COUNT][COL_COUNT];
 // 置 1 表示 g_hall_adc_frame 已经采满一帧，等待按键任务处理。
 extern volatile uint8_t g_scan_complete;
 extern const uint8_t key_mask[ROW_COUNT][COL_COUNT];

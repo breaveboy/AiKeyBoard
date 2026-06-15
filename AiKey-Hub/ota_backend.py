@@ -263,6 +263,12 @@ class OtaBackend(QObject):
         threading.Thread(target=self._do_query, daemon=True).start()
         logger.info("查询线程已启动")
 
+    @Slot()
+    def closeConnection(self) -> None:
+        """切离 OTA 页面时释放 Custom HID。"""
+        if not self._busy:
+            self._close()
+
     # ==================================================================
     #  HID 通信
     # ==================================================================

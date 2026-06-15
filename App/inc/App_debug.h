@@ -13,11 +13,15 @@
 
 #define CMD_SYS_DEBUG 0xF3
 #define DEBUG_PARAM_READ  0x00  /* 子命令：读取当前系统诊断数据 */
-#define DEBUG_PARAM_CLEAR 0x01  /* 子命令：清除所有运行计数器 */
+#define DEBUG_PARAM_CLEAR        0x01  /* 清除运行计数器 */
+#define DEBUG_PARAM_ADC_FILTERED0 0x10  /* 0x10~0x14：读取第0~4行滤波ADC */
+#define DEBUG_PARAM_ADC_FILTERED4 0x14
+#define DEBUG_PARAM_ADC_RAW0      0x20  /* 0x20~0x24：读取第0~4行原始ADC */
+#define DEBUG_PARAM_ADC_RAW4      0x24
 
 
 /* 
- * 返回给上位机的诊断数据结构体（共24字节）
+ * 返回给上位机的诊断数据结构体（共28字节）
  * 采用 1 字节对齐，确保数据在 USB 传输中无空洞、无平台差异 
  */
 #pragma pack(push, 1)
@@ -34,6 +38,11 @@ typedef struct{
     uint8_t error_code;       /* 故障追溯：记录最近一次发生的系统错误码（如 DMA 错误、USB 超时等） */
     uint8_t reserved;         /* 字节对齐预留 */
 }AppDebugInfo_t;
+typedef struct{
+    uint8_t row;
+    uint8_t value_type;      /* 0=原始ADC，1=滤波ADC */
+    uint16_t adc[14];
+} AppDebugAdcRow_t;
 #pragma pack(pop)
  
 /* 状态位定义（对应 state_flags） */
