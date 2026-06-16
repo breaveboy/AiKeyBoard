@@ -17,14 +17,14 @@
       "**/__pycache__": true,
       "**/*.pyc": true,
       "**/*.pyo": true,
-      "**/logs": true,
+     
       "Project/Objects": true,
       "Project/Listings": true
     },
     "search.exclude": {
       "AiKey-Hub/.venv": true,
       "**/__pycache__": true,
-      "**/logs": true,
+      
       "Project/Objects": true,
       "Project/Listings": true
     }

@@ -15,7 +15,7 @@
 #endif
 
 // 0x81 IN 端点忙超时保护，避免 PC 未取走上一包后长期不能打字。
-#define HID_BUSY_TIMEOUT_TICKS 20
+#define HID_BUSY_TIMEOUT_TICKS 40
 
 extern volatile uint8_t hid_state;
 

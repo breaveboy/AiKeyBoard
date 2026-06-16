@@ -85,7 +85,5 @@ uint8_t App_debug_handle(uint8_t parameter,
                          uint8_t *payload,
                          uint8_t capacity);
  
- 
- 
 
 #endif

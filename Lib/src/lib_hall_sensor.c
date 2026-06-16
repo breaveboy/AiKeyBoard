@@ -33,7 +33,7 @@ const uint8_t key_mask[ROW_COUNT][COL_COUNT] = {
  * ================================================================ */
 #define NOISE_GATE  3
 #define SPIKE_GATE 80
-#define IIR_SHIFT   2
+#define IIR_SHIFT   3
 static uint32_t ema_acc[ROW_COUNT][COL_COUNT];
 static uint16_t last_out[ROW_COUNT][COL_COUNT];
 //ÐÂµÄÂË²¨

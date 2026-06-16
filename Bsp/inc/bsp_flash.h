@@ -21,8 +21,8 @@
 #define BSP_FLASH_INFO_ADDRESS      (0x0803C000UL)
 #define BSP_FLASH_INFO_SIZE         (0x00004000UL)
 
-#define BSP_FLASH_PAGE_SIZE         (0x00000100UL)
-#define BSP_FLASH_SECTOR_SIZE       (0x00000800UL)
+#define BSP_FLASH_PAGE_SIZE         (0x00000100UL)   //页的大小256
+#define BSP_FLASH_SECTOR_SIZE       (0x00000800UL)   //扇区的大小2kb
 
 typedef enum {
     BSP_FLASH_REGION_APP = 0,
@@ -31,8 +31,8 @@ typedef enum {
 } bsp_flash_region_t;
 
 typedef enum {
-    BSP_FLASH_OK = 0,
-    BSP_FLASH_ERROR_ARGUMENT,
+    BSP_FLASH_OK = 0,     //成功
+    BSP_FLASH_ERROR_ARGUMENT, 
     BSP_FLASH_ERROR_ALIGNMENT,
     BSP_FLASH_ERROR_NOT_ERASED,
     BSP_FLASH_ERROR_ERASE,

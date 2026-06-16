@@ -56,6 +56,7 @@ static void APP_USBInit(void)
     __HAL_RCC_USB_CLK_ENABLE();
 
     hid_keyboard_init();
+    HAL_NVIC_SetPriority(USBD_IRQn, 2, 0);   // USB´ÓÄ¬ÈÏ0½µµ½2
     NVIC_EnableIRQ(USBD_IRQn);
 }
 

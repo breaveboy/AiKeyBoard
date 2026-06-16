@@ -112,8 +112,8 @@
 #define TASK_TIM_INSTANCE        TIM6            // 任务调度定时器
 #define TASK_TIM_IRQ             TIM6_IRQn
 #define TASK_TIM_IRQHandler      TIM6_IRQHandler
-#define TASK_TIM_PRESCALER       (1000 - 1)     // 预分频
-#define TASK_TIM_PERIOD          (SystemCoreClock / 1000000 - 1)  // 周期
+#define TASK_TIM_PRESCALER  (500 - 1)     // 预分频
+#define TASK_TIM_PERIOD     (SystemCoreClock / 2000000 - 1)  // 周期
 
 // ==========================================================
 //  时钟使能宏定义
